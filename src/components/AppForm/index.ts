@@ -1,3 +1,5 @@
+
+import AppSearch from "./Search.vue"
 import AppSelect from "./select.vue";
 import AppTextField from "./textField.vue";
 import AppCheckbox from "./checkbox.vue";
@@ -18,6 +20,7 @@ export {
   AppRadio,
   AppFormWrapper,
   AppFileAttachment,
+  AppSearch, 
   AppContentEditable,
   AppCalendar,
 };

@@ -1,24 +1,27 @@
-import AppButton from "./AppButton";
-import AppIcon from "./AppIcon";
-import AppImageLoader from "./AppImageLoader";
-import AppTransaction from "./AppTransaction";
-import AppModal from "./AppModal";
-import AppQrCode from "./AppQrCode";
-import AppAvatar from "./AppAvatar";
-import AppChip from "./AppChip";
-import AppCard from "./AppCard";
-import AppTitleCardContainer from "./AppTitleCardContainer";
-import AppDropdownSelect from "./AppDropdownSelect";
-import AppPaymentMethod from "./AppPaymentMethod";
-import AppCountdownTimer from "./AppCountdownTimer";
-import AppDetails from "./AppDetails";
-import AppSwiper from "./AppSwiper";
-import AppInfoBox from "./AppInfoBox";
-import AppCurrencySwitch from "./AppCurrencySwitch";
-import AppPointTransaction from "./AppPointTransaction";
-import AppNotification from "./AppNotification";
-import AppSwitch from "./AppSwitch";
-import { AppHeaderText, AppNormalText } from "./AppTypography";
+import AppButton from "./AppButton"
+import AppIcon from "./AppIcon"
+import AppImageLoader from "./AppImageLoader"
+import AppTransaction from "./AppTransaction"
+import AppModal from "./AppModal"
+import AppQrCode from "./AppQrCode"
+import AppAvatar from "./AppAvatar"
+import AppChip from "./AppChip"
+import AppCard from "./AppCard"
+import AppTitleCardContainer from "./AppTitleCardContainer"
+import AppDropdownSelect from "./AppDropdownSelect"
+import AppPaymentMethod from "./AppPaymentMethod"
+import AppCountdownTimer from "./AppCountdownTimer"
+import AppDetails from "./AppDetails"
+import AppSwiper from "./AppSwiper"
+import AppInfoBox from "./AppInfoBox"
+import AppCurrencySwitch from "./AppCurrencySwitch"
+import AppPointTransaction from "./AppPointTransaction"
+import AppNotification from "./AppNotification"
+import AppSwitch from "./AppSwitch"
+import AppTransactions from "./AppTransactions"
+import AppTabs from "./AppTabs"
+import AppNotifications from "./AppNotifications"
+import { AppHeaderText, AppNormalText } from "./AppTypography"
 import {
   AppSelect,
   AppTextField,
@@ -28,10 +31,11 @@ import {
   AppRadio,
   AppFormWrapper,
   AppFileAttachment,
+  AppSearch,
   AppContentEditable,
-} from "./AppForm";
-import { HorizontalUserList } from "./AppList";
-import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts";
+} from "./AppForm"
+import { HorizontalUserList, BeneficiaryList } from "./AppList"
+import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts"
 
 export {
   AppButton,
@@ -45,9 +49,11 @@ export {
   AppRadio,
   AppFormWrapper,
   AppFileAttachment,
+  AppSearch,
   AppIcon,
   AppImageLoader,
   AppTransaction,
+  AppTransactions,
   AppModal,
   AppQrCode,
   AppAvatar,
@@ -63,9 +69,12 @@ export {
   AppOnboardingLayout,
   AppInfoBox,
   DefaultPageLayout,
+  BeneficiaryList,
+  AppTabs,
   AppCurrencySwitch,
+  AppNotifications,
   AppContentEditable,
   AppPointTransaction,
   AppNotification,
   AppSwitch,
-};
+}

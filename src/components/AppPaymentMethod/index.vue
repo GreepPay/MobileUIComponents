@@ -55,7 +55,7 @@
       AppIcon,
       AppNormalText,
     },
-    name: "AppTransaction",
+    name: "AppPaymentMethods",
     props: {
       /**
        * The transaction data.

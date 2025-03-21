@@ -1,24 +1,21 @@
 <template>
-  <div :class="['relative w-full rounded-[40px]', customClass]">
-    <!-- Gradient Overlay -->
-    <div
-      class="absolute !h-full !w-full inset-0 bg-gradient-to-tl rounded-[40px] from-[#10BB76] via-[#10BB76] to-[#10BB76]"
-      :class="[customClass]"
-    ></div>
+  <app-image-loader
+    :class="[
+      'w-full h-fit rounded-[35px] flex flex- col relative justify-center items-center space-y-5  xs:!py-4 bg-[linear-gradient(359.13deg,#10BB76_25.37%,#008651_99.25%)]',
+      customClass,
+    ]"
+    :photoUrl="''"
+  >
+    <!-- Image bg -->
+    <img
+      src="/images/greep-transparent-logo.svg"
+      class="h-full absolute w-full top-0 left-0 rounded-[35px] z-[1]"
+    />
 
-    <!-- Background Image -->
-    <div
-      :class="[
-        'relative bg-cover bg-center w-full rounded-[40px]',
-        customClass,
-      ]"
-      style="background-image: url('/images/greep-transparent-lg.svg')"
-    >
-      <div class="relative z-10 p-6">
-        <slot />
-      </div>
+    <div class="z-50 w-full h-full px-5 py-5">
+      <slot />
     </div>
-  </div>
+  </app-image-loader>
 </template>
 
 <script lang="ts">

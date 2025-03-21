@@ -1,20 +1,27 @@
 <template>
   <div
+    v-if="items && items.length >= 1"
     :class="[
-      'flex items-center space-x-5 overflow-x-auto h-fit scrollbar-hide',
+      'flex items-center overflow-x-auto h-fit scrollbar-hide',
       customClass,
     ]"
   >
     <div
       v-for="user in items"
       :key="user.id"
-      class="flex flex-col items-center justify-center space-y-1"
+      class="flex flex-col items-center justify-center space-y-1 px-3"
     >
       <app-avatar :src="user.avatar" :alt="user.name" :size="imageSize" />
       <app-normal-text class="text-base !text-gray-two !leading-6">
         {{ user.name }}
       </app-normal-text>
     </div>
+  </div>
+
+  <div v-else class="border flex justify-center rounded-2xl p-5">
+    <app-normal-text class="!text-lg !text-center !text-gray-two !leading-6">
+      {{ noDataText }}
+    </app-normal-text>
   </div>
 </template>
 
@@ -64,6 +71,14 @@
       imageSize: {
         type: Number,
         default: 40,
+      },
+      /**
+       * Text for no data for user list
+       * @default string
+       */
+      noDataText: {
+        type: String,
+        default: "You have no beneficiary",
       },
       /**
        * Allows additional custom styling classes.

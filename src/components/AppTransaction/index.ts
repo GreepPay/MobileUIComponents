@@ -1,3 +1,3 @@
-import AppTransaction from './index.vue'
+import AppTransaction from "./index.vue"
 
 export default AppTransaction
