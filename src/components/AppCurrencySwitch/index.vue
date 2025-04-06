@@ -135,13 +135,7 @@ import AppIcon from "../AppIcon";
 import AppModal from "../AppModal";
 import AppLoading from "../AppLoading";
 import { Logic } from "../../composable";
-
-interface Currency {
-  code: string;
-  name: string;
-  symbol: string;
-  loading?: boolean;
-}
+import { Currency } from "../../types";
 
 export default defineComponent({
   name: "AppCurrencySwitch",
@@ -157,76 +151,79 @@ export default defineComponent({
     default_currency: {
       type: String,
       required: true,
-      default: "USD",
+      default: "",
     },
     modelValue: {
       type: String,
       required: true,
-      default: "USD",
+      default: "",
     },
     modelSymbol: {
       type: String,
       required: false,
       default: "$", // Default to USD symbol
     },
+    availableCurrencies: {
+      type: Array as () => Currency[],
+      default: () => [
+        {
+          code: "TRY",
+          name: "Turkish Lira",
+          symbol: "₺",
+          loading: false,
+        },
+        {
+          code: "USD",
+          name: "United States Dollar",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "USDC",
+          name: "USDC",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "NGN",
+          name: "Nigerian Naira",
+          symbol: "₦",
+          loading: false,
+        },
+        {
+          code: "GHS",
+          name: "Ghanaian Cedis",
+          symbol: "GH₵",
+          loading: false,
+        },
+        {
+          code: "XLM",
+          name: "XLM",
+          symbol: "XLM", // Or any appropriate symbol
+          loading: false,
+        },
+        {
+          code: "ZAR",
+          name: "South African Rand",
+          symbol: "R",
+          loading: false,
+        },
+        {
+          code: "EUR",
+          name: "Euro",
+          symbol: "€",
+          loading: false,
+        },
+      ],
+    },
   },
   emits: ["update:modelValue", "update:modelSymbol"],
   setup(props, context) {
-    const availableCurrencies = reactive<Currency[]>([
-      {
-        code: "TRY",
-        name: "Turkish Lira",
-        symbol: "₺",
-        loading: false,
-      },
-      {
-        code: "USD",
-        name: "United States Dollar",
-        symbol: "$",
-        loading: false,
-      },
-      {
-        code: "USDC",
-        name: "USDC",
-        symbol: "$",
-        loading: false,
-      },
-      {
-        code: "NGN",
-        name: "Nigerian Naira",
-        symbol: "₦",
-        loading: false,
-      },
-      {
-        code: "GHS",
-        name: "Ghanaian Cedis",
-        symbol: "GH₵",
-        loading: false,
-      },
-      {
-        code: "XLM",
-        name: "XLM",
-        symbol: "XLM", // Or any appropriate symbol
-        loading: false,
-      },
-      {
-        code: "ZAR",
-        name: "South African Rand",
-        symbol: "R",
-        loading: false,
-      },
-      {
-        code: "EUR",
-        name: "Euro",
-        symbol: "€",
-        loading: false,
-      },
-    ]);
-
     const defaultCurrencyRef = toRef(props, "default_currency");
 
     const defaultCurrency = computed<Currency>(() => {
-      return availableCurrencies.find(
+      console.log(defaultCurrencyRef.value);
+      return props.availableCurrencies.find(
         (currency) => currency.code === defaultCurrencyRef.value
       )!; // Non-null assertion since prop is required
     });
@@ -283,14 +280,13 @@ export default defineComponent({
     });
 
     watch(defaultCurrencyRef, (newCurrency) => {
-      const currencyData = availableCurrencies.filter(
+      const currencyData = props.availableCurrencies.filter(
         (currency) => currency.code === newCurrency
       );
       selectCurrency(currencyData[0]);
     });
 
     return {
-      availableCurrencies,
       selectedCurrency,
       showSelectModal,
       defaultCurrency,
