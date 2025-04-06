@@ -18,7 +18,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 
 /**
  * Component that loads and displays an image with a fade-in effect.
@@ -64,6 +64,10 @@ export default defineComponent({
 
       highResImage.src = imageUrl.value;
     };
+
+    watch(props, () => {
+      setImage();
+    });
 
     onMounted(() => {
       setImage();

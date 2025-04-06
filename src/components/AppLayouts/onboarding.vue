@@ -4,11 +4,13 @@
   >
     <!-- Top section -->
     <app-image-loader
-      class="w-full flex flex-col sticky top-0 left-0 pb-5 px-4 space-y-2 z-50"
-      custom-style="padding-top: calc(env(safe-area-inset-top) + 16px);"
+      :class="`w-full flex flex-col sticky top-0 left-0 pb-5 px-4 space-y-2 z-50 ${topPadding}`"
       photo-url="/images/green-bg.png"
     >
-      <div class="w-full flex flex-row justify-between items-center">
+      <div
+        class="w-full flex flex-row justify-between items-center"
+        style="padding-top: calc(env(safe-area-inset-top) + 16px) !important"
+      >
         <app-header-text
           class="!text-white !text-left !font-semibold !text-[16px]"
         >
@@ -46,7 +48,9 @@
     <!-- Bottom section -->
     <div
       class="w-full grid-cols-12 grid gap-3 px-4 fixed z-50 bottom-0 left-0 pt-4 bg-white"
-      style="padding-bottom: calc(env(safe-area-inset-bottom) + 16px)"
+      style="
+        padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
+      "
     >
       <!-- Back btn -->
       <app-button
@@ -152,6 +156,11 @@
             },
           ],
         }),
+      },
+
+      topPadding: {
+        type: String,
+        default: "",
       },
     },
     setup(props, context) {

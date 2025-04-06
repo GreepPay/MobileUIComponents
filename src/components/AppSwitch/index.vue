@@ -77,7 +77,7 @@ export default defineComponent({
     };
 
     watch(currentSelectedItem, () => {
-      focusOnItem(currentSelectedItem.value);
+      // focusOnItem(currentSelectedItem.value);
     });
 
     return {

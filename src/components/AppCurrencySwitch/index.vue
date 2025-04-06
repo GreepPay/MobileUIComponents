@@ -51,26 +51,34 @@
             currencyIsSelected(defaultCurrency)
               ? 'border-[1px] border-[#0A141E] rounded-[999px]'
               : 'border-[1px] border-transparent'
-          }  flex flex-row space-x-3 items-center`"
+          }  flex flex-row space-x-3 items-center justify-between`"
         >
-          <app-image-loader
-            :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.svg`"
-            class="h-[32px] w-[32px] rounded-full"
-          />
+          <div class="flex flex-row items-center space-x-3">
+            <app-image-loader
+              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.svg`"
+              class="h-[32px] w-[32px] rounded-full"
+            />
 
-          <app-normal-text
-            :class="`!text-left ${
-              currencyIsSelected(defaultCurrency) ? 'font-semibold' : ''
-            }`"
-            >{{ defaultCurrency.name }} ({{
-              defaultCurrency.symbol
-            }})</app-normal-text
-          >
+            <app-normal-text
+              :class="`!text-left ${
+                currencyIsSelected(defaultCurrency) ? 'font-semibold' : ''
+              }`"
+              >{{ defaultCurrency.name }} ({{
+                defaultCurrency.symbol
+              }})</app-normal-text
+            >
+          </div>
+
+          <div class="flex flex-row justify-end" v-if="defaultCurrency.loading">
+            <app-loading class="!text-gray-800 -mr-[5px]" />
+          </div>
         </div>
       </div>
 
-      <div class="w-full flex flex-col space-y-2">
-        <div class="w-full flex flex-row items-center justify-between">
+      <div class="w-full flex flex-col">
+        <div
+          class="w-full flex flex-row items-center justify-between pt-3 pb-2"
+        >
           <app-normal-text class="font-semibold text-gray-600"
             >Others</app-normal-text
           >
@@ -81,24 +89,30 @@
             (currency) => currency.code !== defaultCurrency.code
           )"
           :key="index"
-          :class="`w-full px-2 py-2 ${
+          :class="`w-full px-2 py-2 mb-2 ${
             currencyIsSelected(currency)
               ? 'border-[1px] border-[#0A141E] rounded-[999px]'
               : 'border-[1px] border-transparent'
-          }  flex flex-row space-x-3 items-center`"
+          }  flex flex-row space-x-3 items-center justify-between`"
           @click="selectCurrency(currency)"
         >
-          <app-image-loader
-            :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.svg`"
-            class="h-[32px] w-[32px] rounded-full"
-          />
+          <div class="flex flex-row items-center space-x-3">
+            <app-image-loader
+              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.svg`"
+              class="h-[32px] w-[32px] rounded-full"
+            />
 
-          <app-normal-text
-            :class="`!text-left ${
-              currencyIsSelected(currency) ? 'font-semibold' : ''
-            }`"
-            >{{ currency.name }} ({{ currency.symbol }})</app-normal-text
-          >
+            <app-normal-text
+              :class="`!text-left ${
+                currencyIsSelected(currency) ? 'font-semibold' : ''
+              }`"
+              >{{ currency.name }} ({{ currency.symbol }})</app-normal-text
+            >
+          </div>
+
+          <div class="flex flex-row justify-end" v-if="currency.loading">
+            <app-loading class="!text-gray-800 -mr-[5px]" />
+          </div>
         </div>
       </div>
     </div>
@@ -106,16 +120,27 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, ref, watch } from "vue";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  reactive,
+  ref,
+  toRef,
+  watch,
+} from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppImageLoader from "../AppImageLoader";
 import AppIcon from "../AppIcon";
 import AppModal from "../AppModal";
+import AppLoading from "../AppLoading";
+import { Logic } from "../../composable";
 
 interface Currency {
   code: string;
   name: string;
   symbol: string;
+  loading?: boolean;
 }
 
 export default defineComponent({
@@ -126,6 +151,7 @@ export default defineComponent({
     AppImageLoader,
     AppIcon,
     AppModal,
+    AppLoading,
   },
   props: {
     default_currency: {
@@ -151,47 +177,57 @@ export default defineComponent({
         code: "TRY",
         name: "Turkish Lira",
         symbol: "₺",
+        loading: false,
       },
       {
         code: "USD",
         name: "United States Dollar",
         symbol: "$",
+        loading: false,
       },
       {
         code: "USDC",
         name: "USDC",
         symbol: "$",
+        loading: false,
       },
       {
         code: "NGN",
         name: "Nigerian Naira",
         symbol: "₦",
+        loading: false,
       },
       {
         code: "GHS",
         name: "Ghanaian Cedis",
         symbol: "GH₵",
+        loading: false,
       },
       {
         code: "XLM",
         name: "XLM",
         symbol: "XLM", // Or any appropriate symbol
+        loading: false,
       },
       {
         code: "ZAR",
         name: "South African Rand",
         symbol: "R",
+        loading: false,
       },
       {
         code: "EUR",
         name: "Euro",
         symbol: "€",
+        loading: false,
       },
     ]);
 
+    const defaultCurrencyRef = toRef(props, "default_currency");
+
     const defaultCurrency = computed<Currency>(() => {
       return availableCurrencies.find(
-        (currency) => currency.code === props.default_currency
+        (currency) => currency.code === defaultCurrencyRef.value
       )!; // Non-null assertion since prop is required
     });
 
@@ -210,8 +246,31 @@ export default defineComponent({
     };
 
     const selectCurrency = (currency: Currency) => {
-      selectedCurrency.value = currency;
-      showSelectModal.value = false;
+      currency.loading = true;
+
+      if (currency.code == selectedCurrency.value.code) {
+        return;
+      }
+
+      const baseCurrency = "USD";
+
+      let targetCurrency = currency.code;
+
+      if (targetCurrency == "XLM" || targetCurrency == "USDC") {
+        targetCurrency = "USD";
+      }
+
+      Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(
+        (data) => {
+          if (data) {
+            selectedCurrency.value = currency;
+            showSelectModal.value = false;
+          } else {
+            showSelectModal.value = false;
+          }
+          currency.loading = false;
+        }
+      );
     };
 
     watch(selectedCurrency, (newCurrency) => {
@@ -221,6 +280,13 @@ export default defineComponent({
       setTimeout(() => {
         showCurrencyImage.value = true;
       }, 100);
+    });
+
+    watch(defaultCurrencyRef, (newCurrency) => {
+      const currencyData = availableCurrencies.filter(
+        (currency) => currency.code === newCurrency
+      );
+      selectCurrency(currencyData[0]);
     });
 
     return {

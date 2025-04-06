@@ -1,0 +1,53 @@
+<template>
+  <div
+    class="w-full flex flex-col min-h-[210px] border-[2px] h-fit border-[#F0F3F6] rounded-[24px] py-8 px-4 justify-center items-center"
+  >
+    <app-icon :name="icon" custom-class="!h-[54px]" />
+
+    <div class="flex flex-col items-center justify-center px-5 pt-3">
+      <app-normal-text class="!text-[#0A141E] !font-[500] !text-sm">
+        {{ title }}
+      </app-normal-text>
+      <app-normal-text
+        class="!text-[#616161] !text-center pt-[4px] px-4 leading-5"
+      >
+        {{ description }}
+      </app-normal-text>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { computed, defineComponent } from "vue";
+import AppIcon from "../AppIcon";
+import { AppNormalText } from "../AppTypography";
+/**
+ * AppEmptyState Component
+ *
+ * Shows an empty state with an icon, title, and description
+ */
+export default defineComponent({
+  name: "AppEmptyState",
+  components: {
+    AppIcon,
+    AppNormalText,
+  },
+  props: {
+    icon: {
+      type: String,
+      default: "no-transaction",
+    },
+    title: {
+      type: String,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+  },
+  setup(props) {
+    return {};
+  },
+});
+</script>
