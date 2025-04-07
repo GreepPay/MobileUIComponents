@@ -53,94 +53,92 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch } from "vue";
-import AppAvatar from "../AppAvatar/index.vue";
-import AppIcon from "../AppIcon/index.vue";
-import { AppNormalText, AppHeaderText } from "../AppTypography";
+  import { defineComponent, PropType, ref, watch } from "vue"
+  import AppAvatar from "../AppAvatar/index.vue"
+  import AppIcon from "../AppIcon/index.vue"
+  import { AppNormalText, AppHeaderText } from "../AppTypography"
 
-/**
- * Beneficiary List Component
- *
- * This component renders a list of dataItems with avatars, names, and descriptions.
- * It supports v-model to track the elected beneficiary.
- *
- * @prop {Array} dataItems - List of beneficiaries with `id`, `name`, `image`, and `description` properties.
- * @prop {Number} [imageSize=40] - Size of the avatar.
- * @prop {String} [customClass=""] - Additional classes for styling.
- * @prop {Object} [modelValue] - Currently selected beneficiary.
- * @emits {update:modelValue} Emits selected beneficiary.
- */
+  /**
+   * Beneficiary List Component
+   *
+   * This component renders a list of dataItems with avatars, names, and descriptions.
+   * It supports v-model to track the elected beneficiary.
+   *
+   * @prop {Array} dataItems - List of beneficiaries with `id`, `name`, `image`, and `description` properties.
+   * @prop {Number} [imageSize=40] - Size of the avatar.
+   * @prop {String} [customClass=""] - Additional classes for styling.
+   * @prop {Object} [modelValue] - Currently selected beneficiary.
+   * @emits {update:modelValue} Emits selected beneficiary.
+   */
 
-interface Beneficiary {
-  id: string | number;
-  name: string;
-  image: string;
-  description: string;
-}
+  interface Beneficiary {
+    id: string | number
+    name: string
+    image: string
+    description: string
+  }
 
-export default defineComponent({
-  name: "BeneficiaryList",
-  components: {
-    AppAvatar,
-    AppNormalText,
-    AppHeaderText,
-    AppIcon,
-  },
-  props: {
-    dataItems: {
-      type: Array as PropType<Beneficiary[]>,
-      required: true,
+  export default defineComponent({
+    name: "BeneficiaryList",
+    components: {
+      AppAvatar,
+      AppNormalText,
+      AppHeaderText,
+      AppIcon,
     },
-    imageSize: {
-      type: Number,
-      default: 38,
-    },
-    customClass: {
-      type: String,
-      default: "",
-    },
-    modelValue: {
-      type: Object as PropType<Beneficiary | null>,
-      default: null,
-    },
-    /**
+    props: {
+      dataItems: {
+        type: Array as PropType<Beneficiary[]>,
+        required: true,
+      },
+      imageSize: {
+        type: Number,
+        default: 38,
+      },
+      customClass: {
+        type: String,
+        default: "",
+      },
+      modelValue: {
+        type: Object as PropType<Beneficiary | null>,
+        default: null,
+      },
+      /**
         
        * @default string
        */ showStatusIcon: {
-      type: Boolean,
-      default: false,
+        type: Boolean,
+        default: false,
+      },
+      /**
+       * Text for no data for beneficiary list
+       * @default string
+       */ noDataText: {
+        type: String,
+        default: "You have no beneficiary",
+      },
     },
-    /**
-     * Text for no data for beneficiary list
-     * @default string
-     */ noDataText: {
-      type: String,
-      default: "You have no beneficiary",
-    },
-  },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const selectedBeneficiary = ref<Beneficiary | null>(props.modelValue);
-    const handleAddBeneficiary = () => {
-      console.log("handle hadd benefiiccary");
-    };
-    watch(
-      () => props.modelValue,
-      (newVal) => {
-        selectedBeneficiary.value = newVal;
+    emits: ["update:modelValue"],
+    setup(props, { emit }) {
+      const selectedBeneficiary = ref<Beneficiary | null>(props.modelValue)
+      const handleAddBeneficiary = () => {}
+      watch(
+        () => props.modelValue,
+        (newVal) => {
+          selectedBeneficiary.value = newVal
+        }
+      )
+
+      const selectBeneficiary = (beneficiary: Beneficiary) => {
+        selectedBeneficiary.value = beneficiary
+        emit("update:modelValue", beneficiary)
       }
-    );
 
-    const selectBeneficiary = (beneficiary: Beneficiary) => {
-      selectedBeneficiary.value = beneficiary;
-      emit("update:modelValue", beneficiary);
-    };
-
-    return {
-      selectedBeneficiary,
-      selectBeneficiary,
-      handleAddBeneficiary,
-    };
-  },
-});
+      return {
+        selectedBeneficiary,
+        selectBeneficiary,
+        handleAddBeneficiary,
+      }
+    },
+  })
 </script>

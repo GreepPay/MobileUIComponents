@@ -77,7 +77,7 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent, reactive } from "vue"
+  import { computed, defineComponent,   } from "vue"
   import AppImageLoader from "../AppImageLoader/index"
   import { AppNormalText, AppHeaderText } from "../AppTypography"
   import AppButton from "../AppButton"
@@ -138,9 +138,7 @@
               action_btn: {
                 label: "Next",
                 is_disabled: false,
-                handler: () => {
-                  console.log("Next")
-                },
+                handler: () => {},
               },
             },
             {
@@ -149,9 +147,7 @@
               action_btn: {
                 label: "Next",
                 is_disabled: false,
-                handler: () => {
-                  console.log("Next")
-                },
+                handler: () => {},
               },
             },
           ],
