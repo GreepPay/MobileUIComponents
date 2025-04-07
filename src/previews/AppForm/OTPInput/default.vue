@@ -31,15 +31,13 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import AppOTPInput from "../../../components/AppForm/otpInput.vue";
+  import { ref } from "vue"
+  import AppOTPInput from "../../../components/AppForm/otpInput.vue"
 
-const otpValue = ref("");
-const otpValue2 = ref("");
-const otpValue3 = ref("");
-const otpValue4 = ref("123");
+  const otpValue = ref("")
+  const otpValue2 = ref("")
+  const otpValue3 = ref("")
+  const otpValue4 = ref("123")
 
-const handleOTPChange = (value) => {
-  console.log("OTP Changed:", value);
-};
+  const handleOTPChange = (value) => {}
 </script>

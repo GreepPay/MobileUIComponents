@@ -20,6 +20,7 @@
 
 <script lang="ts">
   import { defineComponent } from "vue"
+  import AppImageLoader from "../AppImageLoader"
   /**
    * Title Card Container
    *
@@ -37,6 +38,9 @@
    */
   export default defineComponent({
     name: "AppTitleCardContainer",
+    components: {
+      AppImageLoader,
+    },
     props: {
       /**
        *  Allows to add custom classes the container.
