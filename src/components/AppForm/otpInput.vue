@@ -17,7 +17,7 @@
         @keyup.delete="focusInputByRef('' + uniqueKey + (index - 1))"
         @paste="onPaste"
         @input="
-          onInput($event, '' + uniqueKey + (index + 1));
+          onInput($event, '' + uniqueKey + index);
           setValue();
         "
       />

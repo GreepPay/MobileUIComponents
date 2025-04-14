@@ -61,4 +61,5 @@ export interface Currency {
   name: string;
   symbol: string;
   loading?: boolean;
+  country_code?: string;
 }

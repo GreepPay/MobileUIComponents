@@ -31,9 +31,19 @@
       </div>
     </div>
 
-    <app-normal-text class="text-right !text-sm font-semibold">
-      {{ data.transactionType == "credit" ? "+" : "-" }} {{ data.amount }} ₺
-    </app-normal-text>
+    <div class="flex flex-col justify-end">
+      <app-normal-text class="text-right !text-sm font-semibold pb-[3px]">
+        {{ data.transactionType == "credit" ? "+" : "-" }}
+        {{ data.currencySymbol }}
+        {{ Logic.Common.convertToMoney(data.amount, true, "") }}
+      </app-normal-text>
+
+      <app-normal-text
+        class="!text-[12px] text-gray-500 text-right !whitespace-nowrap"
+      >
+        {{ data.subAmount }}
+      </app-normal-text>
+    </div>
   </div>
 </template>
 
@@ -41,6 +51,7 @@
 import { defineComponent } from "vue";
 import AppIcon from "../AppIcon";
 import { AppNormalText } from "../AppTypography";
+import { Logic } from "../../composable";
 
 enum TransactionType {
   Sent = "sent",
@@ -70,6 +81,8 @@ export default defineComponent({
         type: TransactionType;
         transactionType: "credit" | "debit";
         date: string;
+        currencySymbol?: string;
+        subAmount?: string;
       },
       required: true,
     },
@@ -95,6 +108,7 @@ export default defineComponent({
     return {
       getBgColor,
       getIcon,
+      Logic,
     };
   },
 });

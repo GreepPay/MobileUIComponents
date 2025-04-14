@@ -1,4 +1,4 @@
-import HorizontalUserList from "./HorizontalUser.vue"
-import BeneficiaryList from "./BeneficiaryList.vue"
+import AppHorizontalUserList from "./HorizontalUser.vue";
+import AppBeneficiaryList from "./BeneficiaryList.vue";
 
-export { HorizontalUserList, BeneficiaryList }
+export { AppHorizontalUserList, AppBeneficiaryList };

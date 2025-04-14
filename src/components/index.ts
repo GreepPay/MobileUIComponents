@@ -38,7 +38,7 @@ import {
   AppSearch,
   AppContentEditable,
 } from "./AppForm";
-import { HorizontalUserList, BeneficiaryList } from "./AppList";
+import { AppHorizontalUserList, AppBeneficiaryList } from "./AppList";
 import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts";
 
 export {
@@ -65,7 +65,7 @@ export {
   AppCard,
   AppTitleCardContainer,
   AppDropdownSelect,
-  HorizontalUserList,
+  AppHorizontalUserList,
   AppPaymentMethod,
   AppCountdownTimer,
   AppDetails,
@@ -73,7 +73,7 @@ export {
   AppOnboardingLayout,
   AppInfoBox,
   DefaultPageLayout,
-  BeneficiaryList,
+  AppBeneficiaryList,
   AppTabs,
   AppCurrencySwitch,
   AppNotifications,

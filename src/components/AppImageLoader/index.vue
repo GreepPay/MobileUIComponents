@@ -54,7 +54,16 @@ export default defineComponent({
     const imageUrl = ref("");
 
     const setImage = () => {
-      imageUrl.value = props.photoUrl || "";
+      // @ts-ignore
+      const basePath = import.meta.env.VITE_APP_BASE_URL || "/";
+
+      let photoUrl = props.photoUrl || "";
+
+      if (photoUrl.startsWith("/images/")) {
+        photoUrl = photoUrl.replace(/^\/(?!\/)/, basePath);
+      }
+
+      imageUrl.value = photoUrl;
 
       const highResImage = new Image();
 

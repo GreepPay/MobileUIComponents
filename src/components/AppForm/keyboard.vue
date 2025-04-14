@@ -66,7 +66,7 @@
 <script lang="ts">
 import AppNormalText from "../AppTypography/normalText.vue";
 import AppIcon from "../AppIcon";
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, toRef, watch } from "vue";
 
 /**
  *  A number keyboard component.
@@ -90,12 +90,20 @@ export default {
     modelValue: {
       required: false,
     },
+
+    /**
+     * The v-model value for the keyboard input.  Updates the parent with the entered value.
+     */
+    updateValue: {
+      required: false,
+    },
   },
   name: "AppKeyboard",
   emits: ["update:modelValue"],
   setup(props: any, context: any) {
     const content = ref("");
     const activeKey = ref("");
+    const updateValueRef = toRef(props, "updateValue");
 
     const handleClick = (event: Event, callback: Function) => {
       const target = event.currentTarget as HTMLElement;
@@ -118,6 +126,12 @@ export default {
       context.emit("update:modelValue", content.value);
     });
 
+    watch(updateValueRef, () => {
+      if (updateValueRef.value) {
+        content.value = updateValueRef.value;
+      }
+    });
+
     watch(props, () => {
       if (props.modelValue == "") {
         content.value = "";
@@ -137,6 +151,12 @@ export default {
         }
       }
       return true;
+    });
+
+    onMounted(() => {
+      if (props.modelValue) {
+        content.value = props.modelValue;
+      }
     });
 
     return {

@@ -1,7 +1,9 @@
 <template>
   <div
-    class="w-fit p-2 px-3 bg-white rounded-[999px] flex flex-row space-x-[6px] items-center"
-    @click="showSelectModal = true"
+    :class="`w-fit p-2 bg-white ${
+      isSwitchable ? 'rounded-[999px] px-3' : 'rounded-[59px] px-3'
+    } flex flex-row space-x-[6px] items-center`"
+    @click="isSwitchable ? (showSelectModal = true) : null"
   >
     <app-image-loader
       :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.svg`"
@@ -9,7 +11,7 @@
       v-if="showCurrencyImage"
     />
     <div class="h-[32px] w-[32px] rounded-full" v-else></div>
-    <div class="h-[32px] flex justify-center items-center">
+    <div class="h-[32px] flex justify-center items-center" v-if="isSwitchable">
       <app-icon :name="`chevron-down`" custom-class="h-[8px]" />
     </div>
   </div>
@@ -19,7 +21,7 @@
     custom-class="mdlg:hidden!"
     :close="
       () => {
-        showSelectModal = false
+        showSelectModal = false;
       }
     "
     v-if="showSelectModal"
@@ -120,177 +122,178 @@
 </template>
 
 <script lang="ts">
-  import {
-    computed,
-    defineComponent, 
-    ref,
-    toRef,
-    watch,
-  } from "vue"
-  import { AppNormalText, AppHeaderText } from "../AppTypography"
-  import AppImageLoader from "../AppImageLoader"
-  import AppIcon from "../AppIcon"
-  import AppModal from "../AppModal"
-  import AppLoading from "../AppLoading"
-  import { Logic } from "../../composable"
-  import { Currency } from "../../types"
+import { computed, defineComponent, ref, toRef, watch } from "vue";
+import { AppNormalText, AppHeaderText } from "../AppTypography";
+import AppImageLoader from "../AppImageLoader";
+import AppIcon from "../AppIcon";
+import AppModal from "../AppModal";
+import AppLoading from "../AppLoading";
+import { Logic } from "../../composable";
+import { Currency } from "../../types";
 
-  export default defineComponent({
-    name: "AppCurrencySwitch",
-    components: {
-      AppNormalText,
-      AppHeaderText,
-      AppImageLoader,
-      AppIcon,
-      AppModal,
-      AppLoading,
+export default defineComponent({
+  name: "AppCurrencySwitch",
+  components: {
+    AppNormalText,
+    AppHeaderText,
+    AppImageLoader,
+    AppIcon,
+    AppModal,
+    AppLoading,
+  },
+  props: {
+    default_currency: {
+      type: String,
+      required: true,
+      default: "",
     },
-    props: {
-      default_currency: {
-        type: String,
-        required: true,
-        default: "",
-      },
-      modelValue: {
-        type: String,
-        required: true,
-        default: "",
-      },
-      modelSymbol: {
-        type: String,
-        required: false,
-        default: "$", // Default to USD symbol
-      },
-      availableCurrencies: {
-        type: Array as () => Currency[],
-        default: () => [
-          {
-            code: "TRY",
-            name: "Turkish Lira",
-            symbol: "₺",
-            loading: false,
-          },
-          {
-            code: "USD",
-            name: "United States Dollar",
-            symbol: "$",
-            loading: false,
-          },
-          {
-            code: "USDC",
-            name: "USDC",
-            symbol: "$",
-            loading: false,
-          },
-          {
-            code: "NGN",
-            name: "Nigerian Naira",
-            symbol: "₦",
-            loading: false,
-          },
-          {
-            code: "GHS",
-            name: "Ghanaian Cedis",
-            symbol: "GH₵",
-            loading: false,
-          },
-          {
-            code: "XLM",
-            name: "XLM",
-            symbol: "XLM", // Or any appropriate symbol
-            loading: false,
-          },
-          {
-            code: "ZAR",
-            name: "South African Rand",
-            symbol: "R",
-            loading: false,
-          },
-          {
-            code: "EUR",
-            name: "Euro",
-            symbol: "€",
-            loading: false,
-          },
-        ],
-      },
+    modelValue: {
+      type: String,
+      required: true,
+      default: "",
     },
-    emits: ["update:modelValue", "update:modelSymbol"],
-    setup(props, context) {
-      const defaultCurrencyRef = toRef(props, "default_currency")
+    modelSymbol: {
+      type: String,
+      required: false,
+      default: "$", // Default to USD symbol
+    },
+    isSwitchable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    availableCurrencies: {
+      type: Array as () => Currency[],
+      default: () => [
+        {
+          code: "TRY",
+          name: "Turkish Lira",
+          symbol: "₺",
+          loading: false,
+        },
+        {
+          code: "USD",
+          name: "United States Dollar",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "USDC",
+          name: "USDC",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "NGN",
+          name: "Nigerian Naira",
+          symbol: "₦",
+          loading: false,
+        },
+        {
+          code: "GHS",
+          name: "Ghanaian Cedis",
+          symbol: "GH₵",
+          loading: false,
+        },
+        {
+          code: "XLM",
+          name: "XLM",
+          symbol: "XLM", // Or any appropriate symbol
+          loading: false,
+        },
+        {
+          code: "ZAR",
+          name: "South African Rand",
+          symbol: "R",
+          loading: false,
+        },
+        {
+          code: "EUR",
+          name: "Euro",
+          symbol: "€",
+          loading: false,
+        },
+      ],
+    },
+  },
+  emits: ["update:modelValue", "update:modelSymbol"],
+  setup(props, context) {
+    const defaultCurrencyRef = toRef(props, "default_currency");
 
-      const defaultCurrency = computed<Currency>(() => {
-        return props.availableCurrencies.find(
-          (currency) => currency.code === defaultCurrencyRef.value
-        )! // Non-null assertion since prop is required
-      })
+    const defaultCurrency = computed<Currency>(() => {
+      return props.availableCurrencies.find(
+        (currency) => currency.code === defaultCurrencyRef.value
+      )!; // Non-null assertion since prop is required
+    });
 
-      const selectedCurrency = ref<Currency>({
-        code: props.modelValue,
-        symbol: props.modelSymbol,
-        name: defaultCurrency.value.name,
-      })
+    const selectedCurrency = ref<Currency>({
+      code: props.modelValue,
+      symbol: props.modelSymbol,
+      name: defaultCurrency.value?.name,
+    });
 
-      const showCurrencyImage = ref(true)
+    const showCurrencyImage = ref(true);
 
-      const showSelectModal = ref(false)
+    const showSelectModal = ref(false);
 
-      const currencyIsSelected = (currency: Currency) => {
-        return currency.code === selectedCurrency.value.code
+    const currencyIsSelected = (currency: Currency) => {
+      return currency.code === selectedCurrency.value.code;
+    };
+
+    const selectCurrency = (currency: Currency) => {
+      currency.loading = true;
+
+      if (currency.code == selectedCurrency.value.code) {
+        return;
       }
 
-      const selectCurrency = (currency: Currency) => {
-        currency.loading = true
+      const baseCurrency = "USD";
 
-        if (currency.code == selectedCurrency.value.code) {
-          return
-        }
+      let targetCurrency = currency.code;
 
-        const baseCurrency = "USD"
+      if (targetCurrency == "USDC") {
+        targetCurrency = "USD";
+      }
 
-        let targetCurrency = currency.code
-
-        if (targetCurrency == "XLM" || targetCurrency == "USDC") {
-          targetCurrency = "USD"
-        }
-
-        Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(
-          (data) => {
-            if (data) {
-              selectedCurrency.value = currency
-              showSelectModal.value = false
-            } else {
-              showSelectModal.value = false
-            }
-            currency.loading = false
+      Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(
+        (data) => {
+          if (data) {
+            selectedCurrency.value = currency;
+            showSelectModal.value = false;
+          } else {
+            showSelectModal.value = false;
           }
-        )
-      }
+          currency.loading = false;
 
-      watch(selectedCurrency, (newCurrency) => {
-        showCurrencyImage.value = false
-        context.emit("update:modelValue", newCurrency.code)
-        context.emit("update:modelSymbol", newCurrency.symbol)
-        setTimeout(() => {
-          showCurrencyImage.value = true
-        }, 100)
-      })
+          context.emit("update:modelValue", selectedCurrency.value.code);
+        }
+      );
+    };
 
-      watch(defaultCurrencyRef, (newCurrency) => {
-        const currencyData = props.availableCurrencies.filter(
-          (currency) => currency.code === newCurrency
-        )
-        selectCurrency(currencyData[0])
-      })
+    watch(selectedCurrency, (newCurrency) => {
+      showCurrencyImage.value = false;
+      context.emit("update:modelValue", newCurrency.code);
+      context.emit("update:modelSymbol", newCurrency.symbol);
+      setTimeout(() => {
+        showCurrencyImage.value = true;
+      }, 100);
+    });
 
-      return {
-        selectedCurrency,
-        showSelectModal,
-        defaultCurrency,
-        currencyIsSelected,
-        showCurrencyImage,
-        selectCurrency,
-      }
-    },
-  })
+    watch(defaultCurrencyRef, (newCurrency) => {
+      const currencyData = props.availableCurrencies.filter(
+        (currency) => currency.code === newCurrency
+      );
+      selectCurrency(currencyData[0]);
+    });
+
+    return {
+      selectedCurrency,
+      showSelectModal,
+      defaultCurrency,
+      currencyIsSelected,
+      showCurrencyImage,
+      selectCurrency,
+    };
+  },
+});
 </script>
