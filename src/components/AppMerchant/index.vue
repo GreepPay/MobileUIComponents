@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'flex flex-col border  rounded-[16px]   w-full h-fit p-4 rounded-lg',
+      'flex flex-col border  rounded-[16px]   w-full min-w-[140px] h-fit p-4 rounded-lg',
       customClass,
     ]"
   >
@@ -11,7 +11,7 @@
       :size="imageSize"
     />
     <div class="flex flex-col pt-3">
-      <app-normal-text class="!text-sm !font-bold !text-black">
+      <app-normal-text class="!text-sm !font-bold !text-black !truncate">
         {{ merchant.name }}
       </app-normal-text>
       <app-normal-text class="text-xs !text-gray-two">
