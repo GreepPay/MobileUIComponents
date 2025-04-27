@@ -5,12 +5,7 @@
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(tab.key)"
-        :class="[
-          'pr-4 py-2 !text-sm cursor-pointer hover:text-black whitespace-nowrap',
-          activeTab === tab.key
-            ? 'font-bold !text-[#0A141E]'
-            : '!text-[#999999] ',
-        ]"
+        :class="getTabClass(tab.key)"
       >
         {{ tab.label }}
       </app-normal-text>
@@ -19,48 +14,76 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { AppNormalText } from "../AppTypography";
+  import { defineComponent, ref } from "vue"
+  import { AppNormalText } from "../AppTypography"
 
-export default defineComponent({
-  name: "AppTabs",
-  components: { AppNormalText },
-  props: {
-    tabs: {
-      type: Array as () => { key: string; label: string }[],
-      required: true,
+  export default defineComponent({
+    name: "AppTabs",
+    components: { AppNormalText },
+    props: {
+      tabs: {
+        type: Array as () => { key: string; label: string }[],
+        required: true,
+      },
+      type: {
+        type: String,
+        default: "default",
+      },
+      customClass: {
+        type: String,
+        default: "",
+      },
+      defaultTab: {
+        type: String,
+        default: "",
+      },
     },
-    customClass: {
-      type: String,
-      default: "",
-    },
-    defaultTab: {
-      type: String,
-      default: "",
-    },
-  },
-  emits: ["update:activeTab"],
-  setup(props, { emit }) {
-    const activeTab = ref(props.defaultTab || props.tabs[0]?.key || "");
+    emits: ["update:activeTab"],
+    setup(props, { emit }) {
+      const activeTab = ref(props.defaultTab || props.tabs[0]?.key || "")
 
-    const selectTab = (key: string) => {
-      activeTab.value = key;
-      emit("update:activeTab", key);
-    };
+      const selectTab = (key: string) => {
+        activeTab.value = key
+        emit("update:activeTab", key)
+      }
+      const getTabClass = (tabKey: string) => {
+        const baseClass =
+          "px-4 py-2 !text-xs cursor-pointer hover:text-black whitespace-nowrap mr-2"
 
-    return { activeTab, selectTab };
-  },
-});
+        if (props.type === "default") {
+          return [
+            baseClass,
+            activeTab.value === tabKey
+              ? "font-bold !text-black"
+              : "!text-veryLightGray",
+          ]
+        }
+
+        if (props.type === "badge") {
+          return [
+            baseClass,
+            activeTab.value === tabKey
+              ? "font-bold !text-white !bg-black rounded-full border"
+              : "!text-veryLightGray border rounded-full",
+          ]
+        }
+
+        return baseClass
+      }
+
+      return { activeTab, selectTab, getTabClass }
+    },
+  })
 </script>
 
 <style scoped>
-/* Hide scrollbar */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
+  /* Hide scrollbar */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 </style>

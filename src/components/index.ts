@@ -26,6 +26,7 @@ import AppTabs from "./AppTabs";
 import AppLoading from "./AppLoading";
 import AppEmptyState from "./AppEmptyState";
 import { AppHeaderText, AppNormalText } from "./AppTypography";
+import   AppMerchant  from "./AppMerchant"
 import {
   AppSelect,
   AppTextField,
@@ -85,4 +86,5 @@ export {
   AppLoader,
   AppEmptyState,
   AppLoading,
-};
+  AppMerchant,
+}
