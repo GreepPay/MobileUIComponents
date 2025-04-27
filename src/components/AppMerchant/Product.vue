@@ -39,7 +39,7 @@
   }
 
   export default defineComponent({
-    name: "AppMerchant",
+    name: "AppMerchantProduct",
     components: {
       AppAvatar,
       AppNormalText,
