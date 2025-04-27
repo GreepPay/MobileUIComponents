@@ -8,6 +8,7 @@
         :key="index"
         @click="toggleTab(tab.key)"
         :class="getTabClass(tab.key)"
+        :custom-class="isTabActive(tab.key) && '!text-black'"
       >
         {{ tab.label }}
       </app-normal-text>
@@ -43,30 +44,44 @@
       },
     },
     emits: ["update:selectedKeys"],
-    methods: {
-      toggleTab(key: string) {
-        const keys = [...this.selectedKeys]
+    setup(props, { emit }) {
+      const toggleTab = (key: string) => {
+        const keys = [...props.selectedKeys]
         const index = keys.indexOf(key)
-        if (index !== -1) {
-          keys.splice(index, 1)
-        } else {
-          keys.push(key)
-        }
-        this.$emit("update:selectedKeys", keys)
-      },
-      getTabClass(tabKey: string) {
-        const isActive = this.selectedKeys.includes(tabKey)
 
-        return [
-          "px-4 py-2 !text-xs cursor-pointer hover:text-black whitespace-nowrap mr-2",
-          this.type === "default" && isActive
-            ? "font-bold !text-black"
-            : "!text-veryLightGray",
-          this.type === "outlined" && isActive
-            ? "font-bold !text-black rounded-full border border-black"
-            : "!text-veryLightGray border rounded-full",
-        ]
-      },
+        if (index !== -1) keys.splice(index, 1)
+        else keys.push(key)
+
+        emit("update:selectedKeys", keys)
+      }
+
+      const isTabActive = (tabKey: string) => {
+        return props.selectedKeys.includes(tabKey)
+      }
+      const getTabClass = (tabKey: string) => {
+        const isActive = isTabActive(tabKey)
+        const baseClass =
+          "px-4 py-2 !text-xs cursor-pointer hover:text-black whitespace-nowrap mr-2"
+
+        return `
+        ${baseClass} 
+         ${
+           props.type === "default" && isActive
+             ? "font-bold !text-[#0A141E]"
+             : "!text-veryLightGray"
+         } 
+         ${
+           props.type === "outlined" && isActive
+             ? "font-bold !text-[#0A141E] rounded-full border border-[#0A141E]"
+             : "!text-veryLightGray border rounded-full"
+         } 
+       `
+      }
+      return {
+        toggleTab,
+        getTabClass,
+        isTabActive,
+      }
     },
   })
 </script>

@@ -11,12 +11,12 @@
           @click.stop="null"
         >
           <div
-            class="p-4 flex items-center gap-4 border-b-[4px] w-full"
+            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full"
             v-if="hasTitle"
           >
-            <app-header-text customClass="!flex-1">
-              {{ title }}</app-header-text
-            >
+            <app-header-text customClass="!flex-1 !text-lg">
+              {{ title }}
+            </app-header-text>
 
             <app-icon name="close-circle" @click="closeModal()" />
           </div>

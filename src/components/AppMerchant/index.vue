@@ -11,10 +11,10 @@
       :size="imageSize"
     />
     <div class="flex flex-col pt-3">
-      <app-normal-text class="!text-sm !font-bold !text-black !truncate">
+      <app-normal-text class="!text-sm !font-semibold !text-black !truncate">
         {{ merchant.name }}
       </app-normal-text>
-      <app-normal-text class="text-xs !text-gray-two">
+      <app-normal-text class="text-xs !text-gray-two !truncate">
         {{ merchant.category }}
       </app-normal-text>
     </div>
