@@ -1,3 +1,4 @@
 import AppTabs from "./index.vue"
+import AppMultiTabsSelector from "./Multi.vue"
 
-export default AppTabs
+export { AppTabs, AppMultiTabsSelector }

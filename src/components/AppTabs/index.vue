@@ -1,6 +1,6 @@
 <template>
   <div :class="['w-full overflow-x-auto scrollbar-hide', customClass]">
-    <div class="inline-flex items-center h-fit">
+    <div :class="['inline-flex items-center h-fit', tabsClass]">
       <app-normal-text
         v-for="(tab, index) in tabs"
         :key="index"
@@ -32,6 +32,10 @@
       customClass: {
         type: String,
         default: "",
+      },
+      tabsClass: {
+        type: String,
+        default: "flex-nowrap ", // flex-nowrap is default now
       },
       defaultTab: {
         type: String,

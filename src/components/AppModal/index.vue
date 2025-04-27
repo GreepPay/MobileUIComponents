@@ -7,13 +7,23 @@
         @click="closeModal()"
       >
         <div
-          class="w-full bg-white rounded-t-[20px] p-6 min-h-[100px] relative"
+          class="w-full bg-white rounded-t-[20px] min-h-[100px] relative"
           @click.stop="null"
         >
-          <!--
-               * @slot -  Content to be displayed within the modal.
-               -->
-          <slot />
+          <div
+            class="p-4 flex items-center gap-4 border-b-[4px] w-full"
+            v-if="hasTitle"
+          >
+            <app-header-text customClass="!flex-1">
+              {{ title }}</app-header-text
+            >
+
+            <app-icon name="close-circle" @click="closeModal()" />
+          </div>
+
+          <div :class="`py-4 px-4 ${contentClass}`">
+            <slot />
+          </div>
         </div>
       </div>
     </transition>
@@ -56,10 +66,22 @@
         type: Function,
         required: true,
       },
+
+      /**
+       * @required
+       */
+      hasTitle: {
+        type: Boolean,
+        required: false,
+      },
       /**
        * Custom CSS classes to apply to the modal container.
        */
       customClass: {
+        type: String,
+        default: "",
+      },
+      contentClass: {
         type: String,
         default: "",
       },
