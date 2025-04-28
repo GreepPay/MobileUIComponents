@@ -4,6 +4,7 @@
       'flex flex-col border  rounded-[16px]   w-full min-w-[140px] h-fit p-4 rounded-lg',
       customClass,
     ]"
+    @click="selectMerhant"
   >
     <app-avatar
       :src="merchant.imageUrl"

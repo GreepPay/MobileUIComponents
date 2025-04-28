@@ -1,3 +1,4 @@
 import AppMerchant from "./index.vue"
+import AppMerchantProduct from "./Product.vue"
 
-export default AppMerchant
+export { AppMerchant, AppMerchantProduct }

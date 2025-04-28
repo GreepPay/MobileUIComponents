@@ -1,21 +1,26 @@
 <template>
-  <div
-    :class="[
-      'flex flex-col border  rounded-[16px]   w-full min-w-[140px] h-fit p-4 rounded-lg',
-      customClass,
-    ]"
-  >
-    <app-avatar
-      :src="merchant.imageUrl"
-      :alt="merchant.name"
-      :size="imageSize"
-    />
-    <div class="flex flex-col pt-3">
-      <app-normal-text class="!text-sm !font-bold !text-black !truncate">
-        {{ merchant.name }}
+  <div :class="['h-fit w-[140px]', customClass]" @click="viewProduct">
+    <div class="w-[140px] h-32 relative rounded-[16px]">
+      <app-image-loader
+        :photo-url="product.imageUrl"
+        :alt="product.name"
+        :size="imageSize"
+        custom-class="size-full rounded-[16px]"
+      />
+
+      <span
+        class="absolute bottom-2 right-2 size-8 bg-white rounded-full flex items-center justify-center"
+      >
+        <app-icon name="add" class="h-5" />
+      </span>
+    </div>
+
+    <div class="flex flex-col pt-2">
+      <app-normal-text class="!text-xs !text-black !truncate pb-0.5">
+        {{ product.name }}
       </app-normal-text>
-      <app-normal-text class="text-xs !text-gray-two">
-        {{ merchant.category }}
+      <app-normal-text class="!text-sm !font-bold !text-black !truncate">
+        {{ product.price }}
       </app-normal-text>
     </div>
   </div>
@@ -23,31 +28,31 @@
 
 <script lang="ts">
   import { defineComponent, PropType, ref, watch } from "vue"
-  import AppAvatar from "../AppAvatar"
-  import { AppNormalText, AppHeaderText } from "../AppTypography"
+  import AppImageLoader from "../AppImageLoader"
+  import AppIcon from "../AppIcon"
+  import { AppNormalText } from "../AppTypography"
 
   /**
-   * Merchant Item
- 
-  */
+   * MerchantProduct Products
+   */
 
-  interface Merchant {
+  interface MerchantProduct {
     id: string | number
     name: string
-    category: string
+    price: string
     imageUrl: string
   }
 
   export default defineComponent({
     name: "AppMerchantProduct",
     components: {
-      AppAvatar,
       AppNormalText,
-      AppHeaderText,
+      AppImageLoader,
+      AppIcon,
     },
     props: {
-      merchant: {
-        type: Object as PropType<Merchant>,
+      product: {
+        type: Object as PropType<MerchantProduct>,
         required: true,
       },
       imageSize: {
@@ -61,12 +66,12 @@
     },
     emits: ["click"],
     setup(_, { emit }) {
-      const selectMerhant = (merchant: Merchant) => {
-        emit("click", merchant)
+      const viewProduct = (product: MerchantProduct) => {
+        emit("click", product)
       }
 
       return {
-        selectMerhant,
+        viewProduct,
       }
     },
   })

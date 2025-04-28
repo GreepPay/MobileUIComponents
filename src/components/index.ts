@@ -26,7 +26,7 @@ import { AppTabs, AppMultiTabsSelector } from "./AppTabs"
 import AppLoading from "./AppLoading"
 import AppEmptyState from "./AppEmptyState"
 import { AppHeaderText, AppNormalText } from "./AppTypography"
-import AppMerchant from "./AppMerchant"
+import { AppMerchant, AppMerchantProduct } from "./AppMerchant"
 import {
   AppSelect,
   AppTextField,
@@ -39,7 +39,11 @@ import {
   AppSearch,
   AppContentEditable,
 } from "./AppForm"
-import { AppHorizontalUserList, AppBeneficiaryList } from "./AppList"
+import {
+  AppHorizontalUserList,
+  AppBeneficiaryList,
+  AppListWrapper,
+} from "./AppList"
 import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts"
 
 export {
@@ -88,4 +92,6 @@ export {
   AppEmptyState,
   AppLoading,
   AppMerchant,
+  AppMerchantProduct,
+  AppListWrapper,
 }
