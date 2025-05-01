@@ -1,9 +1,9 @@
 <template>
   <div class="flex w-full flex-col relative space-y-[2px]">
-    <div
+    <!-- <div
       v-if="useFloatingLabel && content.length > 0"
       class="h-[10px] w-full"
-    ></div>
+    ></div> -->
     <div
       class="w-full flex flex-row items-center"
       :tabindex="tabIndex"
@@ -49,12 +49,15 @@
         <!-- Floating label -->
         <template v-if="useFloatingLabel && content.length > 0">
           <app-normal-text
-            class="absolute left-4 top-[-24%] px-1 py-[2px] bg-white !text-veryLightGray z-10"
+            :class="`absolute left-4 ${
+              isTextarea ? 'top-[-10%]' : 'top-[-24%]'
+            } px-1 py-[2px] bg-white !text-veryLightGray z-10`"
           >
             {{ placeholder }}
           </app-normal-text>
         </template>
         <input
+          v-if="!isTextarea"
           v-model="content"
           :placeholder="placeholder"
           @focus="isFocused = true"
@@ -74,6 +77,22 @@
               : ''
           "
         />
+        <textarea
+          v-if="isTextarea"
+          v-model="content"
+          :placeholder="placeholder"
+          @focus="isFocused = true"
+          @blur="
+            isFocused = false;
+            checkValidation();
+          "
+          @keypress="isNumber"
+          :disabled="disabled"
+          :type="fieldType"
+          :class="` text-black grow bg-transparent placeholder-gray-400 focus input w-full focus:outline-hidden ${inputStyle} `"
+          :rows="textAreaRow"
+        ></textarea>
+
         <!--
           @slot inner-suffix
           Use this slot to add content after the input field.
@@ -97,24 +116,23 @@
       <slot name="outer-suffix" />
     </div>
     <div
-      v-if="errorMessage || successMessage"
-      class="w-full flex flex-row pt-1 justify-start items-center gap-1"
+      v-if="!validationStatus || maxCharacter > 0"
+      class="w-full flex flex-row pt-1 justify-between items-center"
     >
-      <!-- <img
-        v-if="errorMessage"
-        src="@/assets/svg/All/linear/info-circle.svg"
-        class="w-4 h-4"
-      />
-      <img
-        v-if="successMessage && !errorMessage"
-        src="@/assets/svg/All/linear/tick-circle.svg"
-        class="w-4 h-4"
-      /> -->
-      <app-normal-text
-        :customClass="'text-left'"
-        :color="errorMessage ? 'text-red' : 'text-green'"
+      <span
+        :customClass="' text-left'"
+        :class="`!text-red dark:!text-red ${
+          !validationStatus ? '' : 'invisible'
+        }`"
       >
-        {{ errorMessage || successMessage }}
+        {{ errorMessage }}
+      </span>
+
+      <app-normal-text
+        v-if="maxCharacter > 0"
+        custom-class="!text-[12px] text-gray-600"
+      >
+        {{ content.length }}/{{ maxCharacter }}
       </app-normal-text>
     </div>
 
@@ -334,6 +352,34 @@ export default defineComponent({
     inputStyle: {
       type: String,
       default: "",
+    },
+    /**
+     * Determines whether the input is a textarea
+     */
+    isTextarea: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Maximum number of characters allowed in the input
+     */
+    maxCharacter: {
+      type: Number,
+      default: 0,
+    },
+    /**
+     * Determines the number of rows for the textarea
+     */
+    textAreaRow: {
+      type: String,
+      default: "5",
+    },
+    /**
+     * Determines whether to watch for updates to the input value
+     */
+    watchUpdates: {
+      type: Boolean,
+      default: false,
     },
   },
   name: "AppTextField",

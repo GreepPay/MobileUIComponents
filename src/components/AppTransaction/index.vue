@@ -31,8 +31,10 @@
       </div>
     </div>
 
-    <div class="flex flex-col justify-end">
-      <app-normal-text class="text-right !text-sm font-semibold pb-[3px]">
+    <div class="flex flex-col justify-end pl-1">
+      <app-normal-text
+        class="text-right !text-sm font-semibold pb-[3px] !whitespace-nowrap"
+      >
         {{ data.transactionType == "credit" ? "+" : "-" }}
         {{ data.currencySymbol }}
         {{ Logic.Common.convertToMoney(data.amount, true, "") }}

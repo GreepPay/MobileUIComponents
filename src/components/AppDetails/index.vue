@@ -10,10 +10,20 @@
             : 'items-center justify-between space-x-3'
         } ${index !== 0 && 'border-t border-[#F0F3F6]'}`"
       >
-        <app-normal-text class="!text-[#616161] capitalize">
+        <app-normal-text
+          :class="` capitalize ${
+            invertBoldness
+              ? '!font-[500] !text-[#0A141E] !text-sm'
+              : '!text-[#616161]'
+          }`"
+        >
           {{ item.title }}
         </app-normal-text>
-        <app-normal-text class="!text-[#0A141E] !font-[500] !text-sm">
+        <app-normal-text
+          :class="` ${
+            invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
+          } !text-sm`"
+        >
           {{ item.content }}
         </app-normal-text>
       </div>
@@ -52,6 +62,10 @@ export default defineComponent({
     isVertical: {
       type: Boolean,
       default: true,
+    },
+    invertBoldness: {
+      type: Boolean,
+      default: false,
     },
   },
 });

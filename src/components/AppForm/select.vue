@@ -247,9 +247,11 @@ export default defineComponent({
           selectOptions.value.push({
             key: item.key,
             value: `${item.value}${props.withKey ? ` (${item.key})` : ""}`,
+            altValue: item.altValue ? item.altValue : null,
             hasIcon: item.hasIcon ? item.hasIcon : false,
             extras: item.extras ? item.extras : "",
             isImage: item.isImage ? item.isImage : false,
+            extraInfo: item.extraInfo ? item.extraInfo : null,
           });
         });
       }

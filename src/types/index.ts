@@ -24,11 +24,13 @@ export interface FormContentRule {
 export interface SelectOption {
   key: any;
   value: string;
+  altValue?: string;
   extras?: string;
   hasIcon?: boolean;
   isImage?: boolean;
   isForm?: boolean;
   useSlot?: boolean;
+  extraInfo: any;
   formField?: {
     type: "text" | "tel" | "select";
     placeholder: string;
