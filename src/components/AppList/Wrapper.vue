@@ -1,9 +1,9 @@
 <template>
-  <div
-    class="w-full flex flex-col px-4 py-3 mb-2 bg-white"
-    :class="customClass"
-  >
-    <div class="w-full flex justify-between items-center">
+  <div class="w-full flex flex-col py-3 mb-2 bg-white" :class="customClass">
+    <div
+      class="w-full flex justify-between items-center px-4"
+      :class="headerClass"
+    >
       <app-normal-text class="font-semibold !text-black !text-sm">
         {{ title }}
       </app-normal-text>
@@ -15,13 +15,18 @@
     <div class="py-2">
       <template v-if="hasItems">
         <div
-          class="flex items-center gap-4 overflow-x-auto h-fit scrollbar-hide"
+          class="flex items-center gap-4 overflow-x-auto h-fit scrollbar-hide px-4"
+          :class="contentClass"
         >
           <slot />
         </div>
       </template>
       <div v-else class="py-4 !pt-2">
-        <app-empty-state :title="emptyTitle" :description="emptyDescription" />
+        <app-empty-state
+          :title="emptyTitle"
+          :description="emptyDescription"
+          :useIcon="useEmptyStateIcon"
+        />
       </div>
     </div>
   </div>
@@ -53,13 +58,25 @@
       },
       emptyTitle: {
         type: String,
-        default: "No Similar products available",
+        default: "No data available",
       },
       emptyDescription: {
         type: String,
-        default: "See all Similar products",
+        default: "",
+      },
+      useEmptyStateIcon: {
+        type: Boolean,
+        default: false,
       },
       customClass: {
+        type: String,
+        default: "",
+      },
+      headerClass: {
+        type: String,
+        default: "",
+      },
+      contentClass: {
         type: String,
         default: "",
       },

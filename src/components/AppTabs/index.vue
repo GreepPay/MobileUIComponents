@@ -5,7 +5,7 @@
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(tab.key)"
-        :class="getTabClass(tab.key)"
+        :class="[getTabClass(tab.key), tabClass]"
       >
         {{ tab.label }}
       </app-normal-text>
@@ -34,6 +34,10 @@
         default: "",
       },
       tabsClass: {
+        type: String,
+        default: "flex-nowrap ", // flex-nowrap is default now
+      },
+      tabClass: {
         type: String,
         default: "flex-nowrap ", // flex-nowrap is default now
       },
