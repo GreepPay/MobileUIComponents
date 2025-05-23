@@ -56,7 +56,7 @@
       }
       const getTabClass = (tabKey: string) => {
         const baseClass =
-          "px-4 py-2 !text-xs cursor-pointer hover:text-black whitespace-nowrap mr-2"
+          "px-4 py-2 cursor-pointer hover:text-black whitespace-nowrap mr-2"
 
         if (props.type === "default") {
           return [

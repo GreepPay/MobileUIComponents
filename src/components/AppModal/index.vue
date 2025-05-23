@@ -2,21 +2,35 @@
   <component :is="Teleport" to="body">
     <transition name="fade" appear>
       <div
-        :class="`fixed top-0 w-screen h-screen bg-black/30 flex flex-col overflow-y-hidden items-center mdlg:justify-center! justify-end ${customClass}`"
+        :class="`fixed top-0 w-screen h-screen bg-black/30 flex flex-col   items-center mdlg:justify-center! justify-end ${customClass}`"
         style="z-index: 9999999999999999"
         @click="closeModal()"
       >
         <div
-          class="w-full bg-white rounded-t-[20px] min-h-[100px] relative"
+          class="w-full bg-white rounded-t-[20px] min-h-[100px] overflow-y-auto relative"
           @click.stop="null"
         >
           <div
-            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full"
+            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white"
             v-if="hasTitle"
           >
-            <app-header-text customClass="!flex-1 !text-lg">
-              {{ title }}
-            </app-header-text>
+            <div class="!flex-1 flex items-center">
+              <app-icon
+                v-if="hasBackButton"
+                name="arrow-left"
+                @click="closeModal()"
+                enter-class="flex"
+              />
+
+              <span
+                :class="[
+                  '!text-lg !flex-1 text-black font-semibold',
+                  hasBackButton && '!text-center',
+                ]"
+              >
+                {{ title }}
+              </span>
+            </div>
 
             <app-icon name="close-circle" @click="closeModal()" />
           </div>
@@ -57,6 +71,10 @@
       canClose: {
         type: Boolean,
         default: true,
+      },
+      hasBackButton: {
+        type: Boolean,
+        default: false,
       },
       /**
        * Function to execute when the modal is closed.

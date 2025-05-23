@@ -22,37 +22,41 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { AppNormalText, AppHeaderText } from "../AppTypography";
+  import { defineComponent } from "vue"
+  import { AppNormalText, AppHeaderText } from "../AppTypography"
 
-/**
- * AppDetails Component
- *
- * This component dynamically renders a list of details from an object.
- * Each entry is displayed with a label (formatted key) and value.
- *
- * Props:
- * @prop {Record<string, string>} details - The object containing key-value pairs.
- */
-export default defineComponent({
-  name: "AppDetails",
-  components: { AppNormalText, AppHeaderText },
-  props: {
-    /**
-     * Object containing key-value pairs to display.
-     * @required
-     */
-    details: {
-      type: Array as () => {
-        title: string;
-        content: string;
-      }[],
-      required: true,
+  /**
+   * AppDetails Component
+   *
+   * This component dynamically renders a list of details from an object.
+   * Each entry is displayed with a label (formatted key) and value.
+   *
+   * Props:
+   * @prop {Record<string, string>} details - The object containing key-value pairs.
+   */
+  export default defineComponent({
+    name: "AppDetails",
+    components: { AppNormalText, AppHeaderText },
+    props: {
+      /**
+       * Object containing key-value pairs to display.
+       * @required
+       */
+      details: {
+        type: Array as () => {
+          title: string
+          content: string
+        }[],
+        required: true,
+      },
+      isVertical: {
+        type: Boolean,
+        default: true,
+      },
+      customClass: {
+        type: String,
+        default: "",
+      },
     },
-    isVertical: {
-      type: Boolean,
-      default: true,
-    },
-  },
-});
+  })
 </script>

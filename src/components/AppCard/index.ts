@@ -1,3 +1,21 @@
-import AppCard from './index.vue'
+import AppCard from "./index.vue"
+import AppCouponCard from "./Coupon.vue"
+import AppIconHeaderDesc from "./IconHeaderDesc.vue"
+import AppEventCard from "./Event.vue"
+import AppEventListCard from "./EventList.vue"
+import AppCategoryCard from "./Category.vue"
+import AppProductCard from "./Product.vue"
+import AppPaymentMethodCard from "./PaymentMethod.vue"
+import AppMerchantCard from "./Merchant.vue"
 
-export default AppCard
+export {
+  AppCard,
+  AppCouponCard,
+  AppIconHeaderDesc,
+  AppEventCard,
+  AppCategoryCard,
+  AppEventListCard,
+  AppProductCard,
+  AppPaymentMethodCard,
+  AppMerchantCard,
+}

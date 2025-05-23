@@ -5,7 +5,7 @@
         :photo-url="product.imageUrl"
         :alt="product.name"
         :size="imageSize"
-        custom-class="size-full rounded-[16px]"
+        custom-class="size-full bg-red rounded-[16px]"
       >
         <div class="relative w-full h-full rounded-2xl">
           <!-- <span class="absolute top-2 right-2">

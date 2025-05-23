@@ -42,7 +42,7 @@
        */
       src: {
         type: String,
-        default: "",
+        default: "/images/profile-image.svg",
       },
       /**
        * Alternative text for the image
