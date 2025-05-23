@@ -1,23 +1,23 @@
 <template>
   <div class="bg-white flex flex-col items-center min-w-[80vw]">
     <app-image-loader
-      class="w-full justify-between relative bg-white top-0 z-10 h-40 rounded-2xl"
-      :photo-url="card.imageUrl"
+      class="w-full justify-between relative bg-white top-0   h-40 rounded-2xl"
+      :photo-url="merchant.imageUrl"
     >
       <div class="relative w-full h-full rounded-2xl bg-[#0a141e20]">
         <div
           class="absolute px-4 top-4 flex items-center w-full space-x-2"
-          :class="card.showShopStatus ? 'justify-between' : 'justify-end'"
+          :class="merchant.showShopStatus ? 'justify-between' : 'justify-end'"
         >
           <app-normal-text
-            v-if="card.showShopStatus"
+            v-if="merchant.showShopStatus"
             customClass="!text-xxs !font-semibold !text-white !bg-orange rounded-full px-4 py-1.5"
           >
-            {{ card.badgeText }}
+            {{ merchant.badgeText }}
           </app-normal-text>
 
           <app-icon
-            :name="card.showShopStatus ? 'favourite-red' : 'favourite-inactive'"
+            :name="merchant.showShopStatus ? 'favourite-red' : 'favourite-inactive'"
           />
         </div>
 
@@ -28,29 +28,29 @@
           <app-normal-text
             customClass="leading-6 !text-xxs !font-semibold !text-black pl-1"
           >
-            {{ card.rating }}
+            {{ merchant.rating }}
           </app-normal-text>
         </div>
       </div>
     </app-image-loader>
 
     <div class="bg-white flex items-center w-full py-3">
-      <app-avatar :src="card.avatar" custom-class="!h-12" />
+      <app-avatar :src="merchant.avatar" custom-class="!h-12" />
 
       <div class="ml-3 gap-4 bg-white truncate">
         <app-header-text
           customClass="leading-6 !text-sm !text-black truncate"
         >
-          {{ card.title }}
+          {{ merchant.title }}
         </app-header-text>
 
         <div class="bg-white flex items-center truncate">
           <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-            {{ card.category }}
+            {{ merchant.category }}
           </app-normal-text>
           <span class="!text-gray-two px-2">●</span>
           <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-            From {{ card.price }}
+            From {{ merchant.price }}
           </app-normal-text>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default defineComponent({
     AppNormalText,
   },
   props: {
-    card: {
+    merchant: {
       type: Object as PropType<MerchantCard>,
       required: true,
     },

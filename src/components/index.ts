@@ -17,6 +17,8 @@ import {
   AppProductCard,
   AppPaymentMethodCard,
   AppMerchantCard,
+  AppTicketCard,
+  AppOrderCard,
 } from "./AppCard"
 import AppTitleCardContainer from "./AppTitleCardContainer"
 import AppDropdownSelect from "./AppDropdownSelect"
@@ -117,4 +119,6 @@ export {
   AppPaymentMethodCard,
   AppSteps,
   AppMerchantCard,
+  AppTicketCard,
+  AppOrderCard,
 }
