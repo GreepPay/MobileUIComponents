@@ -12,8 +12,8 @@
         class="w-full flex flex-row items-center justify-between py-4 bg-white px-4 sticky top-0 z-999"
       >
         <app-image-loader
-          :photo-url="'/images/temps/profile-1.png'"
-          custom-class="h-[31px] w-[31px] rounded-full"
+          :photo-url="photoUrl"
+          custom-class="h-[40px] w-[40px] rounded-full"
         />
 
         <app-header-text class="!text-left">
@@ -37,7 +37,8 @@
 import { AppHeaderText } from "../AppTypography";
 import AppImageLoader from "../AppImageLoader";
 import AppIcon from "../AppIcon";
-import { ref, defineComponent } from "vue";
+import { defineComponent } from "vue";
+import { Logic } from "../../composable";
 
 export default defineComponent({
   components: {
@@ -53,6 +54,12 @@ export default defineComponent({
     useTopPadding: {
       type: Boolean,
       default: false,
+    },
+    photoUrl: {
+      type: String,
+      default:
+        Logic.Auth.AuthUser?.profile?.profile_picture ||
+        "/images/profile-image.svg",
     },
   },
   name: "DefaultIndexLayout",

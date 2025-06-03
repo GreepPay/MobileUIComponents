@@ -26,6 +26,7 @@ import AppTabs from "./AppTabs";
 import AppLoading from "./AppLoading";
 import AppEmptyState from "./AppEmptyState";
 import AppVirtualScroller from "./AppVirtualScroller";
+import { AppBottomBar } from "./AppNavigator";
 import { AppHeaderText, AppNormalText } from "./AppTypography";
 import {
   AppSelect,
@@ -87,4 +88,5 @@ export {
   AppEmptyState,
   AppLoading,
   AppVirtualScroller,
+  AppBottomBar,
 };
