@@ -68,7 +68,7 @@
   >
     <div
       @click.stop="true"
-      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
+      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto min-h-[200px] max-h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
     >
       <div
         class="flex items-center justify-center sticky top-0 bg-white w-full pt-3"

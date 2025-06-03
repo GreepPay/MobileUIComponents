@@ -6,7 +6,9 @@
     @click="isSwitchable ? (showSelectModal = true) : null"
   >
     <app-image-loader
-      :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.svg`"
+      :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.${
+        selectedCurrency?.icon_extension || 'svg'
+      }`"
       class="h-[32px] w-[32px] rounded-full"
       v-if="showCurrencyImage"
     />
@@ -28,7 +30,7 @@
   >
     <div
       @click.stop="true"
-      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
+      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto !h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
     >
       <div
         class="flex items-center justify-center sticky top-0 bg-white w-full pt-3"
@@ -57,7 +59,9 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.svg`"
+              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.${
+                defaultCurrency?.icon_extension || 'svg'
+              }`"
               class="h-[32px] w-[32px] rounded-full"
             />
 
@@ -100,7 +104,9 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.svg`"
+              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.${
+                currency?.icon_extension || 'svg'
+              }`"
               class="h-[32px] w-[32px] rounded-full"
             />
 
@@ -113,7 +119,7 @@
           </div>
 
           <div class="flex flex-row justify-end" v-if="currency.loading">
-            <app-loading class="!text-gray-800 -mr-[5px]" />
+            <app-loading class="!text-gray-800" />
           </div>
         </div>
       </div>
@@ -122,7 +128,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, ref, toRef, watch } from "vue";
+import { computed, defineComponent, onMounted, ref, toRef, watch } from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppImageLoader from "../AppImageLoader";
 import AppIcon from "../AppIcon";
@@ -251,8 +257,12 @@ export default defineComponent({
 
       let targetCurrency = currency.code;
 
-      if (targetCurrency == "USDC") {
+      if (targetCurrency == "USDC" || targetCurrency == "USDT") {
         targetCurrency = "USD";
+      }
+
+      if (targetCurrency == "EURC") {
+        targetCurrency = "EUR";
       }
 
       Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(

@@ -9,7 +9,7 @@
         @click="closeModal()"
       >
         <div
-          class="w-full bg-white rounded-t-[20px] p-6 min-h-[100px] relative"
+          :class="`w-full bg-white rounded-t-[20px] p-4 min-h-[100px] relative max-h-[60%] ${innerClass}`"
           @click.stop="null"
         >
           <!--
@@ -77,6 +77,13 @@ export default {
      * Title of the modal, displayed in the header.
      */
     title: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Custom CSS classes to apply to the inner modal container.
+     */
+    innerClass: {
       type: String,
       default: "",
     },

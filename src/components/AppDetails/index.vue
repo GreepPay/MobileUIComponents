@@ -22,7 +22,7 @@
         <app-normal-text
           :class="` ${
             invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
-          } !text-sm`"
+          } !text-sm break-words`"
         >
           {{ item.content }}
         </app-normal-text>

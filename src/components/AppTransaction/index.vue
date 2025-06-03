@@ -3,11 +3,13 @@
     class="w-full flex justify-between items-center py-2 pb-3 border-b-[1px] border-[#F0F3F6]"
   >
     <div class="flex items-center space-x-2">
-      <div
-        class="h-12 w-12 rounded-full flex justify-center items-center"
-        :class="getBgColor(data.type)"
-      >
-        <app-icon :name="getIcon(data.type)" customClass="!h-5" />
+      <div class="w-12">
+        <div
+          class="h-12 w-12 rounded-full flex justify-center items-center"
+          :class="getBgColor(data.type)"
+        >
+          <app-icon :name="getIcon(data.type)" customClass="!h-5" />
+        </div>
       </div>
 
       <div class="flex flex-col space-y-[1px]">

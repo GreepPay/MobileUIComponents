@@ -1,7 +1,7 @@
 <template>
   <div>
     <img
-      :src="`${basePath}images/icons/${name}.svg`"
+      :src="`${basePath}images/icons/${name}.${extension}`"
       :class="`${customClass}`"
     />
   </div>
@@ -24,6 +24,13 @@ defineProps({
   customClass: {
     type: String,
     default: "w-5 h-5",
+  },
+  /**
+   * The file extension of the icon.
+   */
+  extension: {
+    type: String,
+    default: "svg",
   },
 });
 

@@ -8,7 +8,10 @@
     <!--
       @slot Default slot for text content.
     -->
-    <slot />
+    <slot v-if="!isHtml" />
+    <template v-else>
+      <span v-html="htmlContent" :class="`${customClass}`"> </span>
+    </template>
   </span>
 </template>
 <script lang="ts">
@@ -41,6 +44,23 @@ export default defineComponent({
      * @default ''
      */
     customClass: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Determines if the text content should be rendered as HTML.
+     * If true, the `htmlContent` prop will be used.
+     * @default false
+     */
+    isHtml: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * The HTML content to render if `isHtml` is true.
+     * @default ''
+     */
+    htmlContent: {
       type: String,
       default: "",
     },

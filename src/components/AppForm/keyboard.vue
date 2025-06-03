@@ -8,7 +8,8 @@
         @click="
           handleClick($event, () =>
             canAddNumber ? (content += `${key + 1}`) : null
-          )
+          );
+          Logic.Common.makeTouchSensation('MEDIUM');
         "
       >
         <!-- Max of 2 decimal places -->
@@ -27,7 +28,8 @@
         @click="
           handleClick($event, () =>
             content.includes('.') ? null : (content += '.')
-          )
+          );
+          Logic.Common.makeTouchSensation('MEDIUM');
         "
       >
         <span
@@ -44,7 +46,10 @@
       </div>
       <div
         class="col-span-4 flex flex-row items-center justify-center"
-        @click="handleClick($event, () => (content += '0'))"
+        @click="
+          handleClick($event, () => (content += '0'));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
       >
         <span
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
@@ -56,7 +61,10 @@
       </div>
       <div
         class="col-span-4 flex flex-row items-center justify-center"
-        @click="handleClick($event, () => (content = content.slice(0, -1)))"
+        @click="
+          handleClick($event, () => (content = content.slice(0, -1)));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
       >
         <span
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
@@ -72,6 +80,7 @@
 <script lang="ts">
 import AppNormalText from "../AppTypography/normalText.vue";
 import AppIcon from "../AppIcon";
+import { Logic } from "../../composable";
 import { computed, onMounted, ref, toRef, watch } from "vue";
 
 /**
@@ -172,6 +181,7 @@ export default {
       canAddNumber,
       activeKey,
       handleClick,
+      Logic,
     };
   },
 };

@@ -64,4 +64,17 @@ export interface Currency {
   symbol: string;
   loading?: boolean;
   country_code?: string;
+  icon_extension?: string;
+  payin_fees?: {
+    type: "percentage" | "fixed";
+    value: number;
+    min: number;
+    method: "bank_transfer" | "momo";
+  }[];
+  payout_fees?: {
+    type: "percentage" | "fixed";
+    value: number;
+    min: number;
+    method: "bank_transfer" | "momo";
+  }[];
 }
