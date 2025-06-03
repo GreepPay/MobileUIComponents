@@ -68,7 +68,7 @@
           @keypress="isNumber"
           :disabled="fieldType == 'date' ? true : disabled"
           :type="fieldType == 'date' ? 'text' : fieldType"
-          :class="` text-black grow bg-transparent placeholder-gray-400 focus input w-full focus:outline-hidden ${inputStyle} `"
+          :class="` text-black grow bg-transparent placeholder-gray-400 focus input w-full focus:outline-none ${inputStyle} `"
           @click.stop="
             action
               ? action()

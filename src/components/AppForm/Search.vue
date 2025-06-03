@@ -1,7 +1,7 @@
 <template>
   <div :class="['flex items-center w-full space-x-3 rounded', customClass]">
     <div
-      class="relative w-full flex items-center space-x-3 bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:ring-[1.5px] focus-within:ring-green-500"
+      class="relative w-full flex items-center space-x-2 bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:ring-[1.5px] focus-within:ring-green-500"
     >
       <app-icon name="search-normal" class="text-gray-500" />
 

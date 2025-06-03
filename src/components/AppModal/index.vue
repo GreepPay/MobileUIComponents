@@ -12,115 +12,187 @@
           :class="`w-full bg-white rounded-t-[20px] p-4 min-h-[100px] relative max-h-[60%] ${innerClass}`"
           @click.stop="null"
         >
-          <!--
-               * @slot -  Content to be displayed within the modal.
-               -->
-          <slot />
+          <div
+            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white"
+            v-if="hasTitle"
+          >
+            <div class="!flex-1 flex items-center">
+              <app-icon
+                v-if="hasBackButton"
+                name="arrow-left"
+                @click="closeModal()"
+                enter-class="flex"
+              />
+
+              <span
+                :class="[
+                  '!text-lg !flex-1 text-black font-semibold',
+                  hasBackButton && '!text-center',
+                ]"
+              >
+                {{ title }}
+              </span>
+            </div>
+
+            <app-icon name="close-circle" @click="closeModal()" />
+          </div>
+
+          <div :class="`py-4 px-4 ${contentClass}`">
+            <slot />
+          </div>
         </div>
       </div>
     </transition>
   </component>
 </template>
 <script lang="ts">
-import {
-  computed,
-  onMounted,
-  onUnmounted,
-  ref,
-  Teleport as teleport_,
-  TeleportProps,
-  VNodeProps,
-} from "vue";
+  import {
+    computed,
+    onMounted,
+    onUnmounted,
+    ref,
+    Teleport as teleport_,
+    TeleportProps,
+    VNodeProps,
+  } from "vue"
 
-const Teleport = teleport_ as {
-  new (): {
-    $props: VNodeProps & TeleportProps;
-  };
-};
+  const Teleport = teleport_ as {
+    new (): {
+      $props: VNodeProps & TeleportProps
+    }
+  }
 
-import { AppHeaderText } from "../AppTypography";
-import AppIcon from "../AppIcon";
+  import { AppHeaderText } from "../AppTypography"
+  import AppIcon from "../AppIcon"
 
-/**
- *  Modal component that displays content in an overlay.
- */
-export default {
-  components: {
-    AppHeaderText,
-    AppIcon,
-  },
-  name: "AppModal",
-  props: {
-    /**
-     * Determines whether the modal can be closed by clicking outside or pressing the close icon.
-     */
-    canClose: {
-      type: Boolean,
-      default: true,
+  /**
+   *  Modal component that displays content in an overlay.
+   */
+  export default {
+    components: {
+      AppHeaderText,
+      AppIcon,
     },
-    /**
-     * Function to execute when the modal is closed.
-     * @required
-     */
-    close: {
-      type: Function,
-      required: true,
+    name: "AppModal",
+    props: {
+      /**
+       * Determines whether the modal can be closed by clicking outside or pressing the close icon.
+       */
+      canClose: {
+        type: Boolean,
+        default: true,
+      },
+      /**
+       * Function to execute when the modal is closed.
+       * @required
+       */
+      name: "AppModal",
+      props: {
+        /**
+         * Determines whether the modal can be closed by clicking outside or pressing the close icon.
+         */
+        canClose: {
+          type: Boolean,
+          default: true,
+        },
+        hasBackButton: {
+          type: Boolean,
+          default: false,
+        },
+        /**
+         * Function to execute when the modal is closed.
+         * @required
+         */
+        close: {
+          type: Function,
+          required: true,
+        },
+
+        /**
+         * @required
+         */
+        hasTitle: {
+          type: Boolean,
+          required: false,
+        },
+        /**
+         * Custom CSS classes to apply to the modal container.
+         */
+        customClass: {
+          type: String,
+          default: "",
+        },
+        contentClass: {
+          type: String,
+          default: "",
+        },
+        /**
+         * Title of the modal, displayed in the header.
+         */
+        title: {
+          type: String,
+          default: "",
+        },
+      },
+      /**
+       * Custom CSS classes to apply to the modal container.
+       */
+      customClass: {
+        type: String,
+        default: "",
+      },
+      /**
+       * Title of the modal, displayed in the header.
+       */
+      title: {
+        type: String,
+        default: "",
+      },
+      /**
+       * Custom CSS classes to apply to the inner modal container.
+       */
+      innerClass: {
+        type: String,
+        default: "",
+      },
+      close: {
+        type: Function,
+        required: true,
+      },
     },
-    /**
-     * Custom CSS classes to apply to the modal container.
-     */
-    customClass: {
-      type: String,
-      default: "",
-    },
-    /**
-     * Title of the modal, displayed in the header.
-     */
-    title: {
-      type: String,
-      default: "",
-    },
-    /**
-     * Custom CSS classes to apply to the inner modal container.
-     */
-    innerClass: {
-      type: String,
-      default: "",
-    },
-  },
-  setup(props: any) {
-    const closeModal = () => {
-      if (props.canClose) {
-        props.close();
+    setup(props: any) {
+      const closeModal = () => {
+        if (props.canClose) {
+          props.close()
+        }
       }
-    };
 
-    const innerHeight = ref(window.innerHeight);
+      const innerHeight = ref(window.innerHeight)
 
-    const updateHeight = () => {
-      innerHeight.value = window.innerHeight;
-    };
+      const updateHeight = () => {
+        innerHeight.value = window.innerHeight
+      }
 
-    onMounted(() => {
-      updateHeight();
-      window.addEventListener("resize", updateHeight);
-    });
+      onMounted(() => {
+        updateHeight()
+        window.addEventListener("resize", updateHeight)
+      })
 
-    onUnmounted(() => {
-      window.removeEventListener("resize", updateHeight);
-    });
+      onUnmounted(() => {
+        window.removeEventListener("resize", updateHeight)
+      })
 
-    const mobileFullHeight = computed(() => {
+      const mobileFullHeight = computed(() => {
+        return {
+          height: `${innerHeight.value}px`,
+        }
+      })
+
       return {
-        height: `${innerHeight.value}px`,
-      };
-    });
-
-    return {
-      closeModal,
-      Teleport,
-      mobileFullHeight,
-    };
-  },
-};
+        closeModal,
+        Teleport,
+        mobileFullHeight,
+      }
+    },
+  }
 </script>
