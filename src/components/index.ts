@@ -17,6 +17,7 @@ import AppCurrencySwitch from "./AppCurrencySwitch"
 import AppPointTransaction from "./AppPointTransaction"
 import AppNotification from "./AppNotification"
 import AppSwitch from "./AppSwitch"
+import AppFloatingIcon from "./AppFloatingIcon"
 import AppAlert from "./AppAlert"
 import AppNotifications from "./AppNotifications"
 import AppTransactions from "./AppTransactions"
@@ -38,6 +39,9 @@ import {
   AppMerchantCard,
   AppTicketCard,
   AppOrderCard,
+  AppShopCard,
+  AppReviewCard,
+  AppTicketDetailCard,
 } from "./AppCard"
 import { AppTabs, AppMultiTabsSelector } from "./AppTabs"
 import AppToken from "./AppToken"
@@ -123,4 +127,8 @@ export {
   AppMerchantCard,
   AppTicketCard,
   AppOrderCard,
+  AppShopCard,
+  AppReviewCard,
+  AppTicketDetailCard,
+  AppFloatingIcon,
 }

@@ -1,27 +1,22 @@
 <template>
   <div class="bg-white flex flex-col items-center min-w-[80vw]">
     <app-image-loader
-      class="w-full justify-between relative bg-[#0a141e20] top-0 h-40 rounded-2xl"
-      :photo-url="merchant?.banner || defaultBanner"
+      class="w-full justify-between relative bg-white top-0 z-10 h-40 rounded-2xl"
+      :photo-url="shop.image"
     >
-      <div
-        class="relative w-full h-full rounded-2xl bg-[#0a141e20]"
-        v-if="showImageDetails"
-      >
+      <div class="relative w-full h-full rounded-2xl bg-[#0a141e20]">
         <div
           class="absolute px-4 top-4 flex items-center w-full space-x-2"
-          :class="showMerchantStatus ? 'justify-between' : 'justify-end'"
+          :class="showShopStatus ? 'justify-between' : 'justify-end'"
         >
           <app-normal-text
-            v-if="showMerchantStatus"
+            v-if="showShopStatus"
             customClass="!text-xxs !font-semibold !text-white !bg-orange rounded-full px-4 py-1.5"
           >
-            {{ merchant.badgeText }}
+            Featured
           </app-normal-text>
 
-          <app-icon
-            :name="showMerchantStatus ? 'favourite-red' : 'favourite-inactive'"
-          />
+          <app-icon :name="shop.isFavourite ? 'favourite-red' : 'favourite-inactive'" />
         </div>
 
         <div
@@ -31,36 +26,28 @@
           <app-normal-text
             customClass="leading-6 !text-xxs !font-semibold !text-black pl-1"
           >
-            {{ merchant.rating || "N/A" }}
+            {{ shop.rating }}
           </app-normal-text>
         </div>
       </div>
     </app-image-loader>
 
     <div class="bg-white flex items-center w-full py-3">
-      <!--  -->
-      <app-avatar
-        v-if="merchant.logo"
-        :src="merchant.logo"
-        custom-class="!h-11"
-      />
-      <app-icon v-else name="grp-union" custom-class="!h-11 rounded-full" />
+      <app-avatar :src="shop.logo" custom-class="!h-12" />
 
       <div class="ml-3 gap-4 bg-white truncate">
         <app-header-text customClass="leading-6 !text-sm !text-black truncate">
-          {{ merchant?.business_name || "Unknown Merchant" }}
+          {{ shop.name }}
         </app-header-text>
 
         <div class="bg-white flex items-center truncate">
-          <app-normal-text
-            customClass="leading-6 !text-xxs capitalize !text-gray-two"
-          >
-            {{ merchant?.description || "No description available" }}
-          </app-normal-text>
-          <!-- <span class="!text-gray-two px-2">●</span>
           <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-            From {{ merchant.price }}
-          </app-normal-text> -->
+            {{ shop.category }}
+          </app-normal-text>
+          <span class="!text-gray-two px-2">●</span>
+          <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
+            From {{ shop.price }}
+          </app-normal-text>
         </div>
       </div>
     </div>
@@ -69,43 +56,44 @@
 
 <script lang="ts">
   /**
-   * AppMerchantCard
+   * AppShopCard
+   *
+   * Reusable shop showcase card.
+   * Displays image, rating, name, category, and price with favorite and featured indicators.
    */
-  import { defineComponent, PropType } from "vue"
+
+  import { defineComponent } from "vue"
   import AppImageLoader from "../AppImageLoader"
   import AppIcon from "../AppIcon"
-  import AppAvatar from "../AppAvatar"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
+  import AppAvatar from "../AppAvatar"
 
   export default defineComponent({
-    name: "AppMerchantCard",
+    name: "AppShopCard",
     components: {
       AppImageLoader,
       AppIcon,
-      AppAvatar,
       AppHeaderText,
       AppNormalText,
+      AppAvatar,
     },
     props: {
-      merchant: {
-        type: Object as PropType<any>,
+      shop: {
+        type: Object as () => {
+          name: string
+          category: string
+          price: string
+          rating: string
+          image: string
+          logo: string
+          isFavourite: boolean
+        },
         required: true,
       },
-      showMerchantStatus: {
+      showShopStatus: {
         type: Boolean,
         default: false,
       },
-      showImageDetails: {
-        type: Boolean,
-        default: false,
-      },
-    },
-    setup() {
-      const defaultBanner = "/images/greep-transparent-logo.svg"
-
-      return {
-        defaultBanner,
-      }
     },
   })
 </script>

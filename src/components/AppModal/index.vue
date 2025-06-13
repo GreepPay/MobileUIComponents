@@ -9,11 +9,12 @@
         @click="closeModal()"
       >
         <div
-          :class="`w-full bg-white rounded-t-[20px] p-4 min-h-[100px] relative max-h-[60%] ${innerClass}`"
+          :class="`w-full bg-white rounded-t-[20px] p-4 pb-0 min-h-[100px] relative max-h-[60%] ${innerClass}`"
           @click.stop="null"
         >
           <div
-            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white"
+            class="p-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white"
+            :class="titleClass"
             v-if="hasTitle"
           >
             <div class="!flex-1 flex items-center">
@@ -40,6 +41,11 @@
           <div :class="`py-4 px-4 ${contentClass}`">
             <slot />
           </div>
+
+          <slot
+            name="bottom-section"
+            class="absolute !bottom-0 w-full border-t"
+          />
         </div>
       </div>
     </transition>
@@ -82,64 +88,9 @@
         type: Boolean,
         default: true,
       },
-      /**
-       * Function to execute when the modal is closed.
-       * @required
-       */
-      name: "AppModal",
-      props: {
-        /**
-         * Determines whether the modal can be closed by clicking outside or pressing the close icon.
-         */
-        canClose: {
-          type: Boolean,
-          default: true,
-        },
-        hasBackButton: {
-          type: Boolean,
-          default: false,
-        },
-        /**
-         * Function to execute when the modal is closed.
-         * @required
-         */
-        close: {
-          type: Function,
-          required: true,
-        },
-
-        /**
-         * @required
-         */
-        hasTitle: {
-          type: Boolean,
-          required: false,
-        },
-        /**
-         * Custom CSS classes to apply to the modal container.
-         */
-        customClass: {
-          type: String,
-          default: "",
-        },
-        contentClass: {
-          type: String,
-          default: "",
-        },
-        /**
-         * Title of the modal, displayed in the header.
-         */
-        title: {
-          type: String,
-          default: "",
-        },
-      },
-      /**
-       * Custom CSS classes to apply to the modal container.
-       */
-      customClass: {
-        type: String,
-        default: "",
+      hasBackButton: {
+        type: Boolean,
+        default: false,
       },
       /**
        * Title of the modal, displayed in the header.
@@ -149,15 +100,40 @@
         default: "",
       },
       /**
+       * Function to execute when the modal is closed.
+       * @required
+       */ close: {
+        type: Function,
+        required: true,
+      },
+      /**
+       * @required
+       */
+      hasTitle: {
+        type: Boolean,
+        required: false,
+      },
+      /**
+       * Custom CSS classes to apply to the modal container.
+       */
+      customClass: {
+        type: String,
+        default: "",
+      },
+      contentClass: {
+        type: String,
+        default: "",
+      },
+      titleClass: {
+        type: String,
+        default: "",
+      },
+      /**
        * Custom CSS classes to apply to the inner modal container.
        */
       innerClass: {
         type: String,
         default: "",
-      },
-      close: {
-        type: Function,
-        required: true,
       },
     },
     setup(props: any) {

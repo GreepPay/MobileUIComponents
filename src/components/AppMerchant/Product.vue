@@ -2,7 +2,7 @@
   <div :class="['h-fit w-[140px]', customClass]" @click="viewProduct">
     <div class="w-[140px] h-32 relative rounded-[16px]">
       <app-image-loader
-        :photo-url="product.imageUrl"
+        :photo-url="product?.images[0].url"
         :alt="product.name"
         :size="imageSize"
         custom-class="size-full rounded-[16px]"
