@@ -17,7 +17,7 @@
             </span>
           </span>
           <app-normal-text>
-            {{ option.value }}
+            {{ option.altValue ? option.altValue : option.value }}
           </app-normal-text>
         </div>
         <template v-if="option.isImage != true">

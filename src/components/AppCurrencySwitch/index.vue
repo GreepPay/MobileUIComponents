@@ -1,15 +1,26 @@
 <template>
   <div
-    class="w-fit p-2 px-3 bg-white rounded-[999px] flex flex-row space-x-[6px] items-center"
-    @click="showSelectModal = true"
+    :class="`w-fit p-2 bg-white ${
+      isSwitchable ? 'rounded-[999px] px-3 !py-1' : 'rounded-[59px] px-3'
+    } flex flex-row space-x-[6px] items-center`"
+    @click="isSwitchable ? (showSelectModal = true) : null"
   >
-    <app-image-loader
-      :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.svg`"
-      class="h-[32px] w-[32px] rounded-full"
-      v-if="showCurrencyImage"
-    />
+    <template v-if="showCurrencyImage">
+      <app-image-loader
+        :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.${
+          selectedCurrency?.icon_extension || 'svg'
+        }`"
+        class="h-[25px] w-[25px] rounded-full"
+      />
+      <app-normal-text class="!font-[500]">
+        {{ selectedCurrency.code }}
+      </app-normal-text>
+    </template>
     <div class="h-[32px] w-[32px] rounded-full" v-else></div>
-    <div class="h-[32px] flex justify-center items-center">
+    <div
+      class="h-[32px] flex justify-center items-center pl-1"
+      v-if="isSwitchable"
+    >
       <app-icon :name="`chevron-down`" custom-class="h-[8px]" />
     </div>
   </div>
@@ -26,7 +37,7 @@
   >
     <div
       @click.stop="true"
-      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
+      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto !h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
     >
       <div
         class="flex items-center justify-center sticky top-0 bg-white w-full pt-3"
@@ -55,7 +66,9 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.svg`"
+              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.${
+                defaultCurrency?.icon_extension || 'svg'
+              }`"
               class="h-[32px] w-[32px] rounded-full"
             />
 
@@ -98,7 +111,9 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.svg`"
+              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.${
+                currency?.icon_extension || 'svg'
+              }`"
               class="h-[32px] w-[32px] rounded-full"
             />
 
@@ -111,7 +126,7 @@
           </div>
 
           <div class="flex flex-row justify-end" v-if="currency.loading">
-            <app-loading class="!text-gray-800 -mr-[5px]" />
+            <app-loading class="!text-gray-800" />
           </div>
         </div>
       </div>
@@ -120,28 +135,14 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  reactive,
-  ref,
-  toRef,
-  watch,
-} from "vue";
+import { computed, defineComponent, ref, toRef, watch } from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppImageLoader from "../AppImageLoader";
 import AppIcon from "../AppIcon";
 import AppModal from "../AppModal";
 import AppLoading from "../AppLoading";
 import { Logic } from "../../composable";
-
-interface Currency {
-  code: string;
-  name: string;
-  symbol: string;
-  loading?: boolean;
-}
+import { Currency } from "../../types";
 
 export default defineComponent({
   name: "AppCurrencySwitch",
@@ -157,76 +158,83 @@ export default defineComponent({
     default_currency: {
       type: String,
       required: true,
-      default: "USD",
+      default: "",
     },
     modelValue: {
       type: String,
       required: true,
-      default: "USD",
+      default: "",
     },
     modelSymbol: {
       type: String,
       required: false,
       default: "$", // Default to USD symbol
     },
+    isSwitchable: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+    availableCurrencies: {
+      type: Array as () => Currency[],
+      default: () => [
+        {
+          code: "TRY",
+          name: "Turkish Lira",
+          symbol: "₺",
+          loading: false,
+        },
+        {
+          code: "USD",
+          name: "United States Dollar",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "USDC",
+          name: "USDC",
+          symbol: "$",
+          loading: false,
+        },
+        {
+          code: "NGN",
+          name: "Nigerian Naira",
+          symbol: "₦",
+          loading: false,
+        },
+        {
+          code: "GHS",
+          name: "Ghanaian Cedis",
+          symbol: "GH₵",
+          loading: false,
+        },
+        {
+          code: "XLM",
+          name: "XLM",
+          symbol: "XLM", // Or any appropriate symbol
+          loading: false,
+        },
+        {
+          code: "ZAR",
+          name: "South African Rand",
+          symbol: "R",
+          loading: false,
+        },
+        {
+          code: "EUR",
+          name: "Euro",
+          symbol: "€",
+          loading: false,
+        },
+      ],
+    },
   },
   emits: ["update:modelValue", "update:modelSymbol"],
   setup(props, context) {
-    const availableCurrencies = reactive<Currency[]>([
-      {
-        code: "TRY",
-        name: "Turkish Lira",
-        symbol: "₺",
-        loading: false,
-      },
-      {
-        code: "USD",
-        name: "United States Dollar",
-        symbol: "$",
-        loading: false,
-      },
-      {
-        code: "USDC",
-        name: "USDC",
-        symbol: "$",
-        loading: false,
-      },
-      {
-        code: "NGN",
-        name: "Nigerian Naira",
-        symbol: "₦",
-        loading: false,
-      },
-      {
-        code: "GHS",
-        name: "Ghanaian Cedis",
-        symbol: "GH₵",
-        loading: false,
-      },
-      {
-        code: "XLM",
-        name: "XLM",
-        symbol: "XLM", // Or any appropriate symbol
-        loading: false,
-      },
-      {
-        code: "ZAR",
-        name: "South African Rand",
-        symbol: "R",
-        loading: false,
-      },
-      {
-        code: "EUR",
-        name: "Euro",
-        symbol: "€",
-        loading: false,
-      },
-    ]);
-
     const defaultCurrencyRef = toRef(props, "default_currency");
 
     const defaultCurrency = computed<Currency>(() => {
-      return availableCurrencies.find(
+      return props.availableCurrencies.find(
         (currency) => currency.code === defaultCurrencyRef.value
       )!; // Non-null assertion since prop is required
     });
@@ -234,7 +242,7 @@ export default defineComponent({
     const selectedCurrency = ref<Currency>({
       code: props.modelValue,
       symbol: props.modelSymbol,
-      name: defaultCurrency.value.name,
+      name: defaultCurrency.value?.name,
     });
 
     const showCurrencyImage = ref(true);
@@ -256,8 +264,12 @@ export default defineComponent({
 
       let targetCurrency = currency.code;
 
-      if (targetCurrency == "XLM" || targetCurrency == "USDC") {
+      if (targetCurrency == "USDC" || targetCurrency == "USDT") {
         targetCurrency = "USD";
+      }
+
+      if (targetCurrency == "EURC") {
+        targetCurrency = "EUR";
       }
 
       Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(
@@ -269,6 +281,8 @@ export default defineComponent({
             showSelectModal.value = false;
           }
           currency.loading = false;
+
+          context.emit("update:modelValue", selectedCurrency.value.code);
         }
       );
     };
@@ -283,14 +297,13 @@ export default defineComponent({
     });
 
     watch(defaultCurrencyRef, (newCurrency) => {
-      const currencyData = availableCurrencies.filter(
+      const currencyData = props.availableCurrencies.filter(
         (currency) => currency.code === newCurrency
       );
       selectCurrency(currencyData[0]);
     });
 
     return {
-      availableCurrencies,
       selectedCurrency,
       showSelectModal,
       defaultCurrency,

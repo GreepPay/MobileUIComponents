@@ -1,15 +1,17 @@
 <template>
   <div
     id=""
-    :class="`${customClass} blend-in`"
-    style="
-      background-size: cover;
+    :class="`${customClass} blend-in ${
+      image == '' ? `${photoUrl ? 'skeleton' : ''}` : ''
+    }`"
+    :style="`${
+      image == ''
+        ? ''
+        : `background-size: cover;
       background-repeat: no-repeat;
-      background-position: center;
-    "
-    :style="` ${
-      imageUrl ? `background-image:url(${imageUrl});` : ''
-    }  ${customStyle}`"
+      background-position: center;`
+    }
+      ${image ? `background-image:url(${imageUrl});` : ''}  ${customStyle}`"
   >
     <!--
      * @slot -  Optional content to be displayed within the image loader.
@@ -54,7 +56,16 @@ export default defineComponent({
     const imageUrl = ref("");
 
     const setImage = () => {
-      imageUrl.value = props.photoUrl || "";
+      // @ts-ignore
+      const basePath = import.meta.env.VITE_APP_BASE_URL || "/";
+
+      let photoUrl = props.photoUrl || "";
+
+      if (photoUrl.startsWith("/images/")) {
+        photoUrl = photoUrl.replace(/^\/(?!\/)/, basePath);
+      }
+
+      imageUrl.value = photoUrl;
 
       const highResImage = new Image();
 

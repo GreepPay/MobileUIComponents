@@ -4,27 +4,40 @@
   >
     <!-- Top section -->
     <app-image-loader
-      :class="`w-full flex flex-col sticky top-0 left-0 pb-5 px-4 space-y-2 z-50 ${topPadding}`"
-      photo-url="/images/green-bg.png"
+      :class="`w-full flex flex-col sticky top-0 left-0 !pb-2 px-4 space-y-2 z-50 ${topPadding} ${
+        variant == 'default' ? '' : '!bg-white'
+      }`"
+      :photo-url="`${variant == 'default' ? '/images/green-bg.png' : ''}`"
     >
       <div
         class="w-full flex flex-row justify-between items-center"
-        style="padding-top: calc(env(safe-area-inset-top) + 16px) !important"
+        :style="`padding-top: calc(env(safe-area-inset-top) + ${
+          currentPlatform == 'android' ? '45' : '16'
+        }px) !important`"
       >
         <app-header-text
-          class="!text-white !text-left !font-semibold !text-[16px]"
+          :class="` ${
+            variant == 'default' ? '!text-white' : '!text-black'
+          } !text-left !font-semibold !text-[16px]`"
         >
           {{ pageSetting.main_title }}
         </app-header-text>
 
         <app-header-text
-          class="!text-white !text-left !font-semibold opacity-80 !text-[16px]"
+          v-if="variant == 'default'"
+          :class="`!text-white !text-left !font-semibold opacity-80 !text-[16px]`"
         >
-          {{ currentPage?.title }}
+          {{ hideElements ? fallBackTitle : currentPage?.title }}
         </app-header-text>
+        <div class="flex flex-col" v-else @click="Logic.Common.goBack()">
+          <app-icon name="close-circle" custom-class="h-[24px]" />
+        </div>
       </div>
 
-      <div class="w-full flex flex-row items-center gap-x-2">
+      <div
+        class="w-full flex flex-row items-center gap-x-2"
+        v-if="!hideElements"
+      >
         <div
           class="flex flex-col"
           v-for="(page, index) in pageSetting.pages"
@@ -34,8 +47,14 @@
           }%`"
         >
           <div
-            :class="`h-[6px] rounded-[16px] bg-white w-full ${
-              index > currentPageIndex ? '!bg-opacity-30' : ''
+            :class="`rounded-[16px] ${
+              variant == 'default' ? 'bg-white h-[6px]' : 'bg-[#0A141E] h-[3px]'
+            } w-full ${
+              index > currentPageIndex
+                ? `${
+                    variant == 'default' ? '!bg-opacity-30' : '!bg-opacity-20'
+                  }`
+                : ''
             }`"
           ></div>
         </div>
@@ -48,9 +67,13 @@
     <!-- Bottom section -->
     <div
       class="w-full grid-cols-12 grid gap-3 px-4 fixed z-50 bottom-0 left-0 pt-4 bg-white"
-      style="
-        padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;
-      "
+      :style="`
+        padding-bottom: calc(
+          env(safe-area-inset-bottom) + ${
+            currentPlatform == 'android' ? '45' : '16'
+          }px
+        ) !important;
+      `"
     >
       <!-- Back btn -->
       <app-button
@@ -65,24 +88,37 @@
       <!-- Next btn -->
       <app-button
         variant="secondary"
-        :class="`!py-4 col-span-8 !border-secondary ${
-          currentPage.action_btn.is_disabled ? '!bg-opacity-30' : ''
-        }`"
+        :class="`!py-4 col-span-8 !border-secondary`"
         @click="nextPage"
-        :loading="currentPage.action_btn.loading"
+        :disabled="
+          hideElements
+            ? fallBackPage?.action_btn.is_disabled
+            : currentPage.action_btn.is_disabled
+        "
+        :loading="
+          hideElements
+            ? fallBackPage?.action_btn.loading
+            : currentPage.action_btn.loading
+        "
       >
-        Next
+        {{
+          hideElements
+            ? fallBackPage?.action_btn.label
+            : currentPage.action_btn?.label
+        }}
       </app-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive } from "vue";
+import { computed, defineComponent } from "vue";
 import AppImageLoader from "../AppImageLoader/index";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppButton from "../AppButton";
 import { Logic } from "../../composable";
+import AppIcon from "../AppIcon";
+import { getPlatforms } from "@ionic/vue";
 
 /**
  *  Onboarding layout component to create multi-step onboarding flows.
@@ -95,6 +131,7 @@ export default defineComponent({
     AppNormalText,
     AppHeaderText,
     AppButton,
+    AppIcon,
   },
   emits: ["update:modelValue"],
   props: {
@@ -139,9 +176,7 @@ export default defineComponent({
             action_btn: {
               label: "Next",
               is_disabled: false,
-              handler: () => {
-                console.log("Next");
-              },
+              handler: () => {},
             },
           },
           {
@@ -150,9 +185,7 @@ export default defineComponent({
             action_btn: {
               label: "Next",
               is_disabled: false,
-              handler: () => {
-                console.log("Next");
-              },
+              handler: () => {},
             },
           },
         ],
@@ -161,6 +194,30 @@ export default defineComponent({
     topPadding: {
       type: String,
       default: "",
+    },
+    variant: {
+      type: String as () => "default" | "white",
+      default: "default",
+    },
+    hideElements: {
+      type: Boolean,
+      default: false,
+    },
+    fallBackTitle: {
+      type: String,
+      default: "",
+    },
+    fallBackPage: {
+      type: Object as () => {
+        title: string;
+        key: string;
+        action_btn: {
+          label: string;
+          handler: () => void;
+          is_disabled?: boolean;
+          loading?: boolean;
+        };
+      },
     },
   },
   setup(props, context) {
@@ -187,6 +244,13 @@ export default defineComponent({
      * It triggers the `handler` function of the current page's `action_btn` if available and not disabled.
      */
     const nextPage = () => {
+      if (props.hideElements) {
+        if (!props.fallBackPage.action_btn?.is_disabled) {
+          props.fallBackPage.action_btn.handler();
+        }
+        return;
+      }
+
       if (currentPageIndex.value < props.pageSetting.pages.length - 1) {
         if (!currentPage.value.action_btn?.is_disabled) {
           currentPage.value.action_btn.handler();
@@ -211,11 +275,17 @@ export default defineComponent({
       }
     };
 
+    const currentPlatform = computed(() => {
+      return getPlatforms()[0];
+    });
+
     return {
       currentPage,
       currentPageIndex,
       nextPage,
       prevPage,
+      Logic,
+      currentPlatform,
     };
   },
 });

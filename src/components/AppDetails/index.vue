@@ -7,14 +7,25 @@
         :class="`flex py-4 px-1 w-full  ${
           isVertical
             ? 'flex-col space-y-1'
-            : 'items-center justify-between space-x-3'
+            : 'items-center justify-between space-x-3 flex-row'
         } ${index !== 0 && 'border-t border-[#F0F3F6]'}`"
       >
-        <app-normal-text class="!text-[#616161] capitalize">
+        <app-normal-text
+          :class="` capitalize ${
+            invertBoldness
+              ? '!font-[500] !text-[#0A141E] !text-sm'
+              : '!text-[#616161]'
+          }`"
+        >
           {{ item.title }}
         </app-normal-text>
-        <app-normal-text class="!text-[#0A141E] !font-[500] !text-sm">
-          {{ item.content }}
+        <app-normal-text
+          :class="` ${
+            invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
+          } !text-sm break-words`"
+          is-html
+          :htmlContent="item.content"
+        >
         </app-normal-text>
       </div>
     </template>
@@ -22,37 +33,45 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from "vue"
-  import { AppNormalText, AppHeaderText } from "../AppTypography"
+import { defineComponent } from "vue";
+import { AppNormalText, AppHeaderText } from "../AppTypography";
 
-  /**
-   * AppDetails Component
-   *
-   * This component dynamically renders a list of details from an object.
-   * Each entry is displayed with a label (formatted key) and value.
-   *
-   * Props:
-   * @prop {Record<string, string>} details - The object containing key-value pairs.
-   */
-  export default defineComponent({
-    name: "AppDetails",
-    components: { AppNormalText, AppHeaderText },
-    props: {
-      /**
-       * Object containing key-value pairs to display.
-       * @required
-       */
-      details: {
-        type: Array as () => {
-          title: string
-          content: string
-        }[],
-        required: true,
-      },
-      isVertical: {
-        type: Boolean,
-        default: true,
-      },
+/**
+ * AppDetails Component
+ *
+ * This component dynamically renders a list of details from an object.
+ * Each entry is displayed with a label (formatted key) and value.
+ *
+ * Props:
+ * @prop {Record<string, string>} details - The object containing key-value pairs.
+ */
+export default defineComponent({
+  name: "AppDetails",
+  components: { AppNormalText, AppHeaderText },
+  props: {
+    /**
+     * Object containing key-value pairs to display.
+     * @required
+     */
+    details: {
+      type: Array as () => {
+        title: string;
+        content: string;
+      }[],
+      required: true,
     },
-  })
+    isVertical: {
+      type: Boolean,
+      default: true,
+    },
+    customClass: {
+      type: String,
+      default: "",
+    },
+    invertBoldness: {
+      type: Boolean,
+      default: false,
+    },
+  },
+});
 </script>

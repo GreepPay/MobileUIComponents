@@ -5,14 +5,15 @@
         class="col-span-4 flex flex-row items-center justify-center"
         v-for="(key, index) in Array.from(Array(9).keys())"
         :key="index"
+        @click="
+          handleClick($event, () =>
+            canAddNumber ? (content += `${key + 1}`) : null
+          );
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
       >
         <!-- Max of 2 decimal places -->
         <span
-          @click="
-            handleClick($event, () =>
-              canAddNumber ? (content += `${key + 1}`) : null
-            )
-          "
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
           :class="{ 'bg-gray-200': activeKey === `key-${index}` }"
           :data-key-id="`key-${index}`"
@@ -22,13 +23,16 @@
           </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () =>
+            content.includes('.') ? null : (content += '.')
+          );
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          @click="
-            handleClick($event, () =>
-              content.includes('.') ? null : (content += '.')
-            )
-          "
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
           :class="{ 'bg-gray-200': activeKey === 'key-dot' }"
           data-key-id="key-dot"
@@ -40,9 +44,14 @@
           </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () => (content += '0'));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          @click="handleClick($event, () => (content += '0'))"
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
           :class="{ 'bg-gray-200': activeKey === 'key-zero' }"
           data-key-id="key-zero"
@@ -50,9 +59,14 @@
           <app-normal-text class="!text-xl !font-semibold"> 0 </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () => (content = content.slice(0, -1)));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          @click="handleClick($event, () => (content = content.slice(0, -1)))"
           class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
           :class="{ 'bg-gray-200': activeKey === 'key-backspace' }"
           data-key-id="key-backspace"
@@ -66,7 +80,8 @@
 <script lang="ts">
 import AppNormalText from "../AppTypography/normalText.vue";
 import AppIcon from "../AppIcon";
-import { computed, ref, watch } from "vue";
+import { Logic } from "../../composable";
+import { computed, onMounted, ref, toRef, watch } from "vue";
 
 /**
  *  A number keyboard component.
@@ -90,12 +105,20 @@ export default {
     modelValue: {
       required: false,
     },
+
+    /**
+     * The v-model value for the keyboard input.  Updates the parent with the entered value.
+     */
+    updateValue: {
+      required: false,
+    },
   },
   name: "AppKeyboard",
   emits: ["update:modelValue"],
   setup(props: any, context: any) {
     const content = ref("");
     const activeKey = ref("");
+    const updateValueRef = toRef(props, "updateValue");
 
     const handleClick = (event: Event, callback: Function) => {
       const target = event.currentTarget as HTMLElement;
@@ -116,6 +139,12 @@ export default {
         content.value = content.value.slice(1);
       }
       context.emit("update:modelValue", content.value);
+    });
+
+    watch(updateValueRef, () => {
+      if (updateValueRef.value) {
+        content.value = updateValueRef.value;
+      }
     });
 
     watch(props, () => {
@@ -139,6 +168,12 @@ export default {
       return true;
     });
 
+    onMounted(() => {
+      if (props.modelValue) {
+        content.value = props.modelValue;
+      }
+    });
+
     return {
       content,
       tabIndex,
@@ -146,6 +181,7 @@ export default {
       canAddNumber,
       activeKey,
       handleClick,
+      Logic,
     };
   },
 };

@@ -1,6 +1,9 @@
 <template>
   <div>
-    <img :src="`/images/icons/${name}.svg`" :class="`${customClass}`" />
+    <img
+      :src="`${basePath}images/icons/${name}.${extension}`"
+      :class="`${customClass}`"
+    />
   </div>
 </template>
 
@@ -22,5 +25,14 @@ defineProps({
     type: String,
     default: "w-5 h-5",
   },
+  /**
+   * The file extension of the icon.
+   */
+  extension: {
+    type: String,
+    default: "svg",
+  },
 });
+
+const basePath = import.meta.env.VITE_APP_BASE_URL || "/";
 </script>

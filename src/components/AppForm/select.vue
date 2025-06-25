@@ -38,6 +38,13 @@
             {{ placeholder }}
           </app-normal-text>
         </template>
+        <template v-if="usePermanentFloatingLabel">
+          <app-normal-text
+            class="absolute left-4 top-[-24%] px-1 py-[2px] bg-white !text-[#616161] !font-[500] z-10"
+          >
+            {{ name }}
+          </app-normal-text>
+        </template>
         <input
           ref="select"
           :value="withKey ? valueData : textValue"
@@ -68,7 +75,7 @@
   >
     <div
       @click.stop="true"
-      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto h-[400px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
+      class="rounded-t-2xl flex flex-col space-y-2 bg-white w-full absolute overflow-y-auto min-h-[300px] max-h-[600px] bottom-0 left-0 pb-3 px-3 lg:text-sm! mdlg:text-[12px]! text-xs"
     >
       <div
         class="flex items-center justify-center sticky top-0 bg-white w-full pt-3"
@@ -84,6 +91,18 @@
         v-model="selectedKey"
         @click.stop="true"
       />
+
+      <div
+        class="!h-full w-full flex flex-row items-center justify-center flex-grow"
+        v-if="selectOptions.length == 0 && hasSearch"
+      >
+        <app-normal-text
+          :customClass="'text-center -mt-[30px]'"
+          :color="'text-gray-400'"
+        >
+          {{ searchIsLoading ? "Searching..." : searchMessage }}
+        </app-normal-text>
+      </div>
     </div>
   </app-modal>
 </template>
@@ -145,6 +164,10 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    name: {
+      type: String,
+      default: "",
+    },
     /**
      * An array of default keys to select when the component is initialized (for multi-select).
      */
@@ -196,9 +219,38 @@ export default defineComponent({
       required: false,
     },
     /**
+     * Determines whether the input is permanent floating label.
+     */
+    usePermanentFloatingLabel: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    /**
      * Determines whether the input is wrapped.
      */
     isWrapper: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Determines whether the input has a search field.
+     */
+    hasSearch: {
+      type: Boolean,
+      default: false,
+    },
+    /**
+     * Message to display when searching.
+     */
+    searchMessage: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Determines whether the search is loading.
+     */
+    searchIsLoading: {
       type: Boolean,
       default: false,
     },
@@ -247,9 +299,11 @@ export default defineComponent({
           selectOptions.value.push({
             key: item.key,
             value: `${item.value}${props.withKey ? ` (${item.key})` : ""}`,
+            altValue: item.altValue ? item.altValue : null,
             hasIcon: item.hasIcon ? item.hasIcon : false,
             extras: item.extras ? item.extras : "",
             isImage: item.isImage ? item.isImage : false,
+            extraInfo: item.extraInfo ? item.extraInfo : null,
           });
         });
       }
@@ -270,6 +324,7 @@ export default defineComponent({
     watch(props, () => {
       if (props.options) {
         OptionRef.value = props.options;
+        searchOption();
       }
       prepareSelectOptions();
     });
@@ -367,7 +422,15 @@ export default defineComponent({
     };
 
     watch(searchValue, () => {
-      searchOption();
+      if (props.hasSearch) {
+        context.emit("OnSearch", searchValue.value);
+      } else {
+        if (props.handleSearch) {
+          props.handleSearch(searchValue.value, ...props.extraSearchParams);
+        } else {
+          searchOption();
+        }
+      }
     });
 
     watch(OptionRef, () => {

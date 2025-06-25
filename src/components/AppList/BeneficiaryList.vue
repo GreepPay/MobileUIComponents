@@ -5,7 +5,7 @@
         v-for="beneficiary in dataItems"
         :key="beneficiary.id"
         @click="selectBeneficiary(beneficiary)"
-        class="flex items-center py-3 px-4 cursor-pointer rounded-md"
+        class="flex items-center py-2 mt-2 px-2 cursor-pointer rounded-md"
         :class="{
           'bg-gray-100': selectedBeneficiary?.id === beneficiary.id,
         }"
@@ -17,12 +17,12 @@
         />
 
         <div class="flex flex-1 flex-col py-0.5 px-3">
-          <app-header-text
-            customClass="!text-base leading-6 !font-medium !text-black"
+          <app-normal-text
+            customClass="leading-6 !font-[500] !text-sm !text-black"
           >
             {{ beneficiary.name }}
-          </app-header-text>
-          <app-normal-text customClass="!text-sm !text-gray-two">
+          </app-normal-text>
+          <app-normal-text customClass="  !text-gray-two">
             {{ beneficiary.description }}
           </app-normal-text>
         </div>
@@ -41,12 +41,12 @@
 
     <!-- No Data Found Message -->
     <template v-else>
-      <div class="flex items-center justify-center py-6 text-gray-500">
-        <app-normal-text
-          class="!text-base !text-center !text-gray-two !leading-6"
-        >
-          {{ noDataText }}
-        </app-normal-text>
+      <div class="w-full flex flex-col pt-2">
+        <app-empty-state
+          icon="search-normal"
+          title="No Beneficiary Found"
+          description="Search for a user to continue."
+        />
       </div>
     </template>
   </div>
@@ -57,6 +57,7 @@ import { defineComponent, PropType, ref, watch } from "vue";
 import AppAvatar from "../AppAvatar/index.vue";
 import AppIcon from "../AppIcon/index.vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
+import AppEmptyState from "../AppEmptyState";
 
 /**
  * Beneficiary List Component
@@ -85,6 +86,7 @@ export default defineComponent({
     AppNormalText,
     AppHeaderText,
     AppIcon,
+    AppEmptyState,
   },
   props: {
     dataItems: {
@@ -104,9 +106,8 @@ export default defineComponent({
       default: null,
     },
     /**
-        
-       * @default string
-       */ showStatusIcon: {
+     * @default string
+     */ showStatusIcon: {
       type: Boolean,
       default: false,
     },
@@ -121,9 +122,7 @@ export default defineComponent({
   emits: ["update:modelValue"],
   setup(props, { emit }) {
     const selectedBeneficiary = ref<Beneficiary | null>(props.modelValue);
-    const handleAddBeneficiary = () => {
-      console.log("handle hadd benefiiccary");
-    };
+    const handleAddBeneficiary = () => {};
     watch(
       () => props.modelValue,
       (newVal) => {
