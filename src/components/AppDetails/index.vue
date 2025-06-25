@@ -7,7 +7,7 @@
         :class="`flex py-4 px-1 w-full  ${
           isVertical
             ? 'flex-col space-y-1'
-            : 'items-center justify-between space-x-3'
+            : 'items-center justify-between space-x-3 flex-row'
         } ${index !== 0 && 'border-t border-[#F0F3F6]'}`"
       >
         <app-normal-text
@@ -23,8 +23,9 @@
           :class="` ${
             invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
           } !text-sm break-words`"
+          is-html
+          :htmlContent="item.content"
         >
-          {{ item.content }}
         </app-normal-text>
       </div>
     </template>
@@ -62,6 +63,10 @@ export default defineComponent({
     isVertical: {
       type: Boolean,
       default: true,
+    },
+    customClass: {
+      type: String,
+      default: "",
     },
     invertBoldness: {
       type: Boolean,

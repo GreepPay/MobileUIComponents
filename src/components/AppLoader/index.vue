@@ -6,10 +6,13 @@
         ? 'bg-black !bg-opacity-60'
         : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
     }   z-[99999999999999999]`"
+    :style="`padding-top: calc(env(safe-area-inset-top) + ${
+      currentPlatform == 'android' ? '20' : '0'
+    }px) !important;`"
     id="innerModal"
   >
     <template v-if="setup?.loading">
-      <div class="loader-container w-full absolute top-0 left-0">
+      <div :class="`loader-container w-full absolute top-0 left-0`">
         <div class="loader"></div>
       </div>
     </template>
@@ -19,6 +22,8 @@
 import { Logic } from "../../composable";
 import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import AppIcon from "../AppIcon";
+import { getPlatforms } from "@ionic/vue";
+import { computed } from "vue";
 
 export default defineComponent({
   components: {
@@ -70,10 +75,16 @@ export default defineComponent({
       }, 5000);
     };
 
+    const currentPlatform = computed(() => {
+      return getPlatforms()[0];
+    });
+
     onMounted(() => {
       if (props.setup?.isInteractive) {
         rotateMessage();
       }
+
+      console.log(currentPlatform.value);
 
       startTimeoutCounter();
     });
@@ -87,6 +98,7 @@ export default defineComponent({
       messages,
       currentMessageIndex,
       lottieContainer,
+      currentPlatform,
     };
   },
 });

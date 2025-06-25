@@ -5,9 +5,17 @@
       class="flex w-full flex-row space-x-2 items-center cursor-pointer"
     >
       <app-icon
+        v-if="variant == 'normal'"
         :name="`${selected ? 'checkbox-active' : 'checkbox'}`"
         :customClass="`h-[17px]`"
       />
+
+      <app-icon
+        v-if="variant == 'switch'"
+        :name="`${selected ? 'switch-on' : 'switch-off'}`"
+        :customClass="`h-[20px]`"
+      />
+
       <div class="flex flex-row space-x-2 items-center">
         <!-- @slot The content to display next to the checkbox. Use this slot to provide the label for the checkbox. -->
         <slot name="label" />
@@ -35,6 +43,10 @@ export default {
     modelValue: {
       type: Boolean,
       default: false,
+    },
+    variant: {
+      type: String as () => "normal" | "switch",
+      default: "normal",
     },
   },
   setup(props: any, context: any) {

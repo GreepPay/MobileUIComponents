@@ -2,7 +2,9 @@
   <div
     class="flex flex-col items-center pt-0 z-[400] w-full justify-center !font-inter fixed left-0 bottom-0 mdlg:!hidden md:!hidden !bg-white"
     :style="`
-        padding-bottom: calc(env(safe-area-inset-bottom) + 12px) !important;`"
+        padding-bottom: calc(env(safe-area-inset-bottom) + ${
+          currentPlatform == 'android' ? '16' : '12'
+        }px) !important;`"
   >
     <div :class="`w-full  flex flex-row items-center justify-between `">
       <router-link
@@ -22,11 +24,11 @@
               ? `bottom-bar/${tab.icon}-active`
               : `bottom-bar/${tab.icon}`
           "
-          :custom-class="`!h-[24px]`"
+          :custom-class="`!h-[20px]`"
         />
 
         <app-normal-text
-          :color="` !text-[12px] ${
+          :color="` !text-[11px] ${
             tabIsActive(tab.routeTag) ? '!text-primary' : '!text-[#999999]'
           } `"
           :customClass="`${tabIsActive(tab.routeTag) ? '!font-[500]' : ''}`"
@@ -40,8 +42,9 @@
 <script lang="ts">
 import AppIcon from "../AppIcon";
 import { AppNormalText } from "../AppTypography";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { Logic } from "../../composable";
+import { getPlatforms } from "@ionic/vue";
 
 export default {
   components: {
@@ -77,9 +80,14 @@ export default {
   setup() {
     const hoverTab = ref("");
 
+    const currentPlatform = computed(() => {
+      return getPlatforms()[0];
+    });
+
     return {
       hoverTab,
       Logic,
+      currentPlatform,
     };
   },
 };

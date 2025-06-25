@@ -6,7 +6,9 @@
     >
       <div
         :class="`flex flex-col space-y-2 w-full px-4  cursor-pointer   items-center justify-center mdlg:!border-l-[1px] mdlg:!border-r-[1px] mdlg:!border-gray-500 `"
-        style="padding-top: calc(env(safe-area-inset-top) + 16px)"
+        :style="`padding-top: calc(env(safe-area-inset-top) + ${
+          currentPlatform == 'android' ? '45' : '16'
+        }px)`"
         @click="close"
       >
         <div
@@ -39,9 +41,10 @@
   </Transition>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import AppIcon from "../AppIcon";
 import { AppNormalText } from "../AppTypography";
+import { getPlatforms } from "@ionic/vue";
 
 export default defineComponent({
   components: {
@@ -73,6 +76,10 @@ export default defineComponent({
       isVisible.value = false;
     };
 
+    const currentPlatform = computed(() => {
+      return getPlatforms()[0];
+    });
+
     onMounted(() => {
       isVisible.value = true;
       // setTimeout(() => {
@@ -83,6 +90,7 @@ export default defineComponent({
     return {
       isVisible,
       close,
+      currentPlatform,
     };
   },
 });

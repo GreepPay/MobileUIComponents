@@ -4,7 +4,6 @@
       :slides-per-view="slidePerView"
       :space-between="spaceBetween"
       @swiper="onSwiper"
-      :modules="modules"
       @slideChange="onSlideChange"
       :class="swiperClass"
       :direction="direction"
@@ -39,7 +38,7 @@ import { Swiper } from "swiper/vue";
 import "swiper/css";
 
 // import required modules
-import { Autoplay } from "swiper";
+// import { Autoplay } from "swiper";
 import {
   defineComponent,
   onBeforeUnmount,
@@ -152,9 +151,9 @@ export default defineComponent({
 
     const swiperInstance = ref<any>();
     const onSwiper = (swiper: any) => {
-      if (!props.autoPlay.delay) {
-        swiper.autoplay.stop();
-      }
+      // if (!props.autoPlay.delay) {
+      //   swiper.autoplay.stop();
+      // }
       swiperInstance.value = swiper;
     };
 
@@ -226,7 +225,7 @@ export default defineComponent({
       goToNextSlide,
       goToPrevSlide,
       swiperInstance,
-      modules: [Autoplay],
+      // modules: [Autoplay],
       activeSlide,
       swiperRef,
       tabIndex,

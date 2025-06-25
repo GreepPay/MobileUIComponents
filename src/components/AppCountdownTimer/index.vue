@@ -6,7 +6,7 @@
     ]"
   >
     <app-normal-text customClass="!text-[#999999]" v-if="timeLeft">
-      {{ customText }} for {{ formattedTime }}
+      {{ customText }} {{ formattedTime }}
     </app-normal-text>
 
     <app-normal-text customClass="!text-[#999999]  cursor-not-allowed" v-else>
@@ -55,7 +55,7 @@ export default defineComponent({
      */
     customText: {
       type: String,
-      default: "Available",
+      default: "Available for",
     },
     /**
      * Custom class for styling.

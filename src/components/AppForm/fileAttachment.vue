@@ -133,6 +133,12 @@ export default defineComponent({
      *  @param {string} data - The base64 data URL representing the file content.
      */
     "update:base64Data",
+    /**
+     *  Emitted when a single file is selected (when `isMultiple` is false).
+     *  Provides the file content as a base64 data URL.
+     *  @param {string} data - The base64 data URL representing the file content.
+     */
+    "update:filesAndUrl",
   ],
   name: "AppFileAttachment",
   setup(props: any, context: any) {
@@ -159,16 +165,14 @@ export default defineComponent({
     const uploadHandler = (e: any) => {
       const input = e.target;
 
-      if (props.isMultiple) {
-        files.value = input.files;
-      } else {
-        files.value = input.files;
+      files.value = input.files;
 
-        selectedFileName.value = input.files[0].name;
+      selectedFileName.value = input.files[0].name;
 
-        // create readable url
-        const fr = new FileReader();
-        if (files.value) {
+      // create readable url
+      const fr = new FileReader();
+      if (files.value) {
+        if (files.value.length == 0) {
           fr.readAsDataURL(files.value[0]);
           fr.addEventListener("load", () => {
             context.emit(
@@ -179,6 +183,41 @@ export default defineComponent({
               context.emit("update:base64Data", dataUrl);
             });
           });
+        } else {
+          const allDataLocalUrl = ref<string[]>([]);
+          const allDataBase64 = ref<string[]>([]);
+          let completedCount = 0;
+
+          for (let i = 0; i < files.value.length; i++) {
+            const file = files.value[i];
+            const reader = new FileReader();
+
+            reader.onload = (event: any) => {
+              const localFileUrl = event.target.result as string;
+              allDataLocalUrl.value.push(localFileUrl);
+              toDataURL(localFileUrl || "", (dataUrl: any) => {
+                allDataBase64.value.push(dataUrl);
+                completedCount++;
+
+                if (completedCount === files.value.length) {
+                  context.emit("update:localFileUrl", allDataLocalUrl.value);
+                  context.emit("update:base64Data", allDataBase64.value);
+
+                  const allFilesAndUrl: {
+                    url: string;
+                    rawValue: File;
+                  }[] = [];
+                  allDataBase64.value.forEach((url, index) => {
+                    allFilesAndUrl.push({ url, rawValue: files.value[index] });
+                  });
+
+                  context.emit("update:filesAndUrl", allFilesAndUrl);
+                }
+              });
+            };
+
+            reader.readAsDataURL(file);
+          }
         }
       }
     };

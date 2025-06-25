@@ -1,8 +1,8 @@
 <template>
   <div
-    class="w-full flex flex-col min-h-[210px] border-[2px] h-fit border-[#F0F3F6] rounded-[24px] py-8 px-4 justify-center items-center"
+    class="w-full flex flex-col min-h-24 border-[2px] h-fit border-[#F0F3F6] rounded-xl py-8 px-4 justify-center items-center"
   >
-    <app-icon :name="icon" custom-class="!h-[54px]" />
+    <app-icon :name="icon" custom-class="!h-[60px]" v-if="useIcon" />
 
     <div class="flex flex-col items-center justify-center px-5 pt-3">
       <app-normal-text class="!text-[#0A141E] !font-[500] !text-sm">
@@ -14,13 +14,27 @@
         {{ description }}
       </app-normal-text>
     </div>
+
+    <div
+      class="w-full flex flex-row justify-center items-center pt-4"
+      v-if="buttonData"
+    >
+      <app-button
+        variant="secondary"
+        class="!px-6 py-3"
+        @click="buttonData.action()"
+      >
+        {{ buttonData.label }}
+      </app-button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "vue";
+import { defineComponent } from "vue";
 import AppIcon from "../AppIcon";
 import { AppNormalText } from "../AppTypography";
+import AppButton from "../AppButton";
 /**
  * AppEmptyState Component
  *
@@ -31,8 +45,13 @@ export default defineComponent({
   components: {
     AppIcon,
     AppNormalText,
+    AppButton,
   },
   props: {
+    useIcon: {
+      type: Boolean,
+      default: true,
+    },
     icon: {
       type: String,
       default: "no-transaction",
@@ -45,8 +64,15 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    buttonData: {
+      type: Object as () => {
+        label: string;
+        action: Function;
+      },
+      required: false,
+    },
   },
-  setup(props) {
+  setup() {
     return {};
   },
 });

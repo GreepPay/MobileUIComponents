@@ -1,16 +1,11 @@
 <template>
   <div :class="['w-full overflow-x-auto scrollbar-hide', customClass]">
-    <div class="inline-flex items-center h-fit">
+    <div :class="['inline-flex items-center h-fit', tabsClass]">
       <app-normal-text
         v-for="(tab, index) in tabs"
         :key="index"
         @click="selectTab(tab.key)"
-        :class="[
-          'pr-4 py-2 !text-sm cursor-pointer hover:text-black whitespace-nowrap',
-          activeTab === tab.key
-            ? 'font-bold !text-[#0A141E]'
-            : '!text-[#999999] ',
-        ]"
+        :class="[getTabClass(tab.key), tabClass]"
       >
         {{ tab.label }}
       </app-normal-text>
@@ -30,9 +25,21 @@ export default defineComponent({
       type: Array as () => { key: string; label: string }[],
       required: true,
     },
+    type: {
+      type: String,
+      default: "default",
+    },
     customClass: {
       type: String,
       default: "",
+    },
+    tabsClass: {
+      type: String,
+      default: "flex-nowrap ", // flex-nowrap is default now
+    },
+    tabClass: {
+      type: String,
+      default: "flex-nowrap ", // flex-nowrap is default now
     },
     defaultTab: {
       type: String,
@@ -47,8 +54,32 @@ export default defineComponent({
       activeTab.value = key;
       emit("update:activeTab", key);
     };
+    const getTabClass = (tabKey: string) => {
+      const baseClass =
+        "px-4 py-2 cursor-pointer hover:text-black whitespace-nowrap mr-2";
 
-    return { activeTab, selectTab };
+      if (props.type === "default") {
+        return [
+          baseClass,
+          activeTab.value === tabKey
+            ? "!font-[500] !text-black"
+            : "!text-veryLightGray",
+        ];
+      }
+
+      if (props.type === "badge") {
+        return [
+          baseClass,
+          activeTab.value === tabKey
+            ? "!font-[500] !text-white !bg-black rounded-full !outline-[1.5px] !outline-black"
+            : "!text-veryLightGray border-[1.5px] rounded-full !font-[500]",
+        ];
+      }
+
+      return baseClass;
+    };
+
+    return { activeTab, selectTab, getTabClass };
   },
 });
 </script>
