@@ -4,15 +4,18 @@
     <div class="!w-3/4 bg-[#D9D9D9] flex flex-col justify-between p-4">
       <div class="w-full flex flex-col">
         <app-header-text customClass="!text-black !text-base">
-          Ticket ID: {{ ticket.saleId }}
+          {{ variant.sku }}
         </app-header-text>
         <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
-          Status: {{ ticket.status }}
+          Inventory: {{ variant.inventory ?? "N/A" }}
+        </app-normal-text>
+        <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
+          Attributes: {{ attributesText }}
         </app-normal-text>
       </div>
 
       <app-header-text customClass="!text-black !text-base">
-        ${{ ticket.price.toFixed(2) }}
+        ${{ variant.priceAdjustment.toFixed(2) }}
       </app-header-text>
     </div>
 
@@ -22,7 +25,7 @@
       :class="attributeBgColor"
     >
       <app-header-text customClass="!text-white !text-xl vertical-rl">
-        {{ ticket.ticketType }}
+        {{ variant.attributes[0] }}
       </app-header-text>
     </div>
 
@@ -39,7 +42,7 @@
 <script lang="ts">
   import { defineComponent, computed } from "vue"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
-  import { Ticket } from "@greep/logic/src/gql/graphql"
+  import { ProductVariant } from "@greep/logic/src/gql/graphql"
 
   enum BgColor {
     Green = "bg-green",
@@ -52,14 +55,14 @@
   }
 
   export default defineComponent({
-    name: "AppTicketCard",
+    name: "AppVariantCard",
     components: {
       AppHeaderText,
       AppNormalText,
     },
     props: {
-      ticket: {
-        type: Object as () => Ticket,
+      variant: {
+        type: Object as () => ProductVariant,
         required: true,
       },
       customClass: {
@@ -70,7 +73,12 @@
     setup(props) {
       const typeBgColor = computed(() => props.typeColor)
       const firstAttribute = computed(
-        () => props.ticket.attributes?.find(Boolean) || null
+        () => props.variant.attributes?.find(Boolean) || null
+      )
+      const attributesText = computed(
+        () =>
+          props.variant.attributes?.filter(Boolean).join(", ") ||
+          "No attributes"
       )
 
       const bgColorFromAttribute = (attr: string): BgColor => {
@@ -85,13 +93,15 @@
       }
 
       const attributeBgColor = computed(() =>
-        props.ticket.ticketType
-          ? bgColorFromAttribute(props.ticket.ticketType)
+        firstAttribute.value
+          ? bgColorFromAttribute(firstAttribute.value)
           : BgColor.Gray
       )
 
       return {
         typeBgColor,
+        attributesText,
+        firstAttribute,
         attributeBgColor,
       }
     },

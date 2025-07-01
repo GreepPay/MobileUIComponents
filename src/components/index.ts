@@ -42,6 +42,7 @@ import {
   AppShopCard,
   AppReviewCard,
   AppTicketDetailCard,
+  AppVariantCard,
 } from "./AppCard"
 import { AppTabs, AppMultiTabsSelector } from "./AppTabs"
 import AppToken from "./AppToken"
@@ -131,4 +132,5 @@ export {
   AppReviewCard,
   AppTicketDetailCard,
   AppFloatingIcon,
+  AppVariantCard,
 }
