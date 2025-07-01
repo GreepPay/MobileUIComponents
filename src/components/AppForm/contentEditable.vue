@@ -13,8 +13,8 @@
 </template>
 
 <script lang="ts">
-import { computed, watch } from "vue";
-import { ref, defineComponent, onMounted } from "vue";
+import { ref, defineComponent, onMounted, watch, nextTick } from "vue";
+import { Logic } from "../../composable";
 
 export default defineComponent({
   name: "AppContentEditable",
@@ -35,11 +35,17 @@ export default defineComponent({
       type: String,
       default: "",
     },
+    listenForUpdate: {
+      type: Boolean,
+      default: false,
+    },
+    isFormatted: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue", "contentChanged"],
   setup(props, context) {
-    const spanRef = ref();
-
     const editable = ref<HTMLElement | null>(null);
 
     // Track the actual content
@@ -54,45 +60,88 @@ export default defineComponent({
       return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     };
 
-    onMounted(() => {
-      if (props.defaultValue) {
-        let formattedValue = props.defaultValue;
-        if (props.type === "number" || props.type === "tel") {
-          formattedValue = formatNumber(props.defaultValue);
-        }
-        editable.value!.textContent = formattedValue;
-        content.value = formattedValue;
-      } else {
-        // editable.value!.textContent = props.placeholder;
-        // isPlaceholderVisible.value = true;
+    const applyFormatting = (value: string) => {
+      if (props.isFormatted && value.length > 1) {
+        return Logic.Common.convertToMoney(
+          value ? value.toString().replace(/,/g, "") || 0 : 0,
+          false,
+          "",
+          false
+        );
       }
+      return value;
+    };
+
+    const setContentAndPositionCursor = (newContent: string) => {
+      if (editable.value) {
+        editable.value.textContent = newContent;
+        content.value = newContent;
+        //set cursor to the end
+        nextTick(() => {
+          const range = document.createRange();
+          range.selectNodeContents(editable.value!);
+          range.collapse(false);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+        });
+      }
+    };
+
+    onMounted(() => {
+      let initialValue = props.defaultValue;
+      if (props.type === "number" || props.type === "tel") {
+        initialValue = formatNumber(props.defaultValue);
+      }
+      setContentAndPositionCursor(initialValue);
     });
 
     const handleInput = (event: any) => {
       let innerText = event.target.innerText;
-      // if (props.type === "number" || props.type === "tel") {
-      //   innerText = formatNumber(innerText);
-      // }
+      const formattedValue = props.isFormatted
+        ? applyFormatting(innerText)
+        : innerText;
 
-      context.emit("update:modelValue", innerText);
-      content.value = innerText;
-      // event.target.innerText = innerText; // Update the displayed text immediately
-      context.emit("contentChanged", innerText);
+      context.emit("update:modelValue", innerText); // Emit raw value
+      setContentAndPositionCursor(formattedValue); //set formatted value to the contenteditable
+      context.emit("contentChanged", innerText); // Emit raw value
     };
 
     const handleFocus = () => {
-      if (content.value == "\n") {
-        // isPlaceholderVisible.value = true;
-        // editable.value!.textContent = "";
-      }
+      //Placeholder will be handled by css
     };
 
     const handleBlur = () => {
-      if (content.value == "\n") {
-        // isPlaceholderVisible.value = true;
-        // editable.value!.textContent = props.placeholder;
+      //Placeholder will be handled by css
+    };
+
+    const focus = () => {
+      if (editable.value) {
+        editable.value.focus();
+        nextTick(() => {
+          const range = document.createRange();
+          range.selectNodeContents(editable.value!);
+          range.collapse(false);
+          const selection = window.getSelection();
+          selection?.removeAllRanges();
+          selection?.addRange(range);
+        });
       }
     };
+
+    watch(
+      () => props.defaultValue,
+      (newVal) => {
+        let formattedValue = newVal;
+
+        if (props.isFormatted) {
+          formattedValue = applyFormatting(newVal);
+        } else if (props.type === "number" || props.type === "tel") {
+          formattedValue = formatNumber(newVal);
+        }
+        setContentAndPositionCursor(formattedValue);
+      }
+    );
 
     const isNumber = (evt: any) => {
       if (props.type != "tel" && props.type != "number") return true;
@@ -111,12 +160,12 @@ export default defineComponent({
     };
 
     return {
-      spanRef,
       editable,
       handleInput,
       handleFocus,
       handleBlur,
       isNumber,
+      focus,
     };
   },
 });

@@ -306,6 +306,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      console.log(props.preventBackDate);
       if (props.defaultDate) {
         setCalenderDate(Logic.Common.momentInstance(props.defaultDate));
         setCurrent12Years(

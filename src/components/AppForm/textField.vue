@@ -1,5 +1,10 @@
 <template>
-  <div class="flex w-full flex-col relative space-y-[2px]">
+  <div
+    class="flex w-full flex-col relative space-y-[2px]"
+    @click.stop="
+      action ? action() : fieldType == 'date' ? (ShowCalendarModal = true) : ''
+    "
+  >
     <!-- <div
       v-if="useFloatingLabel && content.length > 0"
       class="h-[10px] w-full"
@@ -56,6 +61,16 @@
             {{ placeholder }}
           </app-normal-text>
         </template>
+
+        <template v-if="usePermanentFloatingLabel">
+          <app-normal-text
+            :class="`absolute left-4 ${
+              isTextarea ? 'top-[-10%]' : '!top-[-18%]'
+            } px-1 py-[2px] bg-white !text-[#616161] !font-[500] z-10`"
+          >
+            {{ name }}
+          </app-normal-text>
+        </template>
         <input
           v-if="!isTextarea"
           v-model="content"
@@ -68,6 +83,7 @@
           @keypress="isNumber"
           :disabled="fieldType == 'date' ? true : disabled"
           :type="fieldType == 'date' ? 'text' : fieldType"
+          :ref="(el) => (inputRef = el as HTMLInputElement)"
           :class="` text-black grow bg-transparent placeholder-gray-400 focus input w-full focus:outline-none ${inputStyle} `"
           @click.stop="
             action
@@ -89,6 +105,7 @@
           @keypress="isNumber"
           :disabled="disabled"
           :type="fieldType"
+          :ref="(el) => (textAreaRef = el as HTMLTextAreaElement)"
           :class="` text-black grow bg-transparent placeholder-gray-400 focus input w-full focus:outline-hidden ${inputStyle} `"
           :rows="textAreaRow"
         ></textarea>
@@ -132,7 +149,9 @@
         v-if="maxCharacter > 0"
         custom-class="!text-[12px] text-gray-600"
       >
-        {{ content.length }}/{{ maxCharacter }}
+        {{ Logic.Common.convertToMoney(content.length, false, "") }}/{{
+          Logic.Common.convertToMoney(maxCharacter, false, "")
+        }}
       </app-normal-text>
     </div>
 
@@ -157,7 +176,7 @@
           >
             <div
               @click.stop="true"
-              class="rounded-t-2xl mdlg:!rounded-[10px] md:!rounded-[10px] flex flex-col space-y-2 !bg-white dark:border-[1px] dark:border-gray-100 w-full absolute mdlg:!relative md:!relative overflow-y-auto h-auto max-h-auto bottom-0 left-0 pb-3 px-3 mdlg:!pb-4 md:!pb-4 lg:!text-sm mdlg:!text-[12px] text-xs"
+              class="rounded-t-2xl mdlg:!rounded-[10px] md:!rounded-[10px] flex flex-col !bg-white dark:border-[1px] dark:border-gray-100 w-full absolute mdlg:!relative md:!relative overflow-y-auto h-auto max-h-auto bottom-0 left-0 pb-3 px-3 mdlg:!pb-4 md:!pb-4 lg:!text-sm mdlg:!text-[12px] text-xs"
             >
               <div
                 class="flex items-center justify-center sticky top-0 !bg-white w-full pt-3"
@@ -168,7 +187,7 @@
               </div>
 
               <div
-                class="flex items-center justify-center sticky top-0 flex-col bg-white w-full"
+                class="flex items-center justify-center sticky top-0 flex-col bg-white w-full pt-2"
               >
                 <app-normal-text
                   custom-class="!text-xs font-semibold w-full text-left py-2"
@@ -324,6 +343,14 @@ export default defineComponent({
       required: false,
     },
     /**
+     * Determines whether the input is permanent floating label.
+     */
+    usePermanentFloatingLabel: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
+    /**
      * Determines whether to prevent back date
      */
     preventBackDate: {
@@ -335,7 +362,7 @@ export default defineComponent({
      */
     miminumDate: {
       type: String,
-      default: "",
+      default: new Date().toString(),
     },
 
     /**
@@ -727,6 +754,22 @@ export default defineComponent({
 
     const isFocused = ref(false);
 
+    const inputRef = ref<HTMLInputElement | null>(null);
+    const textAreaRef = ref<HTMLTextAreaElement | null>(null);
+
+    watch(
+      () => isFocused.value,
+      (newValue) => {
+        if (newValue) {
+          if (!props.isTextarea && inputRef.value) {
+            inputRef.value.focus();
+          } else if (props.isTextarea && textAreaRef.value) {
+            textAreaRef.value.focus();
+          }
+        }
+      }
+    );
+
     const tabIndex = Math.random();
 
     return {
@@ -744,6 +787,8 @@ export default defineComponent({
       checkValidation,
       isNumber,
       showError,
+      inputRef,
+      textAreaRef,
     };
   },
 });

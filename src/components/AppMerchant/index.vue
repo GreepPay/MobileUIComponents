@@ -23,52 +23,52 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, watch } from "vue"
-  import AppAvatar from "../AppAvatar"
-  import { AppNormalText, AppHeaderText } from "../AppTypography"
+import { defineComponent, PropType } from "vue";
+import AppAvatar from "../AppAvatar";
+import { AppNormalText, AppHeaderText } from "../AppTypography";
 
-  /**
+/**
    * Merchant Item
- 
+
   */
 
-  interface Merchant {
-    id: string | number
-    name: string
-    category: string
-    imageUrl: string
-  }
+interface Merchant {
+  id: string | number;
+  name: string;
+  category: string;
+  imageUrl: string;
+}
 
-  export default defineComponent({
-    name: "AppMerchant",
-    components: {
-      AppAvatar,
-      AppNormalText,
-      AppHeaderText,
+export default defineComponent({
+  name: "AppMerchant",
+  components: {
+    AppAvatar,
+    AppNormalText,
+    AppHeaderText,
+  },
+  props: {
+    merchant: {
+      type: Object as PropType<Merchant>,
+      required: true,
     },
-    props: {
-      merchant: {
-        type: Object as PropType<Merchant>,
-        required: true,
-      },
-      imageSize: {
-        type: Number,
-        default: 44,
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
+    imageSize: {
+      type: Number,
+      default: 44,
     },
-    emits: ["click"],
-    setup(_, { emit }) {
-      const selectMerhant = (merchant: Merchant) => {
-        emit("click", merchant)
-      }
+    customClass: {
+      type: String,
+      default: "",
+    },
+  },
+  emits: ["click"],
+  setup(_, { emit }) {
+    const selectMerhant = (merchant: Merchant) => {
+      emit("click", merchant);
+    };
 
-      return {
-        selectMerhant,
-      }
-    },
-  })
+    return {
+      selectMerhant,
+    };
+  },
+});
 </script>

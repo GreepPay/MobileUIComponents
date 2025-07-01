@@ -35,10 +35,14 @@
               </span>
             </div>
 
-            <app-icon name="close-circle" @click="closeModal()" />
+            <app-icon
+              name="close-circle"
+              @click="closeModal()"
+              custom-class="h-[24px]"
+            />
           </div>
 
-          <div :class="`py-4 px-4 ${contentClass}`">
+          <div :class="`px-4 py-4 ${contentClass}`">
             <slot />
           </div>
 
@@ -54,6 +58,7 @@
 <script lang="ts">
   import {
     computed,
+    defineComponent,
     onMounted,
     onUnmounted,
     ref,
@@ -74,12 +79,12 @@
   /**
    *  Modal component that displays content in an overlay.
    */
-  export default {
+  export default defineComponent({
+    name: "AppModal",
     components: {
       AppHeaderText,
       AppIcon,
     },
-    name: "AppModal",
     props: {
       /**
        * Determines whether the modal can be closed by clicking outside or pressing the close icon.
@@ -88,55 +93,65 @@
         type: Boolean,
         default: true,
       },
-      hasBackButton: {
-        type: Boolean,
-        default: false,
-      },
-      /**
-       * Title of the modal, displayed in the header.
-       */
-      title: {
-        type: String,
-        default: "",
-      },
-      /**
-       * Function to execute when the modal is closed.
-       * @required
-       */ close: {
-        type: Function,
-        required: true,
-      },
-      /**
-       * @required
-       */
-      hasTitle: {
-        type: Boolean,
-        required: false,
-      },
-      /**
-       * Custom CSS classes to apply to the modal container.
-       */
-      customClass: {
-        type: String,
-        default: "",
-      },
-      contentClass: {
-        type: String,
-        default: "",
-      },
-      titleClass: {
-        type: String,
-        default: "",
-      },
-      /**
-       * Custom CSS classes to apply to the inner modal container.
-       */
-      innerClass: {
-        type: String,
-        default: "",
+      name: "AppModal",
+      props: {
+        /**
+         * Determines whether the modal can be closed by clicking outside or pressing the close icon.
+         */
+        canClose: {
+          type: Boolean,
+          default: true,
+        },
+        hasBackButton: {
+          type: Boolean,
+          default: false,
+        },
+        /**
+         * Title of the modal, displayed in the header.
+         */
+        title: {
+          type: String,
+          default: "",
+        },
+        /**
+         * Function to execute when the modal is closed.
+         * @required
+         */ close: {
+          type: Function,
+          required: true,
+        },
+        /**
+         * @required
+         */
+        hasTitle: {
+          type: Boolean,
+          required: false,
+        },
+        /**
+         * Custom CSS classes to apply to the modal container.
+         */
+        customClass: {
+          type: String,
+          default: "",
+        },
+        contentClass: {
+          type: String,
+          default: "",
+        },
+        titleClass: {
+          type: String,
+          default: "",
+        },
+        /**
+         * Custom CSS classes to apply to the inner modal container.
+         */
+        innerClass: {
+          type: String,
+          default: "",
+        },
       },
     },
-    setup(props: any) {
+    setup(props) {
       const closeModal = () => {
         if (props.canClose) {
           props.close()
@@ -170,5 +185,5 @@
         mobileFullHeight,
       }
     },
-  }
+  })
 </script>

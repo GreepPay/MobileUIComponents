@@ -30,7 +30,7 @@ export interface SelectOption {
   isImage?: boolean;
   isForm?: boolean;
   useSlot?: boolean;
-  extraInfo: any;
+  extraInfo?: any;
   formField?: {
     type: "text" | "tel" | "select";
     placeholder: string;
