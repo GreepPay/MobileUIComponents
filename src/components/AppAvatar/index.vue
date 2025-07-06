@@ -9,8 +9,8 @@
     }"
   >
     <img
-      v-if="src"
-      :src="src"
+      v-if="imageUrl"
+      :src="imageUrl"
       :alt="alt"
       class="w-full h-full object-cover"
       @error="handleImageError"
@@ -89,6 +89,10 @@
       },
     },
     setup(props) {
+      const imageUrl = computed(() => {
+        if (!props.src) return "/images/profile-image.svg"
+        else return props.src
+      })
       const textSize = computed(() => {
         if (props.size < 32) return "xs"
         if (props.size < 48) return "sm"
@@ -114,6 +118,7 @@
       return {
         textSize,
         initials,
+        imageUrl,
         handleImageError,
       }
     },

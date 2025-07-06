@@ -4,18 +4,15 @@
     <div class="!w-3/4 bg-[#D9D9D9] flex flex-col justify-between p-4">
       <div class="w-full flex flex-col">
         <app-header-text customClass="!text-black !text-base">
-          {{ variant.sku }}
+          ID: {{ variant.id }}
         </app-header-text>
         <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
-          Inventory: {{ variant.inventory ?? "N/A" }}
-        </app-normal-text>
-        <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
-          Attributes: {{ attributesText }}
+          Ticket type: {{ variant.sku }}
         </app-normal-text>
       </div>
 
       <app-header-text customClass="!text-black !text-base">
-        ${{ variant.priceAdjustment.toFixed(2) }}
+        {{ currencySymbol }} {{ variant.priceAdjustment }}
       </app-header-text>
     </div>
 
@@ -25,7 +22,7 @@
       :class="attributeBgColor"
     >
       <app-header-text customClass="!text-white !text-xl vertical-rl">
-        {{ variant.attributes[0] }}
+        {{ variant.sku }}
       </app-header-text>
     </div>
 
@@ -69,9 +66,12 @@
         type: String,
         default: "",
       },
+      currencySymbol: {
+        type: String,
+        default: "₦",
+      },
     },
     setup(props) {
-      const typeBgColor = computed(() => props.typeColor)
       const firstAttribute = computed(
         () => props.variant.attributes?.find(Boolean) || null
       )
@@ -81,25 +81,22 @@
           "No attributes"
       )
 
-      const bgColorFromAttribute = (attr: string): BgColor => {
-        const normalized = attr.toLowerCase()
-        if (normalized.includes("vip")) return BgColor.Purple
-        if (normalized.includes("regular")) return BgColor.Green
-        if (normalized.includes("premium")) return BgColor.Blue
-        if (normalized.includes("gold")) return BgColor.Orange
-        if (normalized.includes("online")) return BgColor.BlueGreen
-        if (normalized.includes("in-person")) return BgColor.DarkGreen
+      const bgColorFromAttribute = (): BgColor => {
+        const sku = props.variant.sku.toLowerCase()
+        if (sku.includes("regular")) return BgColor.Green
+        if (sku.includes("vvip+")) return BgColor.Orange
+        if (sku.includes("vvip")) return BgColor.Blue
+        if (sku.includes("vip")) return BgColor.Purple
+        if (sku.includes("online")) return BgColor.BlueGreen
+        if (sku.includes("in-person")) return BgColor.DarkGreen
         return BgColor.Gray
       }
 
       const attributeBgColor = computed(() =>
-        firstAttribute.value
-          ? bgColorFromAttribute(firstAttribute.value)
-          : BgColor.Gray
+        props.variant.sku ? bgColorFromAttribute() : BgColor.Gray
       )
 
       return {
-        typeBgColor,
         attributesText,
         firstAttribute,
         attributeBgColor,

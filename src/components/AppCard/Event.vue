@@ -5,7 +5,7 @@
       :photo-url="mappedEvents.image_url"
     >
       <div
-        class="relative w-full h-full rounded-2xl bg-black text-white bg-[#0a141e70] truncate"
+        class="relative w-full h-full rounded-2xl text-white bg-[#0a141e70] truncate"
       >
         <!-- <div
           class="absolute px-4 top-4 flex items-center w-full space-x-2"
@@ -54,7 +54,6 @@
             >
               <span v-html="mappedEvents.location || mappedEvents.description">
               </span>
-              <!-- {{ mappedEvents.location || mappedEvents.description }} -->
             </app-normal-text>
           </div>
         </div>

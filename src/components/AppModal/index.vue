@@ -93,62 +93,52 @@
         type: Boolean,
         default: true,
       },
-      name: "AppModal",
-      props: {
-        /**
-         * Determines whether the modal can be closed by clicking outside or pressing the close icon.
-         */
-        canClose: {
-          type: Boolean,
-          default: true,
-        },
-        hasBackButton: {
-          type: Boolean,
-          default: false,
-        },
-        /**
-         * Title of the modal, displayed in the header.
-         */
-        title: {
-          type: String,
-          default: "",
-        },
-        /**
-         * Function to execute when the modal is closed.
-         * @required
-         */ close: {
-          type: Function,
-          required: true,
-        },
-        /**
-         * @required
-         */
-        hasTitle: {
-          type: Boolean,
-          required: false,
-        },
-        /**
-         * Custom CSS classes to apply to the modal container.
-         */
-        customClass: {
-          type: String,
-          default: "",
-        },
-        contentClass: {
-          type: String,
-          default: "",
-        },
-        titleClass: {
-          type: String,
-          default: "",
-        },
-        /**
-         * Custom CSS classes to apply to the inner modal container.
-         */
-        innerClass: {
-          type: String,
-          default: "",
-        },
+      hasBackButton: {
+        type: Boolean,
+        default: false,
+      },
+      /**
+       * Title of the modal, displayed in the header.
+       */
+      title: {
+        type: String,
+        default: "",
+      },
+      /**
+       * Function to execute when the modal is closed.
+       * @required
+       */ close: {
+        type: Function,
+        required: true,
+      },
+      /**
+       * @required
+       */
+      hasTitle: {
+        type: Boolean,
+        required: false,
+      },
+      /**
+       * Custom CSS classes to apply to the modal container.
+       */
+      customClass: {
+        type: String,
+        default: "",
+      },
+      contentClass: {
+        type: String,
+        default: "",
+      },
+      titleClass: {
+        type: String,
+        default: "",
+      },
+      /**
+       * Custom CSS classes to apply to the inner modal container.
+       */
+      innerClass: {
+        type: String,
+        default: "",
       },
     },
     setup(props) {
