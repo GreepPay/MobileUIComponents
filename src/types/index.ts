@@ -65,6 +65,11 @@ export interface Currency {
   loading?: boolean;
   country_code?: string;
   icon_extension?: string;
+  card_payment?: {
+    min: number;
+    max: number;
+    fee: string;
+  };
   payin_fees?: {
     type: "percentage" | "fixed";
     value: number;

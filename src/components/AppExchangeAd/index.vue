@@ -1,6 +1,6 @@
 <template>
   <div
-    class="px-4 py-4 mb-3 border-[1.5px] rounded-[12px] border-[#E0E2E4] flex flex-col"
+    class="px-4 py-4 mb-4 border-[1.5px] rounded-[12px] border-[#E0E2E4] flex flex-col"
   >
     <div
       class="flex flex-row items-center pb-3 mb-3 border-b-[1px] border-[#F0F3F6]"
@@ -60,13 +60,14 @@
           <app-normal-text class="!font-semibold !line-clamp-1">
             {{ item.trader.name }}
           </app-normal-text>
-          <div class="flex flex-row space-x-1 items-center">
+          <div class="flex flex-row items-center !pt-[2px]">
             <app-normal-text class="!text-gray-500 !line-clamp-1">
               {{ item.trader.no_of_trades }} trade{{
                 parseFloat(item.trader.no_of_trades) > 1 ? "s" : ""
               }}
             </app-normal-text>
-            <span class="h-[4px] w-[4px] rounded-full !bg-gray-500"> </span>
+            <span class="h-[4px] w-[4px] rounded-full !bg-gray-500 mx-2">
+            </span>
             <app-normal-text class="!text-gray-500 !line-clamp-1">
               {{ item.trader.success_rate }} success
             </app-normal-text>

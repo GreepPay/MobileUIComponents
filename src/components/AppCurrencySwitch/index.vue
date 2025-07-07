@@ -76,10 +76,8 @@
               :class="`!text-left ${
                 currencyIsSelected(defaultCurrency) ? 'font-semibold' : ''
               }`"
-              >{{ defaultCurrency.name }} ({{
-                defaultCurrency.symbol
-              }})</app-normal-text
-            >
+              >{{ defaultCurrency.name }}
+            </app-normal-text>
           </div>
 
           <div class="flex flex-row justify-end" v-if="defaultCurrency.loading">
@@ -121,8 +119,8 @@
               :class="`!text-left ${
                 currencyIsSelected(currency) ? 'font-semibold' : ''
               }`"
-              >{{ currency.name }} ({{ currency.symbol }})</app-normal-text
-            >
+              >{{ currency.name }}
+            </app-normal-text>
           </div>
 
           <div class="flex flex-row justify-end" v-if="currency.loading">

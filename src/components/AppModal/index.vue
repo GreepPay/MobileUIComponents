@@ -6,21 +6,21 @@
         :style="`height: ${
           mobileFullHeight ? mobileFullHeight.height : ''
         }; z-index: 9999999999999999;`"
-        @click="closeModal()"
+        @click="canClose ? closeModal() : null"
       >
         <div
-          :class="`w-full bg-white rounded-t-[20px]  min-h-[100px] relative max-h-[60%] ${innerClass}`"
+          :class="`w-full bg-white !rounded-t-[20px]  min-h-[100px] relative max-h-[60%] ${innerClass}`"
           @click.stop="null"
         >
           <div
-            class="px-4 py-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white"
+            class="px-4 py-4 flex items-center gap-4 border-b-[1.5px] w-full sticky top-0"
             v-if="hasTitle"
           >
             <div class="!flex-1 flex items-center">
               <app-icon
                 v-if="hasBackButton"
                 name="arrow-left"
-                @click="closeModal()"
+                @click.stop="closeModal()"
                 enter-class="flex"
               />
 
@@ -36,7 +36,7 @@
 
             <app-icon
               name="close-circle"
-              @click="closeModal()"
+              @click.stop="closeModal()"
               custom-class="h-[24px]"
             />
           </div>
@@ -135,7 +135,7 @@ export default defineComponent({
   },
   setup(props) {
     const closeModal = () => {
-      if (props.canClose) {
+      if (props.close) {
         props.close();
       }
     };
