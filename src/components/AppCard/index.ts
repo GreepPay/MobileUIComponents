@@ -9,6 +9,10 @@ import AppPaymentMethodCard from "./PaymentMethod.vue"
 import AppMerchantCard from "./Merchant.vue"
 import AppTicketCard from "./Ticket.vue"
 import AppOrderCard from "./Order.vue"
+import AppShopCard from "./Shop.vue"
+import AppReviewCard from "./Review.vue"
+import AppTicketDetailCard from "./TicketDetail.vue"
+import AppVariantCard from "./Variant.vue"
 
 export {
   AppCard,
@@ -22,4 +26,8 @@ export {
   AppMerchantCard,
   AppTicketCard,
   AppOrderCard,
+  AppShopCard,
+  AppReviewCard,
+  AppTicketDetailCard,
+  AppVariantCard,
 }

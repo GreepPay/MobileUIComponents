@@ -21,7 +21,7 @@
           <slot />
         </div>
       </template>
-      <div v-else class="py-4 !pt-2">
+      <div v-else class="p-4 !pt-2">
         <app-empty-state
           :title="emptyTitle"
           :description="emptyDescription"
