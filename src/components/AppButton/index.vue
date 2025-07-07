@@ -63,78 +63,78 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue";
+  import { defineComponent, PropType } from "vue"
 
-/**
- *  Button Component
- *
- *  This component is a reusable button with customizable styling.
- */
+  /**
+   *  Button Component
+   *
+   *  This component is a reusable button with customizable styling.
+   */
 
-export default defineComponent({
-  props: {
-    /**
-     * The variant style to apply to the button.
-     * @values 'primary' | 'secondary' | 'primary-white' | 'text'
-     */
-    variant: {
-      type: String as PropType<
-        "primary" | "secondary" | "primary-white" | "text"
-      >,
-      default: "primary",
-      validator: (value: string) =>
-        ["primary", "secondary", "primary-white", "text"].includes(value),
-    },
-    /**
-     * Whether to show the button in outlined style
-     */
-    outlined: {
-      type: Boolean,
-      default: false,
-    },
-    /**
-     * Whether the button is disabled
-     */
-    disabled: {
-      type: Boolean,
-      default: false,
-    },
-    /**
-     * Whether to show a loading spinner
-     */
-    loading: {
-      type: Boolean,
-      default: false,
-    },
-    /**
-     * Custom CSS classes to apply to the button
-     */
-    customClass: {
-      type: String,
-      default: "",
-    },
-    /**
-     * Whether the button should be rounded
-     */
-    rounded: {
-      type: Boolean,
-      default: true,
-    },
-    /**
-     * If true, the button will only contain an icon and will be fully rounded
-     */
-    iconOnly: {
-      type: Boolean,
-      default: false,
-    },
+  export default defineComponent({
+    props: {
+      /**
+       * The variant style to apply to the button.
+       * @values 'primary' | 'secondary' | 'primary-white' | 'text'
+       */
+      variant: {
+        type: String as PropType<
+          "primary" | "secondary" | "primary-white" | "text"
+        >,
+        default: "primary",
+        validator: (value: string) =>
+          ["primary", "secondary", "primary-white", "text"].includes(value),
+      },
+      /**
+       * Whether to show the button in outlined style
+       */
+      outlined: {
+        type: Boolean,
+        default: false,
+      },
+      /**
+       * Whether the button is disabled
+       */
+      disabled: {
+        type: Boolean,
+        default: false,
+      },
+      /**
+       * Whether to show a loading spinner
+       */
+      loading: {
+        type: Boolean,
+        default: false,
+      },
+      /**
+       * Custom CSS classes to apply to the button
+       */
+      customClass: {
+        type: String,
+        default: "",
+      },
+      /**
+       * Whether the button should be rounded
+       */
+      rounded: {
+        type: Boolean,
+        default: true,
+      },
+      /**
+       * If true, the button will only contain an icon and will be fully rounded
+       */
+      iconOnly: {
+        type: Boolean,
+        default: false,
+      },
 
-    /**
-     * Custom CSS classes to apply to the loading spinner
-     */
-    loadingClass: {
-      type: String,
-      default: "text-white",
+      /**
+       * Custom CSS classes to apply to the loading spinner
+       */
+      loadingClass: {
+        type: String,
+        default: "text-white",
+      },
     },
-  },
-});
+  })
 </script>

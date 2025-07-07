@@ -2,6 +2,26 @@ import { Logic } from "@greep/logic"
 import { Product } from "@greep/logic/src/gql/graphql"
 import { formatRichText } from "./utils"
 
+interface EventTicket {
+  ticket_name: string
+  name: string
+  price: string
+  color: string
+  time: string
+  date: string
+}
+
+interface Event {
+  images: { url: string }[]
+  name: string
+  event_date: string
+  event_time: string
+  location: string
+  place: string
+  tickets: EventTicket[]
+  description: string
+}
+
 interface EventCard {
   image_url: string
   title: string
@@ -11,15 +31,14 @@ interface EventCard {
   uuid: string | number
 }
 
-const mapProductToEventCard = (
-  product: Product,
-  currencies: { code: string; symbol: string }[]
-): EventCard | null => {
-  const image =
-    product.images?.find((img) => img.isPrimary) || product.images?.[0]
+const mapProductToEventCard = (product: Product): Event | null => {
+  const productImages: {
+    url: string
+    alt: string
+  }[] = JSON.parse(product.images)
 
-  const currencySymbol =
-    currencies.find((c) => c.code === product.currency)?.symbol || ""
+  // const currencySymbol =
+  //   currencies.find((c) => c.code === product.currency)?.symbol || ""
 
   const productVariants = product.variants || []
   const lowestPrice =
