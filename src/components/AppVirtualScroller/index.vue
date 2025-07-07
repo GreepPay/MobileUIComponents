@@ -28,150 +28,152 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, toRef } from "vue";
-import { Logic } from "../../composable";
-import { PaginatorInfo } from "@greep/logic/src/gql/graphql";
+  import { defineComponent, onMounted, ref, toRef } from "vue"
+  import { Logic } from "../../composable"
+  import { PaginatorInfo } from "@greep/logic/src/gql/graphql"
 
-export default defineComponent({
-  components: {},
-  props: {
-    data: {
-      type: Array as () => any[],
-      required: true,
+  export default defineComponent({
+    components: {},
+    props: {
+      data: {
+        type: Array as () => any[],
+        required: true,
+      },
+      pagination: {
+        type: Object as () => PaginatorInfo | undefined,
+        required: true,
+      },
+      fetchMore: {
+        type: Function as unknown as () => (
+          nextPage: number
+        ) => Promise<boolean | undefined>,
+        required: true,
+      },
+      fetchNew: {
+        type: Function as unknown as () => () => Promise<boolean | undefined>,
+        required: false,
+      },
+      containerClass: {
+        type: String as () => string,
+        default: "",
+      },
+      direction: {
+        type: String as () => "horizontal" | "vertical",
+        default: "vertical",
+      },
     },
-    pagination: {
-      type: Object as () => PaginatorInfo | undefined,
-      required: true,
-    },
-    fetchMore: {
-      type: Function as unknown as () => (
-        nextPage: number
-      ) => Promise<boolean | undefined>,
-      required: true,
-    },
-    fetchNew: {
-      type: Function as unknown as () => () => Promise<boolean | undefined>,
-      required: false,
-    },
-    containerClass: {
-      type: String as () => string,
-      default: "",
-    },
-    direction: {
-      type: String as () => "horizontal" | "vertical",
-      default: "vertical",
-    },
-  },
-  emits: ["update:modelValue"],
-  name: "AppVirtualScroller",
-  setup(props, context) {
-    const uniqueId = Logic.Common.makeid(16);
-    const contentLoading = ref(false);
-    const muteFetchMore = ref(false);
+    emits: ["update:modelValue"],
+    name: "AppVirtualScroller",
+    setup(props, context) {
+      const uniqueId = Logic.Common.makeid(16)
+      const contentLoading = ref(false)
+      const muteFetchMore = ref(false)
 
-    const onScrolledToEnd = (event: [IntersectionObserverEntry]) => {
-      if (muteFetchMore.value) {
-        return;
-      }
+      const onScrolledToEnd = (event: [IntersectionObserverEntry]) => {
+        if (muteFetchMore.value) {
+          return
+        }
 
-      const observer = event[0];
+        const observer = event[0]
 
-      if (observer) {
-        if (observer.isIntersecting) {
-          const currentPage = props.pagination?.currentPage || 0;
-          const totalPage = props.pagination?.lastPage || 0;
+        if (observer) {
+          if (observer.isIntersecting) {
+            const currentPage = props.pagination?.currentPage || 0
+            const totalPage = props.pagination?.lastPage || 0
 
-          let nextPage = currentPage;
+            let nextPage = currentPage
 
-          if (currentPage < totalPage) {
-            nextPage += 1;
+            if (currentPage < totalPage) {
+              nextPage += 1
+            } else {
+              nextPage = -1
+            }
+
+            if (nextPage > 1) {
+              if (contentLoading.value) {
+                return
+              }
+              contentLoading.value = true
+
+              if (props.fetchMore) {
+                props.fetchMore(nextPage).then((responseData) => {
+                  if (responseData) {
+                    contentLoading.value = false
+                  }
+                })
+              }
+            }
           } else {
-            nextPage = -1;
+            //  It is not visible
           }
-
-          if (nextPage > 1) {
-            if (contentLoading.value) {
-              return;
-            }
-            contentLoading.value = true;
-
-            if (props.fetchMore) {
-              props.fetchMore(nextPage).then((responseData) => {
-                if (responseData) {
-                  contentLoading.value = false;
-                }
-              });
-            }
-          }
-        } else {
-          // console.log("It is not visible");
         }
       }
-    };
 
-    const createObserver = () => {
-      const options = {
-        root: null, // Use the viewport as the root
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the target is visible
-      };
+      const createObserver = () => {
+        const options = {
+          root: null, // Use the viewport as the root
+          rootMargin: "0px",
+          threshold: 0.1, // Trigger when 10% of the target is visible
+        }
 
-      const observer = new IntersectionObserver(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        onScrolledToEnd,
-        options
-      );
-      const targetElement = document.getElementById(`bottomAnchor-${uniqueId}`);
-      if (targetElement) {
-        observer.observe(targetElement);
+        const observer = new IntersectionObserver(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          onScrolledToEnd,
+          options
+        )
+        const targetElement = document.getElementById(
+          `bottomAnchor-${uniqueId}`
+        )
+        if (targetElement) {
+          observer.observe(targetElement)
+        }
       }
-    };
 
-    const createHorizontalObserver = () => {
-      const options = {
-        root: null, // Use the viewport as the root
-        rootMargin: "0px",
-        threshold: 0.1, // Trigger when 10% of the target is visible
-      };
+      const createHorizontalObserver = () => {
+        const options = {
+          root: null, // Use the viewport as the root
+          rootMargin: "0px",
+          threshold: 0.1, // Trigger when 10% of the target is visible
+        }
 
-      const observer = new IntersectionObserver(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        onScrolledToEnd,
-        options
-      );
-      const targetElement = document.getElementById(`sideAnchor-${uniqueId}`);
-      if (targetElement) {
-        observer.observe(targetElement);
+        const observer = new IntersectionObserver(
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          onScrolledToEnd,
+          options
+        )
+        const targetElement = document.getElementById(`sideAnchor-${uniqueId}`)
+        if (targetElement) {
+          observer.observe(targetElement)
+        }
       }
-    };
 
-    const resetList = () => {
-      contentLoading.value = true;
-      muteFetchMore.value = true;
-      if (props.fetchNew) {
-        props.fetchNew().then((responseData) => {
-          if (responseData) {
-            contentLoading.value = false;
-            muteFetchMore.value = false;
-          }
-        });
+      const resetList = () => {
+        contentLoading.value = true
+        muteFetchMore.value = true
+        if (props.fetchNew) {
+          props.fetchNew().then((responseData) => {
+            if (responseData) {
+              contentLoading.value = false
+              muteFetchMore.value = false
+            }
+          })
+        }
       }
-    };
 
-    onMounted(() => {
-      setTimeout(() => {
-        createObserver();
-        createHorizontalObserver();
-      }, 400);
-    });
+      onMounted(() => {
+        setTimeout(() => {
+          createObserver()
+          createHorizontalObserver()
+        }, 400)
+      })
 
-    return {
-      uniqueId,
-      contentLoading,
-      resetList,
-    };
-  },
-});
+      return {
+        uniqueId,
+        contentLoading,
+        resetList,
+      }
+    },
+  })
 </script>

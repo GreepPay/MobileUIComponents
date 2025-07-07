@@ -23,7 +23,7 @@
     <div
       class="w-1/4 flex justify-center items-center"
       :style="
-        variant.color ? `background: ${variant.color};` : `background: #333;`
+        variant.color ? `background: ${variant.color};` : `background: #009DE3;`
       "
     >
       <app-header-text customClass="!text-white !text-xl vertical-rl">
@@ -42,7 +42,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, computed } from "vue"
+  import { defineComponent } from "vue"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
 
   export default defineComponent({
@@ -61,36 +61,9 @@
         default: "",
       },
     },
+
     setup() {
-      // const firstAttribute = computed(
-      //   () => props.variant.attributes?.find(Boolean) || null
-      // )
-      // const attributesText = computed(
-      //   () =>
-      //     props.variant.attributes?.filter(Boolean).join(", ") ||
-      //     "No attributes"
-      // )
-
-      // const bgColorFromAttribute = (): BgColor => {
-      //   const sku = props.variant.sku.toLowerCase()
-      //   if (sku.includes("regular")) return BgColor.Green
-      //   if (sku.includes("vvip+")) return BgColor.Orange
-      //   if (sku.includes("vvip")) return BgColor.Blue
-      //   if (sku.includes("vip")) return BgColor.Purple
-      //   if (sku.includes("online")) return BgColor.BlueGreen
-      //   if (sku.includes("in-person")) return BgColor.DarkGreen
-      //   return BgColor.Gray
-      // }
-
-      // const attributeBgColor = computed(() =>
-      //   props.variant.sku ? bgColorFromAttribute() : BgColor.Gray
-      // )
-
-      return {
-        // attributesText,
-        // firstAttribute,
-        // attributeBgColor,
-      }
+      return {}
     },
   })
 </script>

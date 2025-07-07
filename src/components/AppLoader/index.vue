@@ -83,8 +83,7 @@ export default defineComponent({
       if (props.setup?.isInteractive) {
         rotateMessage();
       }
-
-      console.log(currentPlatform.value);
+ 
 
       startTimeoutCounter();
     });
