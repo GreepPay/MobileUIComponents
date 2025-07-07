@@ -4,25 +4,30 @@
     <div class="!w-3/4 bg-[#D9D9D9] flex flex-col justify-between p-4">
       <div class="w-full flex flex-col">
         <app-header-text customClass="!text-black !text-base">
-          ID: {{ variant.id }}
+          {{ variant.name }}
         </app-header-text>
         <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
-          Ticket type: {{ variant.sku }}
+          {{ variant.date }}
+        </app-normal-text>
+        <app-normal-text customClass="!text-gray-two !font-medium !text-sm">
+          {{ variant.time }}
         </app-normal-text>
       </div>
 
       <app-header-text customClass="!text-black !text-base">
-        {{ currencySymbol }} {{ variant.priceAdjustment }}
+        {{ variant.mappedPrice }}
       </app-header-text>
     </div>
 
     <!-- Ticket Type -->
     <div
       class="w-1/4 flex justify-center items-center"
-      :class="attributeBgColor"
+      :style="
+        variant.color ? `background: ${variant.color};` : `background: #333;`
+      "
     >
       <app-header-text customClass="!text-white !text-xl vertical-rl">
-        {{ variant.sku }}
+        {{ variant.ticket_name }}
       </app-header-text>
     </div>
 
@@ -39,17 +44,6 @@
 <script lang="ts">
   import { defineComponent, computed } from "vue"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
-  import { ProductVariant } from "@greep/logic/src/gql/graphql"
-
-  enum BgColor {
-    Green = "bg-green",
-    Purple = "bg-purple",
-    Orange = "bg-orange",
-    DarkGreen = "bg-dark-green",
-    Blue = "bg-blue",
-    BlueGreen = "bg-blue-green",
-    Gray = "bg-gray",
-  }
 
   export default defineComponent({
     name: "AppVariantCard",
@@ -59,47 +53,43 @@
     },
     props: {
       variant: {
-        type: Object as () => ProductVariant,
+        type: Object as () => any,
         required: true,
       },
       customClass: {
         type: String,
         default: "",
       },
-      currencySymbol: {
-        type: String,
-        default: "₦",
-      },
     },
-    setup(props) {
-      const firstAttribute = computed(
-        () => props.variant.attributes?.find(Boolean) || null
-      )
-      const attributesText = computed(
-        () =>
-          props.variant.attributes?.filter(Boolean).join(", ") ||
-          "No attributes"
-      )
+    setup() {
+      // const firstAttribute = computed(
+      //   () => props.variant.attributes?.find(Boolean) || null
+      // )
+      // const attributesText = computed(
+      //   () =>
+      //     props.variant.attributes?.filter(Boolean).join(", ") ||
+      //     "No attributes"
+      // )
 
-      const bgColorFromAttribute = (): BgColor => {
-        const sku = props.variant.sku.toLowerCase()
-        if (sku.includes("regular")) return BgColor.Green
-        if (sku.includes("vvip+")) return BgColor.Orange
-        if (sku.includes("vvip")) return BgColor.Blue
-        if (sku.includes("vip")) return BgColor.Purple
-        if (sku.includes("online")) return BgColor.BlueGreen
-        if (sku.includes("in-person")) return BgColor.DarkGreen
-        return BgColor.Gray
-      }
+      // const bgColorFromAttribute = (): BgColor => {
+      //   const sku = props.variant.sku.toLowerCase()
+      //   if (sku.includes("regular")) return BgColor.Green
+      //   if (sku.includes("vvip+")) return BgColor.Orange
+      //   if (sku.includes("vvip")) return BgColor.Blue
+      //   if (sku.includes("vip")) return BgColor.Purple
+      //   if (sku.includes("online")) return BgColor.BlueGreen
+      //   if (sku.includes("in-person")) return BgColor.DarkGreen
+      //   return BgColor.Gray
+      // }
 
-      const attributeBgColor = computed(() =>
-        props.variant.sku ? bgColorFromAttribute() : BgColor.Gray
-      )
+      // const attributeBgColor = computed(() =>
+      //   props.variant.sku ? bgColorFromAttribute() : BgColor.Gray
+      // )
 
       return {
-        attributesText,
-        firstAttribute,
-        attributeBgColor,
+        // attributesText,
+        // firstAttribute,
+        // attributeBgColor,
       }
     },
   })

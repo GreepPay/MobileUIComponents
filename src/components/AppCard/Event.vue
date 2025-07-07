@@ -2,7 +2,7 @@
   <div class="bg-white flex flex-col items-center min-w-[80vw] truncate">
     <app-image-loader
       class="w-full justify-between relative bg-white top-0 z-10 h-[420px] rounded-2xl truncate"
-      :photo-url="mappedEvents.image_url"
+      :photo-url="event.image_url"
     >
       <div
         class="relative w-full h-full rounded-2xl text-white bg-[#0a141e70] truncate"
@@ -30,18 +30,18 @@
             <app-header-text
               customClass="leading-6 !text-sm !text-white truncate"
             >
-              {{ mappedEvents.title }}
+              {{ event.name }}
             </app-header-text>
 
             <div class="flex items-center truncate">
               <app-normal-text
-                v-for="(text, index) in mappedEvents.sub_titles"
+                v-for="(text, index) in event.sub_titles"
                 :key="index"
                 customClass="leading-6 !text-xxs !text-white"
               >
                 {{ text }}
                 <span
-                  v-if="index < mappedEvents.sub_titles.length - 1"
+                  v-if="index < event.sub_titles.length - 1"
                   class="!text-white px-2"
                 >
                   ●
@@ -52,8 +52,7 @@
             <app-normal-text
               customClass="leading-6 !text-xxs !text-white truncate pr-4"
             >
-              <span v-html="mappedEvents.location || mappedEvents.description">
-              </span>
+              {{ event.location }}
             </app-normal-text>
           </div>
         </div>
@@ -67,15 +66,13 @@
    * AppEventCard
    *
    * Reusable event showcase card.
-   * Displays background image, prices, title, location, and featured status.
+   * Displays background image, prices, name, location, and featured status.
    */
 
-  import { defineComponent, computed } from "vue"
+  import { defineComponent } from "vue"
   import AppImageLoader from "../AppImageLoader"
   import AppIcon from "../AppIcon"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
-  import { Product } from "@greep/logic/src/gql/graphql"
-  import { mapProductToEventCard, EventCard } from "../../utils/events"
 
   export default defineComponent({
     name: "AppEventCard",
@@ -87,26 +84,16 @@
     },
     props: {
       event: {
-        type: Object as () => Product,
+        type: Object as () => any,
         required: true,
       },
       showFeaturedText: {
         type: Boolean,
         default: false,
       },
-      currencies: {
-        type: Array as () => { code: string; symbol: string }[],
-        required: true,
-      },
     },
-    setup(props) {
-      const mappedEvents = computed<EventCard | null>(() =>
-        mapProductToEventCard(props.event, props.currencies)
-      )
-
-      return {
-        mappedEvents,
-      }
+    setup() {
+      return {}
     },
   })
 </script>
