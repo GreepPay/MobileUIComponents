@@ -21,7 +21,12 @@
   import { defineComponent } from "vue"
   import AppAvatar from "../AppAvatar"
   import { AppNormalText } from "../AppTypography"
+  // import { Category } from "@greep/logic/src/gql/graphql"
 
+  interface CategoryAvatar {
+    label: string
+    image: string
+  }
   export default defineComponent({
     name: "AppCategoryCard",
     components: {
@@ -30,10 +35,7 @@
     },
     props: {
       item: {
-        type: Object as () => {
-          label: string
-          image: string
-        },
+        type: Object as () => CategoryAvatar,
         required: true,
       },
     },

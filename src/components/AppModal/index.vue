@@ -3,47 +3,31 @@
     <transition name="fade" appear>
       <div
         :class="`fixed top-0 w-screen  bg-black/30 flex flex-col overflow-y-hidden items-center mdlg:justify-center! justify-end ${customClass}`"
-        :style="`height: ${
-          mobileFullHeight ? mobileFullHeight.height : ''
-        }; z-index: 9999999999999999;`"
-        @click="canClose ? closeModal() : null"
-      >
-        <div
-          :class="`w-full bg-white !rounded-t-[20px]  min-h-[100px] relative max-h-[60%] ${innerClass}`"
-          @click.stop="null"
-        >
-          <div
-            class="px-4 py-4 flex items-center gap-4 border-b-[1.5px] w-full sticky top-0"
-            v-if="hasTitle"
-          >
+        :style="`height: ${mobileFullHeight ? mobileFullHeight.height : ''
+          }; z-index: 9999999999999999;`" @click="canClose ? closeModal() : null">
+        <div :class="`w-full bg-white rounded-t-[20px] p-4 pb-0 min-h-[100px] relative max-h-[60%] ${innerClass}`"
+          @click.stop="null">
+          <div class="p-4 flex items-center gap-4 border-b-[4px] w-full sticky top-0 bg-white" :class="titleClass"
+            v-if="hasTitle">
             <div class="!flex-1 flex items-center">
-              <app-icon
-                v-if="hasBackButton"
-                name="arrow-left"
-                @click.stop="closeModal()"
-                enter-class="flex"
-              />
+              <app-icon v-if="hasBackButton" name="arrow-left" @click.stop="closeModal()" enter-class="flex" />
 
-              <span
-                :class="[
-                  '!text-lg !flex-1 text-black font-semibold',
-                  hasBackButton && '!text-center',
-                ]"
-              >
+              <span :class="[
+                '!text-lg !flex-1 text-black font-semibold',
+                hasBackButton && '!text-center',
+              ]">
                 {{ title }}
               </span>
             </div>
 
-            <app-icon
-              name="close-circle"
-              @click.stop="closeModal()"
-              custom-class="h-[24px]"
-            />
+            <app-icon name="close-circle" @click.stop="closeModal(true)" custom-class="h-[24px]" />
           </div>
 
           <div :class="`px-4 py-4 ${contentClass}`">
             <slot />
           </div>
+
+          <slot name="bottom-section" class="absolute !bottom-0 w-full border-t" />
         </div>
       </div>
     </transition>
@@ -59,16 +43,16 @@ import {
   Teleport as teleport_,
   TeleportProps,
   VNodeProps,
-} from "vue";
+} from "vue"
 
 const Teleport = teleport_ as {
-  new (): {
-    $props: VNodeProps & TeleportProps;
-  };
-};
+  new(): {
+    $props: VNodeProps & TeleportProps
+  }
+}
 
-import { AppHeaderText } from "../AppTypography";
-import AppIcon from "../AppIcon";
+import { AppHeaderText } from "../AppTypography"
+import AppIcon from "../AppIcon"
 
 /**
  *  Modal component that displays content in an overlay.
@@ -92,14 +76,19 @@ export default defineComponent({
       default: false,
     },
     /**
-     * Function to execute when the modal is closed.
-     * @required
+     * Title of the modal, displayed in the header.
      */
-    close: {
+    title: {
+      type: String,
+      default: "",
+    },
+      /**
+       * Function to execute when the modal is closed.
+       * @required
+       */ close: {
       type: Function,
       required: true,
     },
-
     /**
      * @required
      */
@@ -118,10 +107,7 @@ export default defineComponent({
       type: String,
       default: "",
     },
-    /**
-     * Title of the modal, displayed in the header.
-     */
-    title: {
+    titleClass: {
       type: String,
       default: "",
     },
@@ -134,38 +120,38 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const closeModal = () => {
-      if (props.close) {
-        props.close();
+    const closeModal = (fromButton = false) => {
+      if (props.canClose || fromButton) {
+        props.close()
       }
-    };
+    }
 
-    const innerHeight = ref(window.innerHeight);
+    const innerHeight = ref(window.innerHeight)
 
     const updateHeight = () => {
-      innerHeight.value = window.innerHeight;
-    };
+      innerHeight.value = window.innerHeight
+    }
 
     onMounted(() => {
-      updateHeight();
-      window.addEventListener("resize", updateHeight);
-    });
+      updateHeight()
+      window.addEventListener("resize", updateHeight)
+    })
 
     onUnmounted(() => {
-      window.removeEventListener("resize", updateHeight);
-    });
+      window.removeEventListener("resize", updateHeight)
+    })
 
     const mobileFullHeight = computed(() => {
       return {
         height: `${innerHeight.value}px`,
-      };
-    });
+      }
+    })
 
     return {
       closeModal,
       Teleport,
       mobileFullHeight,
-    };
+    }
   },
-});
+})
 </script>
