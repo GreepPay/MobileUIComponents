@@ -1,38 +1,5 @@
 <template>
-  <button
-    :class="[
-      'relative flex items-center justify-center gap-2 px-4 py-2 transition-all duration-300 ease-in-out',
-      iconOnly ? 'rounded-full p-2 w-10 h-10' : 'rounded-[40px]',
-
-      outlined
-        ? 'bg-transparent border'
-        : variant === 'primary'
-        ? 'bg-primary text-white border border-primary'
-        : variant === 'secondary'
-        ? 'bg-secondary text-white border border-secondary'
-        : variant === 'primary-white'
-        ? 'bg-white text-primary border border-white'
-        : 'bg-transparent text-primary',
-      outlined && variant === 'primary'
-        ? 'border-primary text-primary hover:bg-primary/10'
-        : outlined && variant === 'secondary'
-        ? 'border-secondary text-secondary hover:bg-secondary/10'
-        : outlined && variant === 'primary-white'
-        ? 'border-white text-white hover:bg-white/10'
-        : outlined && variant === 'text'
-        ? 'border-primary text-primary hover:bg-primary/10'
-        : variant === 'primary'
-        ? 'hover:bg-primary/90'
-        : variant === 'secondary'
-        ? 'hover:bg-secondary/90'
-        : variant === 'primary-white'
-        ? 'hover:bg-white/90'
-        : 'hover:bg-primary/10',
-      disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer',
-      customClass,
-    ]"
-    :disabled="disabled || loading"
-  >
+  <button :class="[buttonClass, customClass]" :disabled="disabled || loading">
     <span v-if="loading">
       <svg
         :class="`animate-spin mr-3 h-5 w-5  ${loadingClass} `"
@@ -63,7 +30,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from "vue"
+  import { defineComponent, PropType, computed } from "vue"
 
   /**
    *  Button Component
@@ -79,7 +46,7 @@
        */
       variant: {
         type: String as PropType<
-          "primary" | "secondary" | "primary-white" | "text"
+          "primary" | "secondary" | "danger" | "primary-white" | "text"
         >,
         default: "primary",
         validator: (value: string) =>
@@ -135,6 +102,123 @@
         type: String,
         default: "text-white",
       },
+    },
+
+    setup(props) {
+      const buttonClass = computed(() => {
+        const classList: string[] = []
+
+        // Base classes
+        classList.push(
+          "relative",
+          "flex",
+          "items-center",
+          "justify-center",
+          "gap-2",
+          "px-4",
+          "py-2",
+          "transition-all",
+          "duration-300",
+          "ease-in-out"
+        )
+
+        // Shape
+        if (props.iconOnly) {
+          classList.push("rounded-full", "p-2", "w-10", "h-10")
+        } else {
+          classList.push("rounded-[40px]")
+        }
+
+        // Outlined + Variant logic
+        if (props.outlined) {
+          classList.push("bg-transparent", "border")
+
+          if (props.variant === "primary") {
+            classList.push(
+              "border-primary",
+              "text-primary",
+              "hover:bg-primary/10"
+            )
+          }
+          if (props.variant === "secondary") {
+            classList.push(
+              "border-secondary",
+              "text-secondary",
+              "hover:bg-secondary/10"
+            )
+          }
+          if (props.variant === "danger") {
+            classList.push("border-red", "text-red", "hover:bg-red/10")
+          }
+          if (props.variant === "primary-white") {
+            classList.push("border-white", "text-white", "hover:bg-white/10")
+          }
+          if (props.variant === "text") {
+            classList.push(
+              "border-primary",
+              "text-primary",
+              "hover:bg-primary/10"
+            )
+          }
+        } else {
+          if (props.variant === "primary") {
+            classList.push(
+              "bg-primary",
+              "text-white",
+              "border",
+              "border-primary",
+              "hover:bg-primary/90"
+            )
+          }
+          if (props.variant === "secondary") {
+            classList.push(
+              "bg-secondary",
+              "text-white",
+              "border",
+              "border-secondary",
+              "hover:bg-secondary/90"
+            )
+          }
+          if (props.variant === "danger") {
+            classList.push(
+              "bg-red",
+              "text-white",
+              "border",
+              "border-red-900",
+              "hover:bg-red/90"
+            )
+          }
+          if (props.variant === "primary-white") {
+            classList.push(
+              "bg-white",
+              "text-primary",
+              "border",
+              "border-white",
+              "hover:bg-white/90"
+            )
+          }
+          if (props.variant === "text") {
+            classList.push(
+              "bg-transparent",
+              "text-primary",
+              "hover:bg-primary/10"
+            )
+          }
+        }
+
+        // Disabled
+        if (props.disabled) {
+          classList.push("opacity-40", "cursor-not-allowed")
+        } else {
+          classList.push("cursor-pointer")
+        }
+
+        return classList.join(" ")
+      })
+
+      return {
+        buttonClass,
+      }
     },
   })
 </script>
