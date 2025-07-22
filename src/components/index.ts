@@ -24,6 +24,7 @@ import AppTransactions from "./AppTransactions"
 import AppLoader from "./AppLoader"
 import AppLoading from "./AppLoading"
 import AppEmptyState from "./AppEmptyState"
+import AppEmptyPage from "./AppEmptyPage"
 import AppVirtualScroller from "./AppVirtualScroller"
 import { AppHeaderText, AppNormalText, AppLinkText } from "./AppTypography"
 import AppSteps from "./AppSteps"
@@ -45,6 +46,7 @@ import {
   AppReviewCard,
   AppTicketDetailCard,
   AppVariantCard,
+  AppOrderDetailsCard,
 } from "./AppCard"
 import { AppTabs, AppMultiTabsSelector } from "./AppTabs"
 import AppToken from "./AppToken"
@@ -127,6 +129,7 @@ export {
   AppListWrapper,
   AppToken,
   AppProductCard,
+  AppOrderDetailsCard,
   AppPaymentMethodCard,
   AppSteps,
   AppMerchantCard,
@@ -139,4 +142,5 @@ export {
   AppVariantCard,
   AppExchangeAd,
   AppEvent,
+  AppEmptyPage,
 }
