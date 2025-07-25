@@ -8,12 +8,14 @@
       height: size + 'px',
     }"
   >
-    <img
+    <app-image-loader
       v-if="imageUrl"
-      :src="imageUrl"
-      :alt="alt"
-      class="w-full h-full object-cover"
-      @error="handleImageError"
+      :photo-url="imageUrl"
+      :style="{
+      width: size + 'px',
+      height: size + 'px',
+    }"
+      
     />
     <div
       v-else
@@ -28,6 +30,7 @@
 
 <script lang="ts">
   import { computed, defineComponent } from "vue"
+  import AppImageLoader from "../AppImageLoader"
 
   /**
    * Avatar Component
@@ -36,6 +39,9 @@
    */
   export default defineComponent({
     name: "AppAvatar",
+    components: {
+      AppImageLoader,
+    },
     props: {
       /**
        * Image source URL

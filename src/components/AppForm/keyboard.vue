@@ -1,53 +1,76 @@
 <template>
   <div class="flex w-full flex-col space-y-2">
-    <div class="w-full grid grid-cols-12 gap-6 gap-y-9">
-      <div class="col-span-4 flex flex-row items-center justify-center"
-        v-for="(key, index) in Array.from(Array(9).keys())" :key="index" @click="
+    <div class="w-full grid grid-cols-12 gap-6 gap-y-4">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        v-for="(key, index) in Array.from(Array(9).keys())"
+        :key="index"
+        @click="
           handleClick($event, () =>
             canAddNumber ? (content += `${key + 1}`) : null
           );
-        Logic.Common.makeTouchSensation('MEDIUM');
-        ">
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <!-- Max of 2 decimal places -->
         <span
           class="w-full h-[60px] xs:w-[38px] xs:h-[38px] rounded-md border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
-          :class="{ 'bg-gray-200': activeKey === `key-${index}` }" :data-key-id="`key-${index}`">
+          :class="{ 'bg-gray-200': activeKey === `key-${index}` }"
+          :data-key-id="`key-${index}`"
+        >
           <app-normal-text class="!text-xl font-semibold">
             {{ key + 1 }}
           </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center" @click="
-        handleClick($event, () =>
-          content.includes('.') ? null : (content += '.')
-        );
-      Logic.Common.makeTouchSensation('MEDIUM');
-      ">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () =>
+            content.includes('.') ? null : (content += '.')
+          );
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
-          :class="{ 'bg-gray-200': activeKey === 'key-dot' }" data-key-id="key-dot">
-          <app-normal-text class="!text-xl !font-semibold xs:text-sm text-center">
+          class="w-full h-[60px] xs:w-[38px] xs:h-[38px] rounded-md border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
+          :class="{ 'bg-gray-200': activeKey === 'key-dot' }"
+          data-key-id="key-dot"
+        >
+          <app-normal-text
+            class="!text-xl !font-semibold xs:text-sm text-center"
+          >
             .
           </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center" @click="
-        handleClick($event, () => (content += '0'));
-      Logic.Common.makeTouchSensation('MEDIUM');
-      ">
+      <div
+        class="col-span-4  flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () => (content += '0'));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
-          :class="{ 'bg-gray-200': activeKey === 'key-zero' }" data-key-id="key-zero">
+          class="w-full rounded-md h-[60px] xs:w-[38px] xs:h-[38px]  border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
+          :class="{ 'bg-gray-200': activeKey === 'key-zero' }"
+          data-key-id="key-zero"
+        >
           <app-normal-text class="!text-xl !font-semibold"> 0 </app-normal-text>
         </span>
       </div>
-      <div class="col-span-4 flex flex-row items-center justify-center" @click="
-        handleClick($event, () => (content = content.slice(0, -1)));
-      Logic.Common.makeTouchSensation('MEDIUM');
-      ">
+      <div
+        class="col-span-4 flex flex-row items-center justify-center"
+        @click="
+          handleClick($event, () => (content = content.slice(0, -1)));
+          Logic.Common.makeTouchSensation('MEDIUM');
+        "
+      >
         <span
-          class="w-[43px] h-[43px] xs:w-[38px] xs:h-[38px] rounded-full border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
-          :class="{ 'bg-gray-200': activeKey === 'key-backspace' }" data-key-id="key-backspace">
+          class="w-full h-[60px] xs:w-[38px] xs:h-[38px] rounded-md border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
+          :class="{ 'bg-gray-200': activeKey === 'key-backspace' }"
+          data-key-id="key-backspace"
+        >
           <app-icon name="delete-number" custom-class="!h-[13px]" />
         </span>
       </div>

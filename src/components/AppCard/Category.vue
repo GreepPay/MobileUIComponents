@@ -21,8 +21,7 @@
   import { defineComponent } from "vue"
   import AppAvatar from "../AppAvatar"
   import { AppNormalText } from "../AppTypography"
-  // import { Category } from "@greep/logic/src/gql/graphql"
-
+  
   interface CategoryAvatar {
     label: string
     image: string

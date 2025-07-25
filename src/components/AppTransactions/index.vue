@@ -16,7 +16,7 @@
 
             <div class="flex flex-col space-y-[1px]">
               <app-normal-text
-                class="!text-left !text-base !text-black !font-m edium"
+                class="!text-left !text-sm !text-black !font-m edium"
               >
                 {{ transaction.title }}
               </app-normal-text>

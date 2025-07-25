@@ -7,13 +7,15 @@
   >
     <template v-if="showCurrencyImage">
       <app-image-loader
-        :photo-url="`/images/icons/flags/${selectedCurrency.code.toLocaleLowerCase()}.${
-          selectedCurrency?.icon_extension || 'svg'
-        }`"
+        :photo-url="`/images/icons/flags/${
+          selectedCurrency.use_country_code
+            ? selectedCurrency.country_code.toLocaleLowerCase()
+            : selectedCurrency.code.toLocaleLowerCase()
+        }.${selectedCurrency?.icon_extension || 'svg'}`"
         class="h-[25px] w-[25px] rounded-full"
       />
       <app-normal-text class="!font-[500]">
-        {{ selectedCurrency.code }}
+        {{ selectedCurrency.code.replace('_1', '').replace('_2', '') }}
       </app-normal-text>
     </template>
     <div class="h-[32px] w-[32px] rounded-full" v-else></div>
@@ -66,9 +68,11 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${defaultCurrency.code.toLocaleLowerCase()}.${
-                defaultCurrency?.icon_extension || 'svg'
-              }`"
+              :photo-url="`/images/icons/flags/${
+                defaultCurrency.use_country_code
+                  ? defaultCurrency.country_code.toLocaleLowerCase()
+                  : defaultCurrency.code.toLocaleLowerCase()
+              }.${defaultCurrency?.icon_extension || 'svg'}`"
               class="h-[32px] w-[32px] rounded-full"
             />
 
@@ -109,9 +113,11 @@
         >
           <div class="flex flex-row items-center space-x-3">
             <app-image-loader
-              :photo-url="`/images/icons/flags/${currency.code.toLocaleLowerCase()}.${
-                currency?.icon_extension || 'svg'
-              }`"
+              :photo-url="`/images/icons/flags/${
+                currency.use_country_code
+                  ? currency.country_code.toLocaleLowerCase()
+                  : currency.code.toLocaleLowerCase()
+              }.${currency?.icon_extension || 'svg'}`"
               class="h-[32px] w-[32px] rounded-full"
             />
 

@@ -2,7 +2,7 @@
   <div
     id=""
     :class="`${customClass} blend-in ${
-      image == '' ? `${photoUrl ? 'skeleton' : ''}` : ''
+      image == '' ? `${image ? 'skeleton' : ''}` : ''
     }`"
     :style="`${
       image == ''

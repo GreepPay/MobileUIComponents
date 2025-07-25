@@ -65,6 +65,9 @@ export interface Currency {
   loading?: boolean;
   country_code?: string;
   icon_extension?: string;
+  allow_p2p?: boolean;
+  use_country_code?: boolean;
+  fallback_code?: string;
   card_payment?: {
     min: number;
     max: number;

@@ -2,6 +2,26 @@ import { Logic } from "@greep/logic";
 import { Product, ProductVariantInput } from "@greep/logic/src/gql/graphql";
 import { formatRichText } from "./utils";
 
+interface EventTicket {
+  ticket_name: string;
+  name: string;
+  price: string;
+  color: string;
+  time: string;
+  date: string;
+}
+
+interface Event {
+  images: { url: string }[];
+  name: string;
+  event_date: string;
+  event_time: string;
+  location: string;
+  place: string;
+  tickets: EventTicket[];
+  description: string;
+}
+
 interface EventCard {
   image_url: string;
   title: string;

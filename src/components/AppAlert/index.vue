@@ -1,8 +1,9 @@
 <template>
-  <Transition name="slide">
+  <Teleport to="body">
+ <Transition name="slide">
     <div
       v-if="isVisible"
-      :class="`w-full flex flex-col items-center justify-center top-0 left-0  fixed z-[999999999999999] `"
+      :class="`w-full flex flex-col items-center justify-center top-0 left-0  fixed !z-[999999999999999999] `"
     >
       <div
         :class="`flex flex-col space-y-2 w-full px-4  cursor-pointer   items-center justify-center mdlg:!border-l-[1px] mdlg:!border-r-[1px] mdlg:!border-gray-500 `"
@@ -39,6 +40,8 @@
       </div>
     </div>
   </Transition>
+  </Teleport>
+ 
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref } from "vue";

@@ -41,7 +41,7 @@
         class="text-right !text-sm font-semibold pb-[3px] !whitespace-nowrap"
       >
         {{ data.transactionType == "credit" ? "+" : "-" }}
-        {{ data.currencySymbol }}
+        {{ getIcon(data.type) == 'grp' ? 'GRP' : data.currencySymbol }}
         {{ Logic.Common.convertToMoney(data.amount, true, "") }}
       </app-normal-text>
 

@@ -121,6 +121,7 @@ export default defineComponent({
   },
   setup(props) {
     const closeModal = (fromButton = false) => {
+       
       if (props.canClose || fromButton) {
         props.close()
       }
