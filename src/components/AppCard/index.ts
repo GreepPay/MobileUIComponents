@@ -13,6 +13,7 @@ import AppShopCard from "./Shop.vue"
 import AppReviewCard from "./Review.vue"
 import AppTicketDetailCard from "./TicketDetail.vue"
 import AppVariantCard from "./Variant.vue"
+import AppOrderDetailsCard from "./OrderDetails.vue"
 
 export {
   AppCard,
@@ -30,4 +31,5 @@ export {
   AppReviewCard,
   AppTicketDetailCard,
   AppVariantCard,
+  AppOrderDetailsCard,
 }

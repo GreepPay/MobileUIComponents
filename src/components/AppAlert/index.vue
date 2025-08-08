@@ -14,9 +14,9 @@
       >
         <div
           :class="`!w-full border-[2px] bg-white px-2 ${
-            setup.type === 'success' ? '!border-green-500' : ''
-          }  ${setup.type === 'error' ? '!border-red-500' : ''}  ${
-            setup.type === 'info' ? '!border-purple-500' : ''
+            setup.type === 'success' ? '!border-green' : ''
+          }  ${setup.type === 'error' ? '!border-red' : ''}  ${
+            setup.type === 'info' ? '!border-purple' : ''
           } rounded-[30px]  py-1 justify-between items-center flex flex-row `"
         >
           <div class="flex flex-row items-center">

@@ -13,7 +13,7 @@
     <span> {{ text }} </span>
 
     <!-- Suffix Icon or Default Icon -->
-    <app-icon v-if="suffixIcon" :name="suffixIcon" />
+    <app-icon v-if="suffixIcon" :name="suffixIcon" :customClass="iconClass" />
   </span>
 </template>
 
@@ -51,11 +51,17 @@
         type: String,
         default: null,
       },
+      iconClass: {
+        type: String,
+        default: null,
+      },
     },
 
     emits: ["click"],
     setup(_, { emit }) {
       const handleClick = () => {
+        console.log(657890)
+
         emit("click")
       }
 

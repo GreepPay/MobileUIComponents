@@ -8,14 +8,20 @@
       height: size + 'px',
     }"
   >
-    <app-image-loader
+    <!-- Skeleton Loader -->
+    <div
+      v-if="isLoading"
+      class="skeleton animate-pulse bg-gray-200 w-full h-full"
+    ></div>
+
+    <img
+      v-show="!isLoading"
       v-if="imageUrl"
-      :photo-url="imageUrl"
-      :style="{
-      width: size + 'px',
-      height: size + 'px',
-    }"
-      
+      :src="imageUrl"
+      :alt="alt"
+      class="w-full h-full object-cover"
+      @error="handleImageError"
+      @load="handleImageLoad"
     />
     <div
       v-else
@@ -29,7 +35,7 @@
 </template>
 
 <script lang="ts">
-  import { computed, defineComponent } from "vue"
+  import { computed, defineComponent, ref } from "vue"
   import AppImageLoader from "../AppImageLoader"
 
   /**
@@ -95,10 +101,12 @@
       },
     },
     setup(props) {
+      const isLoading = ref(true)
+
       const imageUrl = computed(() => {
-        if (!props.src) return "/images/profile-image.svg"
-        else return props.src
+        return props.src || "/images/profile-image.svg"
       })
+
       const textSize = computed(() => {
         if (props.size < 32) return "xs"
         if (props.size < 48) return "sm"
@@ -121,11 +129,17 @@
         target.style.display = "none"
       }
 
+      const handleImageLoad = () => {
+        isLoading.value = false
+      }
+
       return {
+        isLoading,
         textSize,
         initials,
         imageUrl,
         handleImageError,
+        handleImageLoad,
       }
     },
   })
