@@ -1,7 +1,7 @@
 <template>
   <app-image-loader
     :class="[
-      'w-full h-fit rounded-[35px] flex flex- col relative justify-center items-center space-y-5  xs:!py-4 bg-[linear-gradient(359.13deg,#10BB76_25.37%,#008651_99.25%)]',
+      'w-full h-fit rounded-[35px] flex flex- col relative justify-center items-center space-y-5  xs:!py-4 bg-[linear-gradient(359.13deg,#0D965E_25.37%,#00683F_99.25%)]',
       customClass,
     ]"
     :photoUrl="''"

@@ -15,7 +15,7 @@
         class="h-[25px] w-[25px] rounded-full"
       />
       <app-normal-text class="!font-[500]">
-        {{ selectedCurrency.code.replace('_1', '').replace('_2', '') }}
+        {{ selectedCurrency.code.replace("_1", "").replace("_2", "") }}
       </app-normal-text>
     </template>
     <div class="h-[32px] w-[32px] rounded-full" v-else></div>
@@ -84,7 +84,7 @@
             </app-normal-text>
           </div>
 
-          <div class="flex flex-row justify-end" v-if="defaultCurrency.loading">
+          <div class="flex flex-row justify-end" v-if="(currentCurrencyBeingFetched == defaultCurrency.code) && fetchingRate">
             <app-loading class="!text-gray-800 -mr-[5px]" />
           </div>
         </div>
@@ -129,7 +129,7 @@
             </app-normal-text>
           </div>
 
-          <div class="flex flex-row justify-end" v-if="currency.loading">
+          <div class="flex flex-row justify-end" v-if="(currentCurrencyBeingFetched == currency.code) && fetchingRate">
             <app-loading class="!text-gray-800" />
           </div>
         </div>
@@ -253,6 +253,9 @@ export default defineComponent({
 
     const showSelectModal = ref(false);
 
+    const fetchingRate = ref(false);
+    const currentCurrencyBeingFetched = ref("");
+
     const currencyIsSelected = (currency: Currency) => {
       return currency.code === selectedCurrency.value.code;
     };
@@ -264,9 +267,15 @@ export default defineComponent({
         return;
       }
 
+      if(fetchingRate.value) {
+        return;
+      }
+
       const baseCurrency = "USD";
 
       let targetCurrency = currency.code;
+
+      currentCurrencyBeingFetched.value = currency.code;
 
       if (targetCurrency == "USDC" || targetCurrency == "USDT") {
         targetCurrency = "USD";
@@ -275,6 +284,8 @@ export default defineComponent({
       if (targetCurrency == "EURC") {
         targetCurrency = "EUR";
       }
+
+      fetchingRate.value = true;
 
       Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency).then(
         (data) => {
@@ -285,10 +296,13 @@ export default defineComponent({
             showSelectModal.value = false;
           }
           currency.loading = false;
+          fetchingRate.value = false;
 
           context.emit("update:modelValue", selectedCurrency.value.code);
         }
-      );
+      ).finally(() => {
+        fetchingRate.value = false;
+      });
     };
 
     watch(selectedCurrency, (newCurrency) => {
@@ -314,6 +328,8 @@ export default defineComponent({
       currencyIsSelected,
       showCurrencyImage,
       selectCurrency,
+      fetchingRate,
+      currentCurrencyBeingFetched
     };
   },
 });

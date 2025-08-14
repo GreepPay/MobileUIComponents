@@ -19,14 +19,24 @@
         >
           {{ item.title }}
         </app-normal-text>
-        <app-normal-text
-          :class="` ${
-            invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
-          } !text-sm break-words`"
-          is-html
-          :htmlContent="item.content"
-        >
-        </app-normal-text>
+        <div class="w-full flex flex-row items-center justify-between">
+          <app-normal-text
+            :class="` ${
+              invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
+            } !text-sm break-words`"
+            is-html
+            :htmlContent="item.content"
+          >
+          </app-normal-text>
+          <div v-if="item.can_copy" @click="Logic.Common.copytext(item.content)" class="flex flex-row items-center cursor-pointer">
+            <app-normal-text
+              :class="`!text-primary !text-xs !font-normal cursor-pointer mr-1`"
+            >
+              Copy
+            </app-normal-text>
+            <app-icon name="copy" class="h-[23px] w-[23px] cursor-pointer" />
+          </div>
+        </div>
       </div>
     </template>
   </div>
@@ -35,6 +45,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
+import AppIcon from "../AppIcon";
+import { Logic } from "../../composable";
 
 /**
  * AppDetails Component
@@ -47,7 +59,7 @@ import { AppNormalText, AppHeaderText } from "../AppTypography";
  */
 export default defineComponent({
   name: "AppDetails",
-  components: { AppNormalText, AppHeaderText },
+  components: { AppNormalText, AppHeaderText, AppIcon },
   props: {
     /**
      * Object containing key-value pairs to display.
@@ -57,6 +69,7 @@ export default defineComponent({
       type: Array as () => {
         title: string;
         content: string;
+        can_copy?: boolean;
       }[],
       required: true,
     },
@@ -72,6 +85,9 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  setup(props) {
+    return { Logic };
   },
 });
 </script>
