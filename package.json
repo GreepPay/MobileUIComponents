@@ -23,7 +23,7 @@
     "vue-router": "^4.2.0"
   },
   "devDependencies": {
-    "@greep/logic": "file:../logic",
+    "@greep/logic": "file:../POSFrontendLogic",
     "@tailwindcss/typography": "^0.5.9",
     "@types/editorjs__header": "^2.6.0",
     "@types/jest": "^27.0.2",
