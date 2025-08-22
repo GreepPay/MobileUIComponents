@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="setup"
-    :class="`w-full flex flex-col fixed top-0 left-0  ${
+    :class="`w-full flex flex-col fixed top-0 left-0  items-center justify-center ${
       setup?.isInteractive
         ? 'bg-black !bg-opacity-60'
         : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
@@ -15,6 +15,21 @@
       <div :class="`loader-container w-full absolute top-0 left-0`">
         <div class="loader"></div>
       </div>
+
+      <div
+        class="w-full flex flex-col space-y-5 xs:space-y-4 h-full absolute top-0 left-0 flex-grow pt-4 items-center justify-center z-50 css-gradient"
+      >
+        <div
+          class="flex flex-row items-center justify-center px-5 py-5 rounded-full bg-white"
+        >
+          <app-image-sequence
+            :totalFrames="4"
+            folder="/images/logo"
+            class="!h-[90px] w-[90px]"
+            :frame-rate="2"
+          />
+        </div>
+      </div>
     </template>
   </div>
 </template>
@@ -24,10 +39,12 @@ import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import AppIcon from "../AppIcon";
 import { getPlatforms } from "@ionic/vue";
 import { computed } from "vue";
+import AppImageSequence from "../AppImageSequence";
 
 export default defineComponent({
   components: {
     AppIcon,
+    AppImageSequence,
   },
   props: {
     customClass: {
@@ -83,7 +100,6 @@ export default defineComponent({
       if (props.setup?.isInteractive) {
         rotateMessage();
       }
- 
 
       startTimeoutCounter();
     });
