@@ -12,23 +12,14 @@
     id="innerModal"
   >
     <template v-if="setup?.loading">
-      <div :class="`loader-container w-full absolute top-0 left-0`">
+      <!-- <div :class="`loader-container w-full absolute top-0 left-0`">
         <div class="loader"></div>
-      </div>
+      </div> -->
 
       <div
         class="w-full flex flex-col space-y-5 xs:space-y-4 h-full absolute top-0 left-0 flex-grow pt-4 items-center justify-center z-50 css-gradient"
       >
-        <div
-          class="flex flex-row items-center justify-center px-5 py-5 rounded-full bg-white"
-        >
-          <app-image-sequence
-            :totalFrames="4"
-            folder="/images/logo"
-            class="!h-[90px] w-[90px]"
-            :frame-rate="2"
-          />
-        </div>
+         <Vue3Lottie :animation-link="'/loader.json'" :height="90" :width="90" />
       </div>
     </template>
   </div>
@@ -39,12 +30,12 @@ import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import AppIcon from "../AppIcon";
 import { getPlatforms } from "@ionic/vue";
 import { computed } from "vue";
-import AppImageSequence from "../AppImageSequence";
+import { Vue3Lottie } from 'vue3-lottie'
 
 export default defineComponent({
   components: {
     AppIcon,
-    AppImageSequence,
+    Vue3Lottie
   },
   props: {
     customClass: {

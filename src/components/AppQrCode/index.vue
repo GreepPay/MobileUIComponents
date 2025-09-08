@@ -1,9 +1,9 @@
 <template>
-  <canvas :id="uniqueId"></canvas>
+  <div :id="uniqueId" class="!py-3" ></div>
 </template>
 <script lang="ts">
 import { defineComponent, onMounted } from "vue";
-import QRCode from "qrcode";
+import QRCodeStyling from "qr-code-styling";
 
 /**
  * AppQrCode Component
@@ -33,10 +33,31 @@ export default defineComponent({
 
         // Calculate parent conainer inner width
         const parentWidth = canvas?.parentElement?.clientWidth;
+        const parentHeight = canvas?.parentElement?.clientHeight;
         if (canvas) {
-          QRCode.toCanvas(canvas, props.data.toString(), {
+        const qrCode =  new QRCodeStyling({
             width: parentWidth,
+            height: parentHeight,
+            type: "svg",
+            data: props.data.toString(),
+            image: "https://greep.blob.core.windows.net/greep/logo.png",
+            dotsOptions: {
+              color: "#000000",
+              type: "rounded",
+            },
+            backgroundOptions: {
+              color: "#ffffff",
+            },
+            imageOptions: {
+              margin: 8,
+              crossOrigin: "anonymous",
+            },
           });
+          qrCode.append(canvas);
+          // QRCode.toCanvas(canvas, props.data.toString(), {
+          //   width: parentWidth,
+
+          // });
         }
       }, 500);
     });
