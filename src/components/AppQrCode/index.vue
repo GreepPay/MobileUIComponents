@@ -64,7 +64,9 @@
         }
       )
 
-      return { uniqueId }
+      return {
+        uniqueId,
+      } 
     },
   })
 </script>
