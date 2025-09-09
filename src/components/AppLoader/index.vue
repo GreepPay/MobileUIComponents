@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="setup"
-    :class="`w-full flex flex-col fixed top-0 left-0  ${
+    :class="`w-full flex flex-col fixed top-0 left-0  items-center justify-center ${
       setup?.isInteractive
         ? 'bg-black !bg-opacity-60'
         : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
@@ -12,8 +12,14 @@
     id="innerModal"
   >
     <template v-if="setup?.loading">
-      <div :class="`loader-container w-full absolute top-0 left-0`">
+      <!-- <div :class="`loader-container w-full absolute top-0 left-0`">
         <div class="loader"></div>
+      </div> -->
+
+      <div
+        class="w-full flex flex-col space-y-5 xs:space-y-4 h-full absolute top-0 left-0 flex-grow pt-4 items-center justify-center z-50 css-gradient"
+      >
+         <Vue3Lottie :animation-link="'/loader.json'" :height="90" :width="90" />
       </div>
     </template>
   </div>
@@ -24,10 +30,12 @@ import { defineComponent, onMounted, onUnmounted, ref } from "vue";
 import AppIcon from "../AppIcon";
 import { getPlatforms } from "@ionic/vue";
 import { computed } from "vue";
+import { Vue3Lottie } from 'vue3-lottie'
 
 export default defineComponent({
   components: {
     AppIcon,
+    Vue3Lottie
   },
   props: {
     customClass: {
@@ -83,7 +91,6 @@ export default defineComponent({
       if (props.setup?.isInteractive) {
         rotateMessage();
       }
- 
 
       startTimeoutCounter();
     });

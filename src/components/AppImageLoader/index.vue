@@ -2,7 +2,7 @@
   <div
     id=""
     :class="`${customClass} blend-in ${
-      image == '' ? `${image ? 'skeleton' : ''}` : ''
+      image == '' && photoUrl ? `animate-pulse bg-gray-300` : ''
     }`"
     :style="`${
       image == ''
