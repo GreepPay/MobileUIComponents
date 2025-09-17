@@ -7,10 +7,10 @@
         }px) !important;`"
   >
     <div :class="`w-full  flex flex-row items-center justify-between `">
-      <router-link
+      <div
         v-for="(tab, index) in tabs"
         :key="index"
-        :to="tab.path"
+        @click="goToPath(tab.path)"
         :class="`flex flex-col space-y-[2px] pt-3 items-center justify-center ${
           tabIsActive(tab.routeTag)
             ? 'border-t-[3px] border-primary'
@@ -24,7 +24,7 @@
               ? `bottom-bar/${tab.icon}-active`
               : `bottom-bar/${tab.icon}`
           "
-          :custom-class="`!h-[20px]`"
+          :custom-class="`!h-[24px]`"
         />
 
         <app-normal-text
@@ -35,7 +35,7 @@
         >
           {{ tab.name }}</app-normal-text
         >
-      </router-link>
+    </div>
     </div>
   </div>
 </template>
@@ -80,6 +80,33 @@ export default {
   setup() {
     const hoverTab = ref("");
 
+   
+
+    const openSupport = () => {
+      // @ts-expect-error window.$chatwoot is not defined
+      if (window.$chatwoot) {
+         // @ts-expect-error window.$chatwoot is not defined
+        window.$chatwoot.setUser(Logic.Auth.AuthUser?.uuid, {
+          email: Logic.Auth.AuthUser?.email,
+          name: Logic.Auth.AuthUser?.first_name,
+          avatar_url: Logic.Auth.AuthUser?.profile?.photo_url || undefined,
+          phone_number: Logic.Auth.AuthUser?.phone || undefined,
+        });
+        // @ts-expect-error window.$chatwoot is not defined
+        window.$chatwoot.toggle();
+      } else {
+        console.warn("Chatwoot is not loaded yet.");
+      }
+    };
+
+     const goToPath = (path: string) => {
+      if(path === "#support") {
+        openSupport();
+        return;
+      }
+      Logic.Common.GoToRoute(path);
+    };
+
     const currentPlatform = computed(() => {
       return getPlatforms()[0];
     });
@@ -88,6 +115,7 @@ export default {
       hoverTab,
       Logic,
       currentPlatform,
+      goToPath
     };
   },
 };
