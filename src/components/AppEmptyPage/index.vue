@@ -1,6 +1,9 @@
 <template>
   <div
-    class="w-full flex flex-col min-h-screen overflow-hidden px-4 justify-center items-center"
+    :class="[
+      'w-full flex flex-col min-h-[70vh] overflow-hidden px-4 justify-center items-center',
+      customClass,
+    ]"
   >
     <app-icon :name="icon" custom-class="!h-[60px]" v-if="useIcon" />
 
@@ -51,6 +54,10 @@
       useIcon: {
         type: Boolean,
         default: true,
+      },
+      customClass: {
+        type: String,
+        default: "",
       },
       icon: {
         type: String,

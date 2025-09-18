@@ -53,18 +53,13 @@
       },
       iconClass: {
         type: String,
-        default: null,
+        default: "",
       },
     },
 
     emits: ["click"],
     setup(_, { emit }) {
-      const handleClick = () => {
-        console.log(657890)
-
-        emit("click")
-      }
-
+      const handleClick = () => emit("click")
       return {
         handleClick,
       }

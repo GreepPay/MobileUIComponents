@@ -1,6 +1,9 @@
 <template>
   <div
-    class="w-full flex flex-col min-h-24 border-[2px] h-fit border-[#F0F3F6] rounded-xl py-8 px-4 justify-center items-center"
+    :class="[
+      'w-full flex flex-col min-h-24 border-[2px] h-fit border-[#F0F3F6] rounded-xl py-8 px-4 justify-center items-center',
+      custonClass,
+    ]"
   >
     <app-icon :name="icon" custom-class="!h-[60px]" v-if="useIcon" />
 
@@ -31,49 +34,53 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import AppIcon from "../AppIcon";
-import { AppNormalText } from "../AppTypography";
-import AppButton from "../AppButton";
-/**
- * AppEmptyState Component
- *
- * Shows an empty state with an icon, title, and description
- */
-export default defineComponent({
-  name: "AppEmptyState",
-  components: {
-    AppIcon,
-    AppNormalText,
-    AppButton,
-  },
-  props: {
-    useIcon: {
-      type: Boolean,
-      default: true,
+  import { defineComponent } from "vue"
+  import AppIcon from "../AppIcon"
+  import { AppNormalText } from "../AppTypography"
+  import AppButton from "../AppButton"
+  /**
+   * AppEmptyState Component
+   *
+   * Shows an empty state with an icon, title, and description
+   */
+  export default defineComponent({
+    name: "AppEmptyState",
+    components: {
+      AppIcon,
+      AppNormalText,
+      AppButton,
     },
-    icon: {
-      type: String,
-      default: "no-transaction",
-    },
-    title: {
-      type: String,
-      default: "",
-    },
-    description: {
-      type: String,
-      default: "",
-    },
-    buttonData: {
-      type: Object as () => {
-        label: string;
-        action: Function;
+    props: {
+      useIcon: {
+        type: Boolean,
+        default: true,
       },
-      required: false,
+      icon: {
+        type: String,
+        default: "no-transaction",
+      },
+      title: {
+        type: String,
+        default: "",
+      },
+      description: {
+        type: String,
+        default: "",
+      },
+      custonClass: {
+        type: String,
+        default: "",
+      },
+      buttonData: {
+        type: Object as () => {
+          label: string
+          action: Function
+        },
+        required: false,
+      },
     },
-  },
-  setup() {
-    return {};
-  },
-});
+    setup() {
+      return {}
+    },
+  })
 </script>
