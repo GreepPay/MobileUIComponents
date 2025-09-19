@@ -70,43 +70,69 @@
       const muteFetchMore = ref(false)
 
       const onScrolledToEnd = (event: [IntersectionObserverEntry]) => {
-        if (muteFetchMore.value) {
+        if (muteFetchMore.value || contentLoading.value) return
+
+        const observer = event[0]
+        if (!observer?.isIntersecting) return
+
+        const currentPage = props.pagination?.currentPage || 0
+        const totalPage = props.pagination?.lastPage || 0
+
+        let nextPage = currentPage
+
+        if (currentPage < totalPage) {
+          nextPage += 1
+        } else {
+          nextPage = -1
+        }
+
+        if (nextPage > 1) {
+          if (contentLoading.value) {
+            return
+          }
+          contentLoading.value = true
+
+          if (props.fetchMore) {
+            props
+              .fetchMore(nextPage)
+              .then((responseData) => {
+                if (responseData) contentLoading.value = false
+              })
+              .finally(() => (contentLoading.value = false))
+          }
+        }
+
+        /* 
+          if (muteFetchMore.value || contentLoading.value) return
+
+        const observer = event[0]
+        if (!observer?.isIntersecting) return
+
+        const currentPage = props.pagination?.currentPage || 0
+        const totalPage = props.pagination?.lastPage || 0
+
+        // let nextPage = currentPage
+
+        if (currentPage >= totalPage) {
+          // no more pages to fetch, stop observing
+          const target = document.getElementById(`bottomAnchor-${uniqueId}`)
+          if (target)
+            observer.target && observer.target.id === target.id
+              ? observer.target // noop
+              : null
           return
         }
 
-        const observer = event[0]
+        const nextPage = currentPage + 1
+        contentLoading.value = true
 
-        if (observer) {
-          if (observer.isIntersecting) {
-            const currentPage = props.pagination?.currentPage || 0
-            const totalPage = props.pagination?.lastPage || 0
-
-            let nextPage = currentPage
-
-            if (currentPage < totalPage) {
-              nextPage += 1
-            } else {
-              nextPage = -1
-            }
-
-            if (nextPage > 1) {
-              if (contentLoading.value) {
-                return
-              }
-              contentLoading.value = true
-
-              if (props.fetchMore) {
-                props.fetchMore(nextPage).then((responseData) => {
-                  if (responseData) {
-                    contentLoading.value = false
-                  }
-                })
-              }
-            }
-          } else {
-            //  It is not visible
-          }
-        }
+        props
+          .fetchMore(nextPage)
+          .then((responseData) => {
+            // handle success (if needed)
+            console.log("responseData", responseData)
+          })
+          .finally(() => (contentLoading.value = false)) */
       }
 
       const createObserver = () => {

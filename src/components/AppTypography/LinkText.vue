@@ -53,7 +53,7 @@
       },
       iconClass: {
         type: String,
-        default: "",
+        default: "!h-5",
       },
     },
 
