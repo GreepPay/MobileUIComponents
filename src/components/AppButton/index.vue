@@ -32,11 +32,11 @@
 <script lang="ts">
   import { defineComponent, PropType, computed } from "vue"
 
-/**
- *  Button Component
- *
- *  This component is a reusable button with customizable styling.
- */
+  /**
+   *  Button Component
+   *
+   *  This component is a reusable button with customizable styling.
+   */
 
   export default defineComponent({
     props: {
