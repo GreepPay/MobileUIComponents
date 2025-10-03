@@ -13,12 +13,9 @@
             <span class="text-blue-600">📸</span>
             <span class="text-blue-800 text-sm font-medium">Upload proof of cash delivery</span>
           </div>
-          <app-button
-            variant="primary"
+          <app-button variant="primary"
             :class="`px-5 !py-2 !border-[1.5px] !bg-transparent !border-purple-500 !text-purple-500`"
-            @click="openProofUpload"
-            >Upload</app-button
-          >
+            @click="openProofUpload">Upload</app-button>
         </div>
       </div>
     </div>
@@ -26,28 +23,17 @@
     <!-- Main input text area -->
     <div class="w-full flex flex-row px-4 items-center justify-between overflow-hidden max-w-full">
       <div class="flex flex-row items-center w-full max-w-[calc(100%-56px)]">
-        
+
         <!-- Regular text input -->
-        <span 
-          v-if="!showAddressMode"
-          :contenteditable="chatEnabled" 
-          role="textbox" 
-          ref="editable"
+        <span v-if="!showAddressMode" :contenteditable="chatEnabled" role="textbox" ref="editable"
           :class="`w-full textarea prose prose-sm relative !text-xs resize-none !min-h-[55px] border-[1.5px] border-[#E0E2E4] text-black whitespace-pre-wrap focus:outline-none !max-h-[80px] overflow-x-hidden bg-transparent rounded-full py-3 pt-4 pl-4 px-3 items-start text-left overflow-y-auto`"
-          :placeholder="placeholder" 
-          id="messageContainerInput" 
-          :data-placeholder="placeholder" 
-          @input="onInput"
-          @keypress="handleKeyEvent" 
-          :inputmode="inputmode">
+          :placeholder="placeholder" id="messageContainerInput" :data-placeholder="placeholder" @input="onInput"
+          @keypress="handleKeyEvent" :inputmode="inputmode">
         </span>
 
         <!-- Address input mode -->
-        <div 
-          v-else
-          @click="$emit('click-address-input')"
-          :class="`w-full textarea prose prose-sm relative !text-xs resize-none !min-h-[55px] border-[1.5px] border-[#2563EB] text-blue-700 whitespace-pre-wrap focus:outline-none !max-h-[80px] overflow-x-hidden bg-blue-50 rounded-full py-3 pt-4 pl-4 px-3 text-left overflow-y-auto cursor-pointer flex items-center`"
-        >
+        <div v-else @click="$emit('click-address-input')"
+          :class="`w-full textarea prose prose-sm relative !text-xs resize-none !min-h-[55px] border-[1.5px] border-[#2563EB] text-blue-700 whitespace-pre-wrap focus:outline-none !max-h-[80px] overflow-x-hidden bg-blue-50 rounded-full py-3 pt-4 pl-4 px-3 text-left overflow-y-auto cursor-pointer flex items-center`">
           <span class="flex items-center space-x-2">
             <span>📍</span>
             <span>Tap to enter your delivery address...</span>
@@ -57,10 +43,8 @@
       </div>
 
       <div class="w-[56px] ml-3">
-        <div 
-          @click="showAddressMode ? $emit('click-address-input') : sendMessageInner"
-          :class="`w-[56px] h-[56px] rounded-full ${showAddressMode ? 'bg-[#2563EB]' : chatEnabled ? 'bg-[#0A141E]' : 'bg-gray-300'} items-center justify-center flex flex-row ${chatEnabled ? 'cursor-pointer' : 'cursor-not-allowed'}`"
-        >
+        <div @click="showAddressMode ? $emit('click-address-input') : sendMessageInner"
+          :class="`w-[56px] h-[56px] rounded-full ${showAddressMode ? 'bg-[#2563EB]' : chatEnabled ? 'bg-[#0A141E]' : 'bg-gray-300'} items-center justify-center flex flex-row ${chatEnabled ? 'cursor-pointer' : 'cursor-not-allowed'}`">
           <div class="w-[24px]">
             <span v-if="showAddressMode" class="text-white text-lg">📍</span>
             <app-icon v-else name="send" :custom-class="`!h-[24px] ${chatEnabled ? 'text-white' : 'text-gray-500'}`" />
@@ -73,8 +57,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, onMounted, toRef, watch, nextTick, ref } from "vue";
-import AppIcon from "../AppIcon/index.vue";
-import AppButton from "../AppButton/index.vue";
+import AppIcon from "../../AppIcon/index.vue";
+import AppButton from "../../AppButton/index.vue";
 
 type InputMode =
   | "search"
@@ -143,26 +127,26 @@ export default defineComponent({
     const isSeller = computed(() => {
       const participants = props.conversation?.participants || [];
       const currentUserId = props.authUser?.id;
-      
+
       if (!currentUserId || !participants.length) {
         return false;
       }
-      
+
       const currentUserIdNum = parseInt(currentUserId);
-      
+
       // Check if current user is a participant
       const isParticipant = participants.some((p: any) => p.user_id === currentUserIdNum);
-      
+
       // Check if current user is the owner (conversation creator)
       let isOwner = false;
-      
+
       if (props.conversation?.owner_id) {
         isOwner = props.conversation.owner_id === currentUserIdNum;
       } else if (participants.length > 0) {
         const sortedParticipants = [...participants].sort((a: any, b: any) => a.id - b.id);
         isOwner = sortedParticipants[0].user_id === currentUserIdNum;
       }
-      
+
       return isParticipant && !isOwner;
     });
 
@@ -205,7 +189,7 @@ export default defineComponent({
 
       evt = evt ? evt : window.event;
       const charCode = evt.which ? evt.which : evt.keyCode;
-      
+
       if (
         charCode > 31 &&
         (charCode < 48 || charCode > 57) &&
@@ -227,7 +211,7 @@ export default defineComponent({
     const setInputAttributes = () => {
       const metadata = lastAIMessageRef.value?.metadata ? JSON.parse(lastAIMessageRef.value?.metadata) : {};
       const extraInfo = metadata?.extras || {};
-      
+
       if (extraInfo) {
         if (isSeller.value) {
           inputmode.value = "text";
@@ -259,19 +243,19 @@ export default defineComponent({
         placeholder.value = "Chat disabled";
         return;
       }
-      
+
       if (isSeller.value) {
         chatEnabled.value = true;
         placeholder.value = "Type your message...";
         return;
       }
-      
+
       if (props.orderConfirmed) {
         chatEnabled.value = true;
         placeholder.value = "Type your message...";
         return;
       }
-      
+
       if (lastAIMessageRef?.value?.metadata) {
         const metadata = JSON.parse(lastAIMessageRef.value.metadata);
         if (metadata.type == "options" && !isSeller.value) {
@@ -295,7 +279,7 @@ export default defineComponent({
       if (props.disabled || !chatEnabled.value) {
         return;
       }
-      
+
       if (props.showAddressMode) {
         return;
       }
@@ -303,7 +287,7 @@ export default defineComponent({
       if (chatContent.value.trim() === "") {
         return;
       }
-      
+
       const canSend = props.sendMessage(chatContent.value);
       if (canSend) {
         chatContent.value = "";

@@ -36,7 +36,7 @@
                 Delivery fee is 3 USDC
               </app-normal-text>
             </div>
-            
+
             <!-- Order summary header -->
             <app-normal-text class="!text-base !font-semibold !text-[#333333] !mb-4">
               Confirm your order details to move forward with the trade;
@@ -53,7 +53,8 @@
               <!-- You get -->
               <div class="w-full flex flex-row justify-between items-center mb-2">
                 <app-normal-text class="!text-[#666666]">• You get</app-normal-text>
-                <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.youGet }}</app-normal-text>
+                <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.youGet
+                  }}</app-normal-text>
               </div>
 
               <!-- Fee -->
@@ -89,17 +90,20 @@
               <!-- Delivery address / Pickup location -->
               <div class="w-full flex flex-col mt-3">
                 <app-normal-text class="!text-[#666666] mb-2">
-                  • {{ message.orderSummary.payoutOption === 'Pickup' ? 'Pickup location' : 'We deliver cash to you at' }}
+                  • {{ message.orderSummary.payoutOption === 'Pickup' ? 'Pickup location' : 'We deliver cash to you at'
+                  }}
                 </app-normal-text>
                 <div class="order-summary-address">
-                  <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress }}</app-normal-text>
+                  <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress
+                    }}</app-normal-text>
                 </div>
               </div>
             </div>
           </div>
 
           <!-- REGULAR MESSAGE CONTENT (when not order summary) -->
-          <template v-else-if="message.text_content && !message.text_content.includes('{order_summary_text}') && !clickableImageUrl && !derivedPdfUrl">
+          <template
+            v-else-if="message.text_content && !message.text_content.includes('{order_summary_text}') && !clickableImageUrl && !derivedPdfUrl">
             <app-normal-text is-html :html-content="message.text_content" :class="`prose prose-sm !text-xs !leading-relaxed ${isUserMessage ? '!text-white' : ''
               }`">
             </app-normal-text>
@@ -108,13 +112,15 @@
           <!-- Media: show image clickable; opens original file in a new tab -->
           <template v-if="clickableImageUrl">
             <a :href="clickableImageUrl" target="_blank" rel="noopener noreferrer">
-              <app-image-loader :photo-url="clickableImageUrl" class="h-[250px] w-[250px] rounded-[12px] mt-2 cursor-pointer" />
+              <app-image-loader :photo-url="clickableImageUrl"
+                class="h-[250px] w-[250px] rounded-[12px] mt-2 cursor-pointer" />
             </a>
           </template>
 
           <!-- PDF: render a neat clickable chip with filename -->
           <template v-else-if="derivedPdfUrl">
-            <a :href="derivedPdfUrl" target="_blank" rel="noopener noreferrer" class="pdf-chip mt-2 inline-flex items-center">
+            <a :href="derivedPdfUrl" target="_blank" rel="noopener noreferrer"
+              class="pdf-chip mt-2 inline-flex items-center">
               <span class="mr-2">📄</span>
               <span class="truncate max-w-[220px]">{{ pdfFileName }}</span>
             </a>
@@ -145,10 +151,10 @@
 
 <script lang="ts">
 import { defineComponent, computed } from "vue";
-import AppNormalText from "../AppTypography/AppNormalText.vue";
-import AppIcon from "../AppIcon/index.vue";
-import AppImageLoader from "../AppImageLoader/index.vue";
-import AppButton from "../AppButton/index.vue";
+import AppNormalText from "../../AppTypography/normalText.vue";
+import AppIcon from "../../AppIcon/index.vue";
+import AppImageLoader from "../../AppImageLoader/index.vue";
+import AppButton from "../../AppButton/index.vue";
 
 export default defineComponent({
   name: "ChatMessage",
@@ -206,7 +212,7 @@ export default defineComponent({
       // Prefer explicit media if it indicates a PDF
       const explicit = props.message?.media && props.message.media.url ? props.message.media.url : '';
       if (explicit && /\.pdf($|\?)/i.test(explicit)) return explicit;
-      
+
       // Fallback: parse from text content
       const content: string = (props.message?.text_content || props.message?.content || '').toString();
       const regex = /(https?:\/\/[^\s]+\.pdf(?:\?[^\s]*)?)/i;
@@ -263,8 +269,10 @@ export default defineComponent({
 }
 
 .pdf-chip {
-  border: 1.5px solid #6b7280; /* gray-500 */
-  color: #374151; /* gray-700 */
+  border: 1.5px solid #6b7280;
+  /* gray-500 */
+  color: #374151;
+  /* gray-700 */
   background: #ffffff;
   padding: 8px 12px;
   border-radius: 9999px;
@@ -275,11 +283,14 @@ export default defineComponent({
 .view-link {
   margin-top: 6px;
 }
+
 .view-link a {
-  color: #2563eb; /* blue-600 */
+  color: #2563eb;
+  /* blue-600 */
   text-decoration: none;
   font-weight: 600;
 }
+
 .view-link a:hover {
   text-decoration: underline;
 }

@@ -1,99 +1,83 @@
 <template>
-  <app-modal
-    :show="show"
-    @close="handleCancel"
-    custom-class="bank-transfer-modal"
-  >
-    <template #header>
-      <div class="flex items-center space-x-2">
-        <span class="text-xl">🏦</span>
-        <span class="text-lg font-semibold text-gray-800">Bank Account Details</span>
-      </div>
-    </template>
+  <!-- Bank Transfer Bottom Sheet -->
+  <div v-if="show" class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end" @click="handleCancel">
+    <div class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
+      @click.stop>
+      <div class="p-4 pb-8">
+        <!-- Handle bar -->
+        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
 
-    <template #content>
-      <!-- Saved Bank Accounts Section -->
-      <div v-if="shouldShowSavedAccounts">
-        <p class="text-sm text-gray-600 mb-4">💳 Choose from your saved bank accounts</p>
-        
-        <div class="space-y-3 mb-6">
-          <div 
-            v-for="account in savedBankAccounts" 
-            :key="account.uuid"
-            @click="selectSavedAccount(account)"
-            class="p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors"
-          >
-            <div class="flex justify-between items-center">
-              <div>
-                <div class="font-medium text-gray-800">{{ account.bank_name }}</div>
-                <div class="text-sm text-gray-600">{{ account.account_number }} • {{ account.account_name }}</div>
-                <div v-if="account.currency" class="text-xs text-blue-600 font-medium">{{ account.currency }}</div>
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-2">
+            <span class="text-xl">🏦</span>
+            <span class="text-lg font-semibold text-gray-800">Bank Account Details</span>
+          </div>
+          <button @click="handleCancel"
+            class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Content -->
+        <!-- Saved Bank Accounts Section -->
+        <div v-if="shouldShowSavedAccounts">
+          <p class="text-sm text-gray-600 mb-4">💳 Choose from your saved bank accounts</p>
+
+          <div class="space-y-3 mb-6">
+            <div v-for="account in savedBankAccounts" :key="account.uuid" @click="selectSavedAccount(account)"
+              class="p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="font-medium text-gray-800">{{ account.bank_name }}</div>
+                  <div class="text-sm text-gray-600">{{ account.account_number }} • {{ account.account_name }}</div>
+                  <div v-if="account.currency" class="text-xs text-blue-600 font-medium">{{ account.currency }}</div>
+                </div>
+                <div class="text-blue-500">→</div>
               </div>
-              <div class="text-blue-500">→</div>
             </div>
+          </div>
+
+          <app-button @click="showAddNewForm = true" variant="primary-white" class="w-full">
+            + Add New Bank Account
+          </app-button>
+        </div>
+
+        <!-- Add New Bank Account Form -->
+        <div v-if="shouldShowForm">
+          <p class="text-sm text-gray-600 mb-4">
+            {{ savedBankAccounts && savedBankAccounts.length > 0 ? 'Add a new bank account' : 'Enter your bank account details for the transfer' }}
+          </p>
+
+          <app-form :fields="formFields" @input="handleFormInput" :values="bankForm" />
+
+          <div v-if="savedBankAccounts && savedBankAccounts.length > 0" class="mt-4">
+            <app-button @click="showAddNewForm = false" variant="secondary" class="w-full">
+              ← Back to Saved Accounts
+            </app-button>
           </div>
         </div>
 
-        <app-button
-          @click="showAddNewForm = true"
-          variant="outline"
-          class="w-full"
-        >
-          + Add New Bank Account
-        </app-button>
-      </div>
-
-      <!-- Add New Bank Account Form -->
-      <div v-if="shouldShowForm">
-        <p class="text-sm text-gray-600 mb-4">
-          {{ savedBankAccounts && savedBankAccounts.length > 0 ? 'Add a new bank account' : 'Enter your bank account details for the transfer' }}
-        </p>
-        
-        <app-form
-          :fields="formFields"
-          @input="handleFormInput"
-          :values="bankForm"
-        />
-
-        <div v-if="savedBankAccounts && savedBankAccounts.length > 0" class="mt-4">
-          <app-button
-            @click="showAddNewForm = false"
-            variant="outline"
-            class="w-full"
-          >
-            ← Back to Saved Accounts
+        <!-- Footer -->
+        <div class="flex space-x-3 pt-4 border-t border-gray-200">
+          <app-button @click="handleCancel" variant="secondary" class="flex-1">
+            Cancel
+          </app-button>
+          <app-button @click="handleConfirm" :disabled="!isFormValid" variant="primary" class="flex-1">
+            {{ isProcessing ? 'Processing...' : 'Confirm Bank Account' }}
           </app-button>
         </div>
       </div>
-    </template>
-
-    <template #footer>
-      <div class="flex space-x-3">
-        <app-button
-          @click="handleCancel"
-          variant="outline"
-          class="flex-1"
-        >
-          Cancel
-        </app-button>
-        <app-button
-          @click="handleConfirm"
-          :disabled="!isFormValid"
-          variant="primary"
-          class="flex-1"
-        >
-          {{ isProcessing ? 'Processing...' : 'Confirm Bank Account' }}
-        </app-button>
-      </div>
-    </template>
-  </app-modal>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, computed, watch, reactive } from "vue";
-import AppModal from "../AppModal/index.vue";
-import AppButton from "../AppButton/index.vue";
-import AppForm from "../AppForm/index.vue";
+import AppButton from "../../AppButton/index.vue";
+import { AppFormWrapper } from "../../AppForm/index";
 
 interface BankAccount {
   uuid: string;
@@ -113,9 +97,8 @@ interface BankForm {
 export default defineComponent({
   name: "BankTransferModal",
   components: {
-    AppModal,
     AppButton,
-    AppForm,
+    AppForm: AppFormWrapper,
   },
   props: {
     show: {
@@ -143,7 +126,7 @@ export default defineComponent({
   setup(props, { emit }) {
     const showAddNewForm = ref(false);
     const selectedAccount = ref<BankAccount | null>(null);
-    
+
     const bankForm = reactive<BankForm>({
       bankName: '',
       accountNumber: '',
@@ -200,11 +183,11 @@ export default defineComponent({
 
     const isFormValid = computed(() => {
       if (selectedAccount.value) return true;
-      
+
       return bankForm.bankName.trim() !== '' &&
-             bankForm.accountNumber.trim() !== '' &&
-             bankForm.accountName.trim() !== '' &&
-             bankForm.currency.trim() !== '';
+        bankForm.accountNumber.trim() !== '' &&
+        bankForm.accountName.trim() !== '' &&
+        bankForm.currency.trim() !== '';
     });
 
     const handleFormInput = (values: any) => {

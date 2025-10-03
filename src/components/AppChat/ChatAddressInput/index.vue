@@ -2,27 +2,13 @@
   <div class="w-full flex flex-col space-y-4">
     <!-- Address search input -->
     <div class="space-y-2">
-      <app-dropdown-select
-        placeholder="Search for your address..."
-        :hasTitle="false"
-        v-model="selectedAddress"
-        ref="addressSelect"
-        @onSearch="handleAddressSearch"
-        :options="addressOptions"
-        autoComplete
-        :hasSearch="true"
-        name="DeliveryAddress"
-        usePermanentFloatingLabel
-        searchMessage="Type to search for addresses"
-        :searchIsLoading="addressSearchIsLoading"
-      />
+      <app-select placeholder="Search for your address..." :hasTitle="false" v-model="selectedAddress"
+        ref="addressSelect" @OnSearch="handleAddressSearch" :options="addressOptions" autoComplete :hasSearch="true"
+        name="DeliveryAddress" usePermanentFloatingLabel searchMessage="Type to search for addresses"
+        :searchIsLoading="addressSearchIsLoading" />
       <!-- Use current location -->
-      <button
-        type="button"
-        @click="useCurrentLocation"
-        class="text-xs text-blue-600 hover:underline mt-1"
-        :disabled="isLocating"
-      >
+      <button type="button" @click="useCurrentLocation" class="text-xs text-blue-600 hover:underline mt-1"
+        :disabled="isLocating">
         <span v-if="isLocating">📍 Detecting your location...</span>
         <span v-else>📍 Use my current location</span>
       </button>
@@ -30,17 +16,9 @@
 
     <!-- Additional details input -->
     <div class="space-y-2">
-      <app-form
-        :fields="[{
-          name: 'AddressDetails',
-          type: 'textarea',
-          placeholder: 'Add helpful details (apartment, floor, landmark, etc.)',
-          value: addressDetails,
-          maxCharacter: 500,
-          usePermanentFloatingLabel: true
-        }]"
-        @input="handleDetailsInput"
-      />
+      <app-text-field :has-title="false" type="text"
+        placeholder="Add helpful details (apartment, floor, landmark, etc.)" ref="addressDetailsField"
+        name="AddressDetails" v-model="addressDetails" usePermanentFloatingLabel is-textarea :max-character="500" />
       <div class="text-xs text-gray-500 text-right">{{ addressDetailsLength }}/500</div>
     </div>
 
@@ -53,29 +31,25 @@
 
     <!-- Action buttons -->
     <div class="flex space-x-3 pt-2">
-      <app-button
-        @click="confirmAddress"
-        :disabled="isProcessing"
-        variant="primary"
-        class="px-6 py-3"
-      >
+      <button @click="confirmAddress" :disabled="isProcessing"
+        class="px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors disabled:opacity-50">
         <span v-if="isProcessing">Confirming...</span>
         <span v-else>✓ Continue</span>
-      </app-button>
+      </button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, reactive, ref, computed, onMounted } from "vue";
-import AppDropdownSelect from "../AppDropdownSelect/index.vue";
-import AppForm from "../AppForm/index.vue";
-import AppButton from "../AppButton/index.vue";
+import { AppSelect, AppTextField } from "../..";
+import { Logic } from "@greep/logic";
 
 interface SelectOption {
+  key: string;
+  value: string;
   title: string;
   icon: string;
-  value: string;
 }
 
 declare global {
@@ -87,9 +61,8 @@ declare global {
 export default defineComponent({
   name: "ChatAddressInput",
   components: {
-    AppDropdownSelect,
-    AppForm,
-    AppButton,
+    AppSelect,
+    AppTextField,
   },
   props: {
     onAddressConfirm: {
@@ -149,9 +122,10 @@ export default defineComponent({
           predictions.suggestions.forEach((prediction: any) => {
             const currentPrediction = prediction.placePrediction;
             addressOptions.push({
-              title: currentPrediction.text.text,
-              icon: 'location',
+              key: currentPrediction.text.text,
               value: currentPrediction.text.text,
+              title: "",
+              icon: ""
             });
           });
         }
@@ -264,7 +238,6 @@ export default defineComponent({
       addressOptions,
       isLocating,
       handleAddressSearch,
-      handleDetailsInput,
       confirmAddress,
       cancelAddress,
       useCurrentLocation,
