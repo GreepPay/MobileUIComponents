@@ -130,16 +130,18 @@
         <!-- Actions -->
         <div class="w-full flex flex-row flex-wrap gap-2 mt-3" v-if="message.actions && showActions">
           <template v-for="(item, index) in message.actions" :key="index">
-            <app-button @click="item.handler" :class="`!px-5 !py-2 !border-[1.5px] !bg-transparent ${item.type == 'success'
-              ? '!border-green-500 !text-green-500'
-              : ''
-              } ${item.type == 'info' ? '!border-blue-500 !text-blue-500' : ''
-              } ${item.type == 'danger' ? '!border-red-500 !text-red-500' : ''
-              } ${item.type == 'warning'
-                ? '!border-orange-500 !text-orange-500'
-                : ''
-              } ${item.type == 'primary' ? '!border-purple-500 !text-purple-500' : ''
-              } `">
+            <app-button @click="item.handler" :class="`!px-5 !py-2 !border-[1.5px] ${item.type === 'success'
+              ? '!border-green-500 !text-green !bg-transparent'
+              : item.type === 'info' 
+              ? '!border-blue-500 !text-blue !bg-transparent'
+              : item.type === 'danger'
+              ? '!border-red-500 !text-red-500 !bg-transparent'
+              : item.type === 'warning'
+              ? '!border-orange-500 !text-orange-500 !bg-transparent'
+              : item.type === 'primary'
+              ? '!border-purple-500 !text-purple-500 !bg-transparent'
+              : '!border-gray-400 !text-gray-700 !bg-white hover:!bg-gray-50'
+              }`">
               {{ item.label }}
             </app-button>
           </template>
