@@ -5,9 +5,12 @@
         <app-icon name="arrow-swap" custom-class="!h-[32px]" />
       </div>
 
-      <app-normal-text class="!font-[500]">
-        USDC to {{ item.currency.name }}
+      <app-normal-text class="!font-[500]" >
+        {{ item.currency.name }}
       </app-normal-text>
+      <!-- <app-normal-text class="!font-[500]" v-else>
+        {{ item.currency.name }} to USDC
+      </app-normal-text> -->
     </div>
 
     <div class="flex flex-col pb-3 border-b-[1px] border-[#F0F3F6]">
@@ -95,6 +98,7 @@ interface Item {
     no_of_trades: string;
     success_rate: string;
   };
+  ad_type?: string;
 }
 
 /**
