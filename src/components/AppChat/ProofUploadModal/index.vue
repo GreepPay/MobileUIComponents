@@ -1,6 +1,5 @@
 <template>
-  <!-- Proof Upload Bottom Sheet -->
-  <div v-if="isOpen" class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end" @click="handleClose">
+  <div v-if="show" class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end" @click="handleCancel">
     <div class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
       @click.stop>
       <div class="p-4 pb-8">
@@ -9,14 +8,7 @@
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center space-x-2">
-            <span class="text-xl">📸</span>
-            <div>
-              <h2 class="text-lg font-semibold text-gray-800">Upload Proof</h2>
-              <p class="text-sm text-gray-600">Upload proof of payment or delivery</p>
-            </div>
-          </div>
-          <button @click="handleClose"
+          <button @click="handleCancel"
             class="text-gray-400 hover:text-gray-600 p-2 rounded-full hover:bg-gray-100 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -24,147 +16,148 @@
           </button>
         </div>
 
-        <!-- Content -->
-        <div class="space-y-4">
-          <!-- File Upload Area -->
-          <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-            <input ref="fileInputRef" type="file" class="hidden" accept="image/*,.pdf" @change="handleFileSelect"
-              multiple />
-
-            <div v-if="!selectedFiles.length" class="text-gray-500">
-              <app-icon name="camera" class="w-16 h-16 mx-auto mb-4 text-gray-400" />
-              <p class="text-lg font-medium mb-2">Upload Files</p>
-              <p class="text-sm">Drop files here or click to select</p>
-              <p class="text-xs mt-2">Supports: Images (JPG, PNG) and PDF files</p>
-            </div>
-
-            <div v-else class="space-y-3">
-              <div v-for="(file, index) in selectedFiles" :key="index"
-                class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div class="flex items-center space-x-3">
-                  <app-icon :name="getFileIcon(file.type)" class="w-6 h-6 text-blue-500" />
-                  <div>
-                    <p class="text-sm font-medium">{{ file.name }}</p>
-                    <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
-                  </div>
-                </div>
-                <button @click="removeFile(index)" class="text-red-500 hover:text-red-700 p-1">
-                  <app-icon name="x" class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <app-button @click="openFileSelector" variant="primary-white" class="mt-4">
-              {{ selectedFiles.length ? 'Add More Files' : 'Select Files' }}
-            </app-button>
+        <!-- Proof Upload Content -->
+        <div class="proof-upload-section">
+          <div class="proof-upload-header">
+            <h4>📸 Upload Proof of Payment</h4>
+            <p>Please upload a screenshot or photo of your payment confirmation</p>
           </div>
 
-          <!-- Notes/Comments -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Notes (Optional)
-            </label>
-            <textarea v-model="notes" placeholder="Add any additional notes or comments..."
-              class="w-full p-3 border border-gray-300 rounded-lg resize-none" rows="3" />
-          </div>
-        </div>
+          <div class="proof-upload-content">
+            <app-file-attachment v-model="selectedFile"
+              :placeholder="selectedFile ? selectedFile.name : 'Select proof of payment file'" accept="image/*,.pdf"
+              :is-multiple="false" @update:model-value="handleFileSelect" />
 
-        <!-- Footer -->
-        <div class="flex space-x-3 pt-4 border-t border-gray-200">
-          <app-button @click="handleClose" variant="secondary" class="flex-1">
-            Cancel
-          </app-button>
-          <app-button @click="handleUpload" variant="primary" class="flex-1"
-            :disabled="!selectedFiles.length || isUploading">
-            {{ isUploading ? 'Uploading...' : 'Upload Proof' }}
-          </app-button>
+            <button v-if="selectedFile" @click="handleUpload" class="upload-proof-btn" :disabled="isUploading">
+              {{ isUploading ? '⏳ Uploading...' : '🚀 Upload Proof' }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-import { ref, defineProps, defineEmits } from 'vue'
-import AppButton from '../../AppButton/index.vue'
-import AppIcon from '../../AppIcon/index.vue'
+<script lang="ts">
+import { defineComponent, ref } from 'vue';
+import AppFileAttachment from '../../AppForm/fileAttachment.vue';
+import { Logic } from '../../../composable';
 
-interface UploadedFile {
-  name: string
-  type: string
-  size: number
-  url?: string
-}
+export default defineComponent({
+  name: 'ProofUploadModal',
+  components: {
+    AppFileAttachment,
+  },
+  props: {
+    show: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ['cancel', 'upload-success', 'upload-error'],
+  setup(props, { emit }) {
+    const selectedFile = ref<File | null>(null);
+    const isUploading = ref(false);
 
-interface Props {
-  isOpen: boolean
-  type?: 'payment' | 'delivery'
-}
+    const handleFileSelect = (file: File) => {
+      selectedFile.value = file;
+    };
 
-interface Emits {
-  (e: 'close'): void
-  (e: 'upload', files: File[], notes: string): void
-}
+    const handleCancel = () => {
+      selectedFile.value = null;
+      emit('cancel');
+    };
 
-const props = defineProps<Props>()
-const emit = defineEmits<Emits>()
+    const handleUpload = async () => {
+      if (!selectedFile.value) return;
 
-const fileInputRef = ref<HTMLInputElement>()
-const selectedFiles = ref<File[]>([])
-const notes = ref('')
-const isUploading = ref(false)
+      try {
+        isUploading.value = true;
+        const fileUrl = await Logic.Wallet.UploadFile(selectedFile.value);
 
-const openFileSelector = () => {
-  fileInputRef.value?.click()
-}
+        if (fileUrl) {
+          emit('upload-success', {
+            fileUrl,
+            fileName: selectedFile.value.name,
+            fileType: selectedFile.value.type,
+          });
 
-const handleFileSelect = (event: Event) => {
-  const input = event.target as HTMLInputElement
-  if (input.files) {
-    const newFiles = Array.from(input.files)
-    selectedFiles.value.push(...newFiles)
-  }
-}
+          // Clear the file input
+          selectedFile.value = null;
+        } else {
+          throw new Error('Failed to get file URL from upload');
+        }
+      } catch (error) {
+        console.error('Failed to upload proof:', error);
+        emit('upload-error', error);
+      } finally {
+        isUploading.value = false;
+      }
+    };
 
-const removeFile = (index: number) => {
-  selectedFiles.value.splice(index, 1)
-}
-
-const getFileIcon = (fileType: string): string => {
-  if (fileType.startsWith('image/')) {
-    return 'image'
-  } else if (fileType === 'application/pdf') {
-    return 'document'
-  }
-  return 'document'
-}
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return '0 Bytes'
-  const k = 1024
-  const sizes = ['Bytes', 'KB', 'MB', 'GB']
-  const i = Math.floor(Math.log(bytes) / Math.log(k))
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-
-const handleClose = () => {
-  selectedFiles.value = []
-  notes.value = ''
-  isUploading.value = false
-  emit('close')
-}
-
-const handleUpload = async () => {
-  if (!selectedFiles.value.length) return
-
-  isUploading.value = true
-  try {
-    emit('upload', selectedFiles.value, notes.value)
-    handleClose()
-  } catch (error) {
-    console.error('Upload failed:', error)
-  } finally {
-    isUploading.value = false
-  }
-}
+    return {
+      selectedFile,
+      isUploading,
+      handleFileSelect,
+      handleCancel,
+      handleUpload,
+    };
+  },
+});
 </script>
+
+<style scoped>
+.proof-upload-section {
+  background: transparent;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 20px 0;
+  color: #333;
+  border: 2px dashed #e5e7eb;
+}
+
+.proof-upload-header h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.proof-upload-header p {
+  margin: 0 0 20px 0;
+  opacity: 0.8;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.proof-upload-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-proof-btn {
+  background: #4CAF50;
+  border: none;
+  color: white;
+  padding: 14px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.upload-proof-btn:hover:not(:disabled) {
+  background: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.upload-proof-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+</style>

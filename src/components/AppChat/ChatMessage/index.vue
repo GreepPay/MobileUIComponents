@@ -54,7 +54,7 @@
               <div class="w-full flex flex-row justify-between items-center mb-2">
                 <app-normal-text class="!text-[#666666]">• You get</app-normal-text>
                 <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.youGet
-                  }}</app-normal-text>
+                }}</app-normal-text>
               </div>
 
               <!-- Fee -->
@@ -95,7 +95,7 @@
                 </app-normal-text>
                 <div class="order-summary-address">
                   <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress
-                    }}</app-normal-text>
+                  }}</app-normal-text>
                 </div>
               </div>
             </div>
@@ -132,15 +132,15 @@
           <template v-for="(item, index) in message.actions" :key="index">
             <app-button @click="item.handler" :class="`!px-5 !py-2 !border-[1.5px] ${item.type === 'success'
               ? '!border-green-500 !text-green !bg-transparent'
-              : item.type === 'info' 
-              ? '!border-blue-500 !text-blue !bg-transparent'
-              : item.type === 'danger'
-              ? '!border-red-500 !text-red-500 !bg-transparent'
-              : item.type === 'warning'
-              ? '!border-orange-500 !text-orange-500 !bg-transparent'
-              : item.type === 'primary'
-              ? '!border-purple-500 !text-purple-500 !bg-transparent'
-              : '!border-gray-400 !text-gray-700 !bg-white hover:!bg-gray-50'
+              : item.type === 'info'
+                ? '!border-blue-500 !text-blue !bg-transparent'
+                : item.type === 'danger'
+                  ? '!border-red-500 !text-red-500 !bg-transparent'
+                  : item.type === 'warning'
+                    ? '!border-orange-500 !text-orange-500 !bg-transparent'
+                    : item.type === 'primary'
+                      ? '!border-purple-500 !text-purple-500 !bg-transparent'
+                      : '!border-gray-400 !text-gray-700 !bg-white hover:!bg-gray-50'
               }`">
               {{ item.label }}
             </app-button>
