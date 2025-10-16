@@ -27,78 +27,153 @@
 
           <!-- ORDER SUMMARY DISPLAY -->
           <div v-if="message.isOrderSummary && message.orderSummary" class="order-summary-container">
-            <!-- Delivery fee notice -->
-            <div class="w-full flex flex-row items-center mb-4">
-              <div class="w-[24px] h-[24px] mr-2">
-                <span class="text-lg">⚠️</span>
-              </div>
-              <app-normal-text class="!text-sm !text-[#666666]">
-                Delivery fee is 3 USDC
-              </app-normal-text>
-            </div>
-
-            <!-- Order summary header -->
-            <app-normal-text class="!text-base !font-semibold !text-[#333333] !mb-4">
-              Confirm your order details to move forward with the trade;
-            </app-normal-text>
-
-            <!-- Order details -->
-            <div class="order-summary-details">
-              <!-- You sell -->
-              <div class="w-full flex flex-row justify-between items-center mb-2">
-                <app-normal-text class="!text-[#666666]">• You sell</app-normal-text>
-                <app-normal-text class="!font-semibold">{{ message.orderSummary.youSell }}</app-normal-text>
-              </div>
-
-              <!-- You get -->
-              <div class="w-full flex flex-row justify-between items-center mb-2">
-                <app-normal-text class="!text-[#666666]">• You get</app-normal-text>
-                <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.youGet
-                }}</app-normal-text>
-              </div>
-
-              <!-- Fee -->
-              <div class="w-full flex flex-row justify-between items-center mb-2">
-                <app-normal-text class="!text-[#666666]">• Fee</app-normal-text>
-                <app-normal-text class="!font-semibold">{{ message.orderSummary.fee }}</app-normal-text>
-              </div>
-
-              <!-- Delivery fee -->
-              <div class="w-full flex flex-row justify-between items-center mb-2">
-                <app-normal-text class="!text-[#666666]">• Delivery fee</app-normal-text>
-                <app-normal-text class="!font-semibold">{{ message.orderSummary.deliveryFee }}</app-normal-text>
-              </div>
-
-              <!-- You pay -->
-              <div class="w-full flex flex-row justify-between items-center pt-3 mt-3 order-summary-total">
-                <app-normal-text class="!text-[#333333] !font-medium">• You pay</app-normal-text>
-                <app-normal-text class="!font-bold !text-lg">{{ message.orderSummary.youPay }}</app-normal-text>
-              </div>
-
-              <!-- Payment type -->
-              <div class="w-full flex flex-row justify-between items-center mb-2 mt-3">
-                <app-normal-text class="!text-[#666666]">• Payment type</app-normal-text>
-                <app-normal-text class="!font-semibold">{{ message.orderSummary.paymentType }}</app-normal-text>
-              </div>
-
-              <!-- Payout option -->
-              <div class="w-full flex flex-row justify-between items-center mb-2">
-                <app-normal-text class="!text-[#666666]">• Payout option</app-normal-text>
-                <app-normal-text class="!font-semibold">{{ message.orderSummary.payoutOption }}</app-normal-text>
-              </div>
-
-              <!-- Delivery address / Pickup location -->
-              <div class="w-full flex flex-col mt-3">
-                <app-normal-text class="!text-[#666666] mb-2">
-                  • {{ message.orderSummary.payoutOption === 'Pickup' ? 'Pickup location' : 'We deliver cash to you at'
-                  }}
+            <!-- Delivery-specific summary -->
+            <template v-if="message.orderSummary.itemDescription">
+              <!-- Delivery order header -->
+              <div class="w-full flex flex-row items-center mb-4">
+                <div class="w-[24px] h-[24px] mr-2">
+                  <span class="text-lg">📦</span>
+                </div>
+                <app-normal-text class="!text-base !font-semibold !text-[#333333]">
+                  Delivery Order Summary
                 </app-normal-text>
-                <div class="order-summary-address">
-                  <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress
-                  }}</app-normal-text>
+              </div>
+
+              <!-- Delivery details -->
+              <div class="order-summary-details">
+                <!-- Item -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Item</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.itemDescription }}</app-normal-text>
+                </div>
+
+                <!-- Weight -->
+                <div class="w-full flex flex-row justify-between items-center mb-2" v-if="message.orderSummary.weight">
+                  <app-normal-text class="!text-[#666666]">• Weight</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.weight }}</app-normal-text>
+                </div>
+
+                <!-- Delivery cost -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Delivery cost</app-normal-text>
+                  <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.deliveryFee
+                    }}</app-normal-text>
+                </div>
+
+                <!-- Payment method -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Payment method</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.paymentType }}</app-normal-text>
+                </div>
+
+                <!-- Tracking number -->
+                <div class="w-full flex flex-row justify-between items-center mb-2"
+                  v-if="message.orderSummary.trackingNumber">
+                  <app-normal-text class="!text-[#666666]">• Tracking number</app-normal-text>
+                  <app-normal-text class="!font-semibold !text-blue-600">{{ message.orderSummary.trackingNumber
+                    }}</app-normal-text>
+                </div>
+
+                <!-- Order ID -->
+                <div class="w-full flex flex-row justify-between items-center mb-2" v-if="message.orderSummary.orderId">
+                  <app-normal-text class="!text-[#666666]">• Order ID</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.orderId }}</app-normal-text>
+                </div>
+
+                <!-- Status -->
+                <div class="w-full flex flex-row justify-between items-center pt-3 mt-3 order-summary-total"
+                  v-if="message.orderSummary.status">
+                  <app-normal-text class="!text-[#333333] !font-medium">• Status</app-normal-text>
+                  <app-normal-text class="!font-bold !text-lg !text-orange-600">{{ message.orderSummary.status
+                    }}</app-normal-text>
+                </div>
+
+                <!-- Pickup and delivery addresses -->
+                <div class="w-full flex flex-col mt-3">
+                  <app-normal-text class="!text-[#666666] mb-2">• Delivery route</app-normal-text>
+                  <div class="order-summary-address">
+                    <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress
+                      }}</app-normal-text>
+                  </div>
                 </div>
               </div>
-            </div>
+            </template>
+
+            <!-- P2P trading summary (existing) -->
+            <template v-else>
+              <!-- Delivery fee notice -->
+              <div class="w-full flex flex-row items-center mb-4">
+                <div class="w-[24px] h-[24px] mr-2">
+                  <span class="text-lg">⚠️</span>
+                </div>
+                <app-normal-text class="!text-sm !text-[#666666]">
+                  Delivery fee is 3 USDC
+                </app-normal-text>
+              </div>
+
+              <!-- Order summary header -->
+              <app-normal-text class="!text-base !font-semibold !text-[#333333] !mb-4">
+                Confirm your order details to move forward with the trade;
+              </app-normal-text>
+
+              <!-- Order details -->
+              <div class="order-summary-details">
+                <!-- You sell -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• You sell</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.youSell }}</app-normal-text>
+                </div>
+
+                <!-- You get -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• You get</app-normal-text>
+                  <app-normal-text class="!font-semibold !text-green-600">{{ message.orderSummary.youGet
+                    }}</app-normal-text>
+                </div>
+
+                <!-- Fee -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Fee</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.fee }}</app-normal-text>
+                </div>
+
+                <!-- Delivery fee -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Delivery fee</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.deliveryFee }}</app-normal-text>
+                </div>
+
+                <!-- You pay -->
+                <div class="w-full flex flex-row justify-between items-center pt-3 mt-3 order-summary-total">
+                  <app-normal-text class="!text-[#333333] !font-medium">• You pay</app-normal-text>
+                  <app-normal-text class="!font-bold !text-lg">{{ message.orderSummary.youPay }}</app-normal-text>
+                </div>
+
+                <!-- Payment type -->
+                <div class="w-full flex flex-row justify-between items-center mb-2 mt-3">
+                  <app-normal-text class="!text-[#666666]">• Payment type</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.paymentType }}</app-normal-text>
+                </div>
+
+                <!-- Payout option -->
+                <div class="w-full flex flex-row justify-between items-center mb-2">
+                  <app-normal-text class="!text-[#666666]">• Payout option</app-normal-text>
+                  <app-normal-text class="!font-semibold">{{ message.orderSummary.payoutOption }}</app-normal-text>
+                </div>
+
+                <!-- Delivery address / Pickup location -->
+                <div class="w-full flex flex-col mt-3">
+                  <app-normal-text class="!text-[#666666] mb-2">
+                    • {{ message.orderSummary.payoutOption === 'Pickup' ? 'Pickup location' : 'We deliver cash to youat'
+                    }}
+                  </app-normal-text>
+                  <div class="order-summary-address">
+                    <app-normal-text class="!text-[#333333] !font-medium">{{ message.orderSummary.deliveryAddress
+                      }}</app-normal-text>
+                  </div>
+                </div>
+              </div>
+            </template>
           </div>
 
           <!-- REGULAR MESSAGE CONTENT (when not order summary) -->

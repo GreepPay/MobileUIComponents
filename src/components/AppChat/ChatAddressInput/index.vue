@@ -11,7 +11,7 @@
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-2">
             <span class="text-xl">📍</span>
-            <span class="text-lg font-semibold text-gray-800">Delivery Address</span>
+            <span class="text-lg font-semibold text-gray-800">{{ addressType }}</span>
           </div>
           <button @click="handleCancel" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
             <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,11 +24,11 @@
         <div class="space-y-4">
           <!-- Address search input -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Address</label>
-            <app-select placeholder="Search for your address..." :hasTitle="false" v-model="selectedAddress"
-              ref="addressSelect" @OnSearch="handleAddressSearch" :options="addressOptions" autoComplete
-              :hasSearch="true" name="DeliveryAddress" usePermanentFloatingLabel
-              searchMessage="Type to search for addresses" :searchIsLoading="addressSearchIsLoading" />
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ addressType }}</label>
+            <app-select :placeholder="placeholderText" :hasTitle="false" v-model="selectedAddress" ref="addressSelect"
+              @OnSearch="handleAddressSearch" :options="addressOptions" autoComplete :hasSearch="true"
+              name="DeliveryAddress" usePermanentFloatingLabel :searchMessage="searchMessage"
+              :searchIsLoading="addressSearchIsLoading" />
             <!-- Use current location -->
             <button type="button" @click="useCurrentLocation" class="text-xs text-blue-600 hover:underline mt-1"
               :disabled="isLocating">
@@ -40,8 +40,7 @@
           <!-- Additional details input -->
           <div class="space-y-2">
             <label class="block text-sm font-medium text-gray-700 mb-1">Address Details</label>
-            <app-text-field :has-title="false" type="text"
-              placeholder="Add helpful details (apartment, floor, landmark, etc.)" ref="addressDetailsField"
+            <app-text-field :has-title="false" type="text" :placeholder="detailsPlaceholder" ref="addressDetailsField"
               name="AddressDetails" v-model="addressDetails" usePermanentFloatingLabel is-textarea
               :max-character="500" />
             <div class="text-xs text-gray-500 text-right">{{ addressDetailsLength }}/500</div>
@@ -49,7 +48,7 @@
 
           <!-- Address preview -->
           <div v-if="selectedAddress" class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-            <div class="text-sm font-medium text-blue-800 mb-1">Delivery Address:</div>
+            <div class="text-sm font-medium text-blue-800 mb-1">{{ addressType }}:</div>
             <div class="text-sm text-blue-700">{{ selectedAddress }}</div>
             <div v-if="addressDetails" class="text-sm text-blue-600 mt-1">{{ addressDetails }}</div>
           </div>
@@ -106,6 +105,13 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    addressType: {
+      type: String,
+      default: 'Delivery Address',
+      validator: (value: string) => {
+        return ['Delivery Address', 'Pickup Address'].includes(value) || value.length > 0;
+      }
+    },
   },
   emits: ['address-confirm', 'cancel'],
   setup(props, { emit }) {
@@ -120,6 +126,24 @@ export default defineComponent({
     const isLocating = ref(false);
 
     const addressDetailsLength = computed(() => addressDetails.value.length);
+
+    // Computed properties for dynamic text based on address type
+    const placeholderText = computed(() => {
+      const isPickup = props.addressType.toLowerCase().includes('pickup');
+      return isPickup ? 'Search for pickup address...' : 'Search for your address...';
+    });
+
+    const searchMessage = computed(() => {
+      const isPickup = props.addressType.toLowerCase().includes('pickup');
+      return isPickup ? 'Type to search for pickup addresses' : 'Type to search for addresses';
+    });
+
+    const detailsPlaceholder = computed(() => {
+      const isPickup = props.addressType.toLowerCase().includes('pickup');
+      return isPickup
+        ? 'Add helpful details for pickup (apartment, floor, landmark, etc.)'
+        : 'Add helpful details (apartment, floor, landmark, etc.)';
+    });
 
     const handleDetailsInput = (values: any) => {
       addressDetails.value = values.AddressDetails || '';
@@ -139,9 +163,19 @@ export default defineComponent({
       addressOptions.splice(0, addressOptions.length);
 
       try {
-        if (!autocompleteSuggestion.value || !searchValue) return;
+        if (!autocompleteSuggestion.value || !searchValue) {
+          console.log("⏳ AutocompleteSuggestion not ready, initializing...");
+          await initPlacesService();
+
+          if (!autocompleteSuggestion.value) {
+            console.error("❌ Failed to initialize Google Places AutocompleteSuggestion");
+            return;
+          }
+        }
 
         addressSearchIsLoading.value = true;
+        console.log("🔍 Searching for addresses:", searchValue);
+
         const predictions = await autocompleteSuggestion.value.fetchAutocompleteSuggestions({
           input: searchValue,
           sessionToken: sessionToken.value,
@@ -157,6 +191,9 @@ export default defineComponent({
               icon: ""
             });
           });
+          console.log("✅ Found", predictions.suggestions.length, "address suggestions");
+        } else {
+          console.log("📭 No address suggestions found");
         }
       } catch (error) {
         console.error("Error searching addresses:", error);
@@ -179,8 +216,13 @@ export default defineComponent({
             const { latitude, longitude } = position.coords;
 
             if (!geocoder.value) {
-              console.error("Google Maps Geocoder not initialized.");
-              return;
+              console.error("Google Maps Geocoder not initialized. Attempting to initialize...");
+              await initPlacesService();
+
+              if (!geocoder.value) {
+                console.error("Failed to initialize Google Maps Geocoder.");
+                return;
+              }
             }
 
             geocoder.value.geocode(
@@ -188,8 +230,9 @@ export default defineComponent({
               (results: any, status: any) => {
                 if (status === "OK" && results[0]) {
                   selectedAddress.value = results[0].formatted_address;
+                  console.log("✅ Current location address found:", results[0].formatted_address);
                 } else {
-                  console.error("Unable to fetch address for current location.");
+                  console.error("Unable to fetch address for current location. Status:", status);
                 }
               }
             );
@@ -202,6 +245,11 @@ export default defineComponent({
         (error) => {
           isLocating.value = false;
           console.error("Unable to retrieve your location:", error);
+        },
+        {
+          timeout: 10000, // 10 second timeout
+          enableHighAccuracy: true,
+          maximumAge: 300000 // 5 minutes
         }
       );
     };
@@ -241,7 +289,7 @@ export default defineComponent({
 
     const initPlacesService = async () => {
       try {
-        // @ts-ignore Google Maps API
+        // Check if Google Maps API is loaded
         if (typeof window !== 'undefined' && (window as any).google?.maps) {
           const { AutocompleteSuggestion, AutocompleteSessionToken, Geocoder } =
             await (window as any).google.maps.importLibrary("places");
@@ -249,10 +297,48 @@ export default defineComponent({
           autocompleteSuggestion.value = AutocompleteSuggestion;
           sessionToken.value = new AutocompleteSessionToken();
           geocoder.value = new (window as any).google.maps.Geocoder();
+          console.log("✅ Google Maps Places service initialized successfully");
+        } else {
+          // Wait for Google Maps API to load
+          console.log("⏳ Waiting for Google Maps API to load...");
+          await waitForGoogleMaps();
+
+          if ((window as any).google?.maps) {
+            const { AutocompleteSuggestion, AutocompleteSessionToken, Geocoder } =
+              await (window as any).google.maps.importLibrary("places");
+
+            autocompleteSuggestion.value = AutocompleteSuggestion;
+            sessionToken.value = new AutocompleteSessionToken();
+            geocoder.value = new (window as any).google.maps.Geocoder();
+            console.log("✅ Google Maps Places service initialized successfully (after wait)");
+          } else {
+            console.error("❌ Google Maps API failed to load");
+          }
         }
       } catch (error) {
         console.error("Error initializing Google Places service:", error);
       }
+    };
+
+    const waitForGoogleMaps = (): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        let attempts = 0;
+        const maxAttempts = 20; // Wait up to 10 seconds (20 * 500ms)
+
+        const checkGoogleMaps = () => {
+          attempts++;
+
+          if ((window as any).google?.maps) {
+            resolve();
+          } else if (attempts >= maxAttempts) {
+            reject(new Error("Google Maps API failed to load within timeout"));
+          } else {
+            setTimeout(checkGoogleMaps, 500);
+          }
+        };
+
+        checkGoogleMaps();
+      });
     };
 
     const handleCancel = () => {
@@ -270,6 +356,9 @@ export default defineComponent({
       addressSearchIsLoading,
       addressOptions,
       isLocating,
+      placeholderText,
+      searchMessage,
+      detailsPlaceholder,
       handleAddressSearch,
       confirmAddress,
       cancelAddress,
