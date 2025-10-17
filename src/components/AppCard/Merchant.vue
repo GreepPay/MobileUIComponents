@@ -39,12 +39,18 @@
 
     <div class="bg-white flex items-center w-full py-3">
       <!--  -->
-      <app-avatar
-        v-if="merchant.logo"
-        :src="merchant.logo"
-        custom-class="!h-11"
-      />
-      <app-icon v-else name="grp-union" custom-class="!h-11 rounded-full" />
+      <div class="!h-11 !w-11 rounded-full rounded-full">
+        <app-avatar
+          v-if="merchant.logo"
+          :src="merchant.logo"
+          custom-class="!h-11 !w-11 rounded-full"
+        />
+        <app-icon
+          v-else
+          name="grp-union"
+          custom-class="!h-11 !w-11 rounded-full"
+        />
+      </div>
 
       <div class="ml-3 gap-4 bg-white truncate">
         <app-header-text customClass="leading-6 !text-sm !text-black truncate">

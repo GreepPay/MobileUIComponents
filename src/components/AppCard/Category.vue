@@ -21,7 +21,7 @@
   import { defineComponent } from "vue"
   import AppAvatar from "../AppAvatar"
   import { AppNormalText } from "../AppTypography"
-  
+
   interface CategoryAvatar {
     label: string
     image: string

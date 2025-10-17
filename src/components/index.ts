@@ -71,6 +71,18 @@ import {
 import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts"
 import { AppBottomBar } from "./AppNavigator"
 
+import {
+  AppChat,
+  ChatTopBar,
+  ChatBottomBar,
+  ChatMessage,
+  ChatAddressInput,
+  BankTransferModal,
+  ProofUploadModal,
+  PaymentConfirmation,
+  PickupLocationModal,
+} from "./AppChat"
+
 export {
   AppButton,
   AppHeaderText,
@@ -143,4 +155,13 @@ export {
   AppExchangeAd,
   AppEvent,
   AppEmptyPage,
+  AppChat,
+  ChatTopBar,
+  ChatBottomBar,
+  ChatMessage,
+  ChatAddressInput,
+  BankTransferModal,
+  ProofUploadModal,
+  PaymentConfirmation,
+  PickupLocationModal,
 }

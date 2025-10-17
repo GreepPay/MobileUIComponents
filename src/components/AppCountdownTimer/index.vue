@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, onUnmounted } from "vue";
+import { defineComponent, ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { AppNormalText } from "../AppTypography";
 
 /**
@@ -58,6 +58,15 @@ export default defineComponent({
       default: "Available for",
     },
     /**
+     * Time format: 'mm:ss' or 'hh:mm:ss'
+     * @default "auto" (auto-detects based on duration)
+     */
+    format: {
+      type: String,
+      default: "auto",
+      validator: (value: string) => ["mm:ss", "hh:mm:ss", "auto"].includes(value),
+    },
+    /**
      * Custom class for styling.
      * @default ""
      */
@@ -72,12 +81,29 @@ export default defineComponent({
     let timer: number | null = null;
 
     const formattedTime = computed(() => {
-      const minutes = Math.floor(timeLeft.value / 60);
+      const hours = Math.floor(timeLeft.value / 3600);
+      const minutes = Math.floor((timeLeft.value % 3600) / 60);
       const seconds = timeLeft.value % 60;
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-        2,
-        "0"
-      )}`;
+
+      // Determine format to use
+      let useFormat = props.format;
+      if (useFormat === "auto") {
+        useFormat = timeLeft.value >= 3600 ? "hh:mm:ss" : "mm:ss";
+      }
+
+      if (useFormat === "hh:mm:ss") {
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+          2,
+          "0"
+        )}:${String(seconds).padStart(2, "0")}`;
+      } else {
+        // mm:ss format
+        const totalMinutes = Math.floor(timeLeft.value / 60);
+        return `${String(totalMinutes).padStart(2, "0")}:${String(seconds).padStart(
+          2,
+          "0"
+        )}`;
+      }
     });
 
     const startCountdown = () => {
@@ -90,6 +116,16 @@ export default defineComponent({
         }
       }, 1000);
     };
+
+    // Watch for duration changes and reset timer
+    watch(() => props.duration, (newDuration) => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+      timeLeft.value = newDuration;
+      startCountdown();
+    });
 
     onMounted(startCountdown);
 

@@ -3,8 +3,9 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, onMounted, watch } from "vue"
-  import QRCodeStyling from "qr-code-styling"
+import { defineComponent, onMounted } from "vue";
+// Dynamic import to avoid ES module issues
+let QRCode: any;
 
   export default defineComponent({
     name: "AppQrCode",
@@ -19,50 +20,27 @@
         Math.random().toString(36).substring(2, 15) +
         Math.random().toString(36).substring(2, 15)
 
-      let qrCode: QRCodeStyling | null = null
+    onMounted(async () => {
+      try {
+        // Dynamically import QR code library
+        const qrcodeModule = await import('qrcode');
+        QRCode = qrcodeModule.default || qrcodeModule;
+        
+        setTimeout(() => {
+          const canvas = document.getElementById(uniqueId);
 
-      const renderQr = () => {
-        const container = document.getElementById(uniqueId)
-        if (!container) return
-
-        const parentWidth = container?.parentElement?.clientWidth || 200
-        const parentHeight = container?.parentElement?.clientHeight || 200
-
-        // Clear previous QR before appending new one
-        container.innerHTML = ""
-
-        qrCode = new QRCodeStyling({
-          width: parentWidth,
-          height: parentHeight,
-          type: "svg",
-          data: props.data.toString(),
-          image: "https://greep.blob.core.windows.net/greep/logo.png",
-          dotsOptions: {
-            color: "#000000",
-            type: "rounded",
-          },
-          backgroundOptions: {
-            color: "#ffffff",
-          },
-          imageOptions: {
-            margin: 8,
-            crossOrigin: "anonymous",
-          },
-        })
-
-        qrCode.append(container)
+          // Calculate parent container inner width
+          const parentWidth = canvas?.parentElement?.clientWidth;
+          if (canvas && QRCode) {
+            QRCode.toCanvas(canvas, props.data.toString(), {
+              width: parentWidth,
+            });
+          }
+        }, 500);
+      } catch (error) {
+        console.error('Failed to load QR code library:', error);
       }
-
-      onMounted(() => {
-        setTimeout(() => renderQr(), 500)
-      })
-
-      watch(
-        () => props.data,
-        (newValue) => {
-          if (newValue) renderQr()
-        }
-      )
+    });
 
       return {
         uniqueId,

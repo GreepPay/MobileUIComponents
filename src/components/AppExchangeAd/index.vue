@@ -1,17 +1,16 @@
 <template>
-  <div
-    class="px-4 py-4 mb-4 border-[1.5px] rounded-[12px] border-[#E0E2E4] flex flex-col"
-  >
-    <div
-      class="flex flex-row items-center pb-3 mb-3 border-b-[1px] border-[#F0F3F6]"
-    >
+  <div class="px-4 py-4 mb-4 border-[1.5px] rounded-[12px] border-[#E0E2E4] flex flex-col">
+    <div class="flex flex-row items-center pb-3 mb-3 border-b-[1px] border-[#F0F3F6]">
       <div class="w-[32px] mr-2">
-        <app-icon name="bottom-bar/ads-active" custom-class="!h-[32px]" />
+        <app-icon name="arrow-swap" custom-class="!h-[32px]" />
       </div>
 
-      <app-normal-text class="!font-[500]">
-        USDC to {{ item.currency.name }}
+      <app-normal-text class="!font-[500]" >
+        {{ item.currency.name }}
       </app-normal-text>
+      <!-- <app-normal-text class="!font-[500]" v-else>
+        {{ item.currency.name }} to USDC
+      </app-normal-text> -->
     </div>
 
     <div class="flex flex-col pb-3 border-b-[1px] border-[#F0F3F6]">
@@ -23,11 +22,8 @@
     </div>
 
     <!-- Limit -->
-    <div
-      :class="`flex flex-col  ${
-        item.trader ? 'py-3 border-b-[1px] border-[#F0F3F6]' : 'pt-3'
-      }`"
-    >
+    <div :class="`flex flex-col  ${item.trader ? 'py-3 border-b-[1px] border-[#F0F3F6]' : 'pt-3'
+      }`">
       <div class="flex flex-col pb-3">
         <app-normal-text class="!text-gray-500 pb-1">
           Cash Limit
@@ -54,7 +50,7 @@
     <div class="flex flex-col pt-3" v-if="item.trader">
       <div class="w-full flex flex-row items-center">
         <div class="w-[43px]">
-          <app-avatar :src="item.trader.photo_url" :size="40" />
+          <app-avatar :src="item.trader.photo_url" :name="item.trader.name" :size="40" />
         </div>
         <div class="flex flex-col space-y-[1px] pl-1">
           <app-normal-text class="!font-semibold !line-clamp-1">
@@ -102,6 +98,7 @@ interface Item {
     no_of_trades: string;
     success_rate: string;
   };
+  ad_type?: string;
 }
 
 /**

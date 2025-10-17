@@ -1,8 +1,11 @@
 <template>
-  <div :class="['h-fit w-[140px]', customClass]" @click="viewProduct">
-    <div class="w-[140px] h-32 relative rounded-[16px]">
+  <div
+    :class="['h-fit min-w-[140px] w-full', customClass]"
+    @click="viewProduct"
+  >
+    <div class="min-w-[140px] w-full h-32 relative rounded-[16px]">
       <app-image-loader
-        :photo-url="product.imageUrl"
+        :photo-url="product.imageUrl || defaultBanner"
         :alt="product.name"
         :size="imageSize"
         custom-class="size-full  rounded-[16px]"
@@ -13,7 +16,9 @@
           </span> -->
 
           <span
-            class="absolute bottom-2 right-2 size-8 bg-white rounded-full flex items-center justify-center"
+            class="absolute bottom-2 right-2 size-8 bg-white border shadow rounded-full flex items-center justify-center"
+            :class="isInCart ? '!border-green' : '!border-red'"
+            @click="emit('click', product)"
           >
             <app-icon name="add" class="h-5" />
           </span>
@@ -23,10 +28,10 @@
 
     <div class="flex flex-col pt-2">
       <app-normal-text class="!text-xs !text-black !truncate pb-0.5">
-        {{ product.name }}
+        {{ product?.name }}
       </app-normal-text>
       <app-normal-text class="!text-sm !font-bold !text-black !truncate">
-        {{ product.price }}
+        {{ product?.price }}
       </app-normal-text>
     </div>
   </div>
@@ -47,7 +52,6 @@
     price: string
     imageUrl: string
   }
-
   export default defineComponent({
     name: "AppMerchantProduct",
     components: {
@@ -68,15 +72,21 @@
         type: String,
         default: "",
       },
+      isInCart: {
+        type: Boolean,
+        default: false,
+      },
     },
     emits: ["click"],
     setup(_, { emit }) {
+      const defaultBanner = "/images/greep-transparent-logo.svg"
       const viewProduct = (product: MerchantProduct) => {
         emit("click", product)
       }
 
       return {
         viewProduct,
+        defaultBanner,
       }
     },
   })

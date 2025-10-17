@@ -101,36 +101,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { AppHeaderText, AppNormalText } from "../AppTypography";
+  import { defineComponent } from "vue"
+  import { AppHeaderText, AppNormalText } from "../AppTypography"
 
-export default defineComponent({
-  name: "AppVariantCard",
-  components: {
-    AppHeaderText,
-    AppNormalText,
-  },
-  props: {
-    variant: {
-      type: Object as () => {
-        id: string;
-        sku: string;
-        ticket_name: string;
-        name: string;
-        price: string;
-        color: string;
-        time: string;
-        date: string;
+  export default defineComponent({
+    name: "AppVariantCard",
+    components: {
+      AppHeaderText,
+      AppNormalText,
+    },
+    props: {
+      variant: {
+        type: Object as () => {
+          id: string
+          sku: string
+          ticket_name: string
+          name: string
+          price: string
+          color: string
+          time: string
+          date: string
+        },
+        required: true,
       },
-      required: true,
+      customClass: {
+        type: String,
+        default: "",
+      },
     },
-    customClass: {
-      type: String,
-      default: "",
+    setup() {
+      return {}
     },
-  },
-  setup() {
-    return {};
-  },
-});
+  })
 </script>
