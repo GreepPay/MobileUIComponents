@@ -4,6 +4,7 @@ import ChatTopBar from "./ChatTopBar";
 import ChatBottomBar from "./ChatBottomBar";
 import ChatMessage from "./ChatMessage";
 import ChatAddressInput from "./ChatAddressInput";
+import DeliveryAddressInput from "./DeliveryAddressInput";
 import BankTransferModal from "./BankTransferModal";
 import ProofUploadModal from "./ProofUploadModal";
 import PaymentConfirmation from "./PaymentConfirmation";
@@ -15,6 +16,7 @@ export {
   ChatBottomBar,
   ChatMessage,
   ChatAddressInput,
+  DeliveryAddressInput,
   BankTransferModal,
   ProofUploadModal,
   PaymentConfirmation,
