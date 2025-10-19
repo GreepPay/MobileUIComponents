@@ -16,11 +16,15 @@
           </span> -->
 
           <span
-            class="absolute bottom-2 right-2 size-8 bg-white border shadow rounded-full flex items-center justify-center"
-            :class="isInCart ? '!border-green' : '!border-red'"
-            @click="emit('click', product)"
+            class="absolute bottom-2 right-2 size-7 bg-white shadow rounded-full flex items-center justify-center"
+            :class="isInCart && '!border !border-red '"
+            @click="isInCart ? removeFromCart() : addToCart()"
           >
-            <app-icon name="add" class="h-5" />
+            <app-icon
+              :name="isInCart ? 'minus' : 'add'"
+              class="h-5"
+              :class="isInCart && 'scale-[70%]'"
+            />
           </span>
         </div>
       </app-image-loader>
@@ -31,7 +35,7 @@
         {{ product?.name }}
       </app-normal-text>
       <app-normal-text class="!text-sm !font-bold !text-black !truncate">
-        {{ product?.price }}
+        {{ product?.formattedPrice }}
       </app-normal-text>
     </div>
   </div>
@@ -46,12 +50,25 @@
   /**
    * MerchantProduct Products
    */
+  type ProductSource = "market" | "event" | "ticket" | "other"
+  type ProductCategory = "physical" | "ticket" | "event" | "other"
+
   interface MerchantProduct {
     id: string | number
+    uuid?: string
     name: string
-    price: string
+    price: number
+    formattedPrice: string
+    currency?: string
+    currencySymbol?: string
     imageUrl: string
+    quantity: number
+    category: ProductCategory
+    productType?: ProductSource
+    selected?: boolean
+    meta?: Record<string, any>
   }
+
   export default defineComponent({
     name: "AppMerchantProduct",
     components: {
@@ -77,16 +94,19 @@
         default: false,
       },
     },
-    emits: ["click"],
-    setup(_, { emit }) {
+    emits: ["click", "add-to-cart"],
+    setup(props, { emit }) {
       const defaultBanner = "/images/greep-transparent-logo.svg"
-      const viewProduct = (product: MerchantProduct) => {
-        emit("click", product)
-      }
+
+      const viewProduct = () => emit("click", props.product)
+      const addToCart = () => emit("add-to-cart", props.product)
+      const removeFromCart = () => emit("remove-from-cart", props.product)
 
       return {
         viewProduct,
         defaultBanner,
+        addToCart,
+        removeFromCart,
       }
     },
   })

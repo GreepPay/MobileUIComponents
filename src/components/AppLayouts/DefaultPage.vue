@@ -16,13 +16,20 @@
         <div class="w-full flex flex-row items-center justify-between">
           <app-image-loader
             :photo-url="photoUrl"
-            custom-class="h-[40px] w-[40px] rounded-full"
+            custom-class="h-[40px] w-[40px] rounded-full border-[1px] border-gray-100"
             @click="Logic.Common.GoToRoute('/profile')"
           />
 
-          <app-header-text class="!text-left">
+          <div class="flex flex-row items-center space-x-1" @click="titleClickAction()">
+            <app-header-text class="!text-left line-clamp-1">
             {{ title }}
           </app-header-text>
+            <app-icon
+              v-if="icon"
+              :name="icon"
+              custom-class="!h-[8px]"
+            />
+          </div>
 
           <div
             @click="Logic.Common.GoToRoute('/notifications')"
@@ -69,6 +76,14 @@ export default defineComponent({
       default:
         Logic.Auth.AuthUser?.profile?.profile_picture ||
         "/images/profile-image.svg",
+    },
+    icon: {
+      type: String,
+      default: "",
+    },
+    titleClickAction: {
+      type: Function,
+      default: () => {},
     },
   },
   name: "DefaultIndexLayout",
