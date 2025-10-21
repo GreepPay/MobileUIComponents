@@ -11,68 +11,76 @@
                 <div class="flex items-center justify-between mb-6">
                     <div class="flex items-center space-x-2">
                         <span class="text-xl">🚚</span>
-                        <span class="text-lg font-semibold text-gray-800">{{ addressType }}</span>
+                        <app-header-text class="text-lg text-gray-800">{{ addressType }}</app-header-text>
                     </div>
-                    <button @click="handleCancel" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                    </button>
+                    <app-button variant="text" icon-only @click="handleCancel" custom-class="!p-2 hover:bg-gray-100">
+                        <template #icon>
+                            <app-icon name="close" custom-class="w-5 h-5 text-gray-500" />
+                        </template>
+                    </app-button>
                 </div>
 
                 <!-- Content -->
-                <div class="space-y-4">
-                    <!-- Area Selection -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Select Area</label>
-                        <app-select :placeholder="'Choose your area...'" :hasTitle="false" v-model="selectedArea"
-                            ref="areaSelect" :options="areaOptions" :hasSearch="true" name="DeliveryArea"
-                            usePermanentFloatingLabel />
-                    </div>
+                <app-form-wrapper :parent-refs="formRefs">
+                    <div class="space-y-4">
+                        <!-- Area Selection -->
+                        <div class="space-y-2">
+                            <app-normal-text class="block text-sm font-medium text-gray-700 mb-1">Select
+                                Area</app-normal-text>
+                            <app-select :placeholder="'Choose your area...'" :hasTitle="false" v-model="selectedArea"
+                                ref="areaSelect" :options="areaOptions" :hasSearch="true" name="DeliveryArea" />
+                        </div>
 
-                    <!-- Google Maps Link -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps Location Link</label>
-                        <app-text-field :has-title="false" type="url"
-                            :placeholder="'Paste your Google Maps location link here...'" ref="mapsLinkField"
-                            name="MapsLink" v-model="mapsLink" usePermanentFloatingLabel />
-                        <div class="text-xs text-gray-500">
-                            💡 Open Google Maps, find your location, tap "Share" and copy the link
+                        <!-- Google Maps Link -->
+                        <div class="space-y-2">
+                            <app-normal-text class="block text-sm font-medium text-gray-700 mb-1">Google Maps Location
+                                Link</app-normal-text>
+                            <app-text-field :has-title="false" type="url"
+                                :placeholder="'Paste your Google Maps location link here...'" ref="mapsLinkField"
+                                name="MapsLink" v-model="mapsLink" />
+                            <app-normal-text class="text-xs text-gray-500">
+                                💡 Open Google Maps, find your location, tap "Share" and copy the link
+                            </app-normal-text>
+                        </div>
+
+                        <!-- Additional details input -->
+                        <div class="space-y-2">
+                            <app-normal-text class="block text-sm font-medium text-gray-700 mb-1">Address
+                                Details</app-normal-text>
+                            <app-text-field :has-title="false" type="text" :placeholder="detailsPlaceholder"
+                                ref="addressDetailsField" name="AddressDetails" v-model="addressDetails" is-textarea
+                                :max-character="500" />
+                        </div>
+
+                        <!-- Address preview -->
+                        <div v-if="selectedArea && (mapsLink || addressDetails)"
+                            class="bg-blue-50 p-3 rounded-lg border border-blue-200">
+                            <app-normal-text class="text-sm font-medium text-blue-800 mb-1">{{ addressType
+                            }}:</app-normal-text>
+                            <app-normal-text class="text-sm text-blue-700">📍 {{ selectedArea }}</app-normal-text>
+                            <div v-if="mapsLink" class="text-sm text-blue-600 mt-1">
+                                🗺️ <app-link-text text="View on Google Maps" @click="openMapsLink"
+                                    custom-class="!text-blue-600 hover:!text-blue-800" />
+                            </div>
+                            <app-normal-text v-if="addressDetails" class="text-sm text-blue-600 mt-1">📝 {{
+                                addressDetails
+                            }}</app-normal-text>
                         </div>
                     </div>
-
-                    <!-- Additional details input -->
-                    <div class="space-y-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Address Details</label>
-                        <app-text-field :has-title="false" type="text" :placeholder="detailsPlaceholder"
-                            ref="addressDetailsField" name="AddressDetails" v-model="addressDetails"
-                            usePermanentFloatingLabel is-textarea :max-character="500" />
-                        <div class="text-xs text-gray-500 text-right">{{ addressDetailsLength }}/500</div>
-                    </div>
-
-                    <!-- Address preview -->
-                    <div v-if="selectedArea && (mapsLink || addressDetails)"
-                        class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-                        <div class="text-sm font-medium text-blue-800 mb-1">{{ addressType }}:</div>
-                        <div class="text-sm text-blue-700">📍 {{ selectedArea }}</div>
-                        <div v-if="mapsLink" class="text-sm text-blue-600 mt-1">
-                            🗺️ <a :href="mapsLink" target="_blank" class="underline hover:text-blue-800">View on Google
-                                Maps</a>
-                        </div>
-                        <div v-if="addressDetails" class="text-sm text-blue-600 mt-1">📝 {{ addressDetails }}</div>
-                    </div>
-                </div>
+                </app-form-wrapper>
             </div>
 
             <!-- Modal Footer -->
             <div class="modal-footer">
-                <button class="btn-secondary" @click="handleCancel">
+                <app-button variant="secondary" @click="handleCancel" custom-class="px-6">
                     Cancel
-                </button>
-                <button class="btn-primary" @click="confirmAddress" :disabled="!isValidAddress || isProcessing">
-                    {{ isProcessing ? 'Confirming...' : '✓ Continue' }}
-                </button>
+                </app-button>
+                <app-button variant="primary" @click="confirmAddress" :disabled="!isValidAddress || isProcessing"
+                    :loading="isProcessing" custom-class="px-6">
+                    <template v-if="!isProcessing">
+                        Continue
+                    </template>
+                </app-button>
             </div>
         </div>
     </div>
@@ -80,7 +88,16 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, computed } from "vue";
-import { AppSelect, AppTextField } from "../..";
+import {
+    AppSelect,
+    AppTextField,
+    AppButton,
+    AppIcon,
+    AppFormWrapper,
+    AppHeaderText,
+    AppNormalText,
+    AppLinkText
+} from "../..";
 
 interface SelectOption {
     key: string;
@@ -94,6 +111,12 @@ export default defineComponent({
     components: {
         AppSelect,
         AppTextField,
+        AppButton,
+        AppIcon,
+        AppFormWrapper,
+        AppHeaderText,
+        AppNormalText,
+        AppLinkText,
     },
     props: {
         onAddressConfirm: {
@@ -121,6 +144,17 @@ export default defineComponent({
         const selectedArea = ref("");
         const mapsLink = ref("");
         const addressDetails = ref("");
+
+        // Form refs for validation
+        const areaSelect = ref(null);
+        const mapsLinkField = ref(null);
+        const addressDetailsField = ref(null);
+
+        const formRefs = computed(() => ({
+            areaSelect: areaSelect.value,
+            mapsLinkField: mapsLinkField.value,
+            addressDetailsField: addressDetailsField.value,
+        }));
 
 
 
@@ -344,6 +378,12 @@ export default defineComponent({
             cancelAddress();
         };
 
+        const openMapsLink = () => {
+            if (mapsLink.value) {
+                window.open(mapsLink.value, '_blank');
+            }
+        };
+
         return {
             selectedArea,
             mapsLink,
@@ -356,6 +396,12 @@ export default defineComponent({
             confirmAddress,
             cancelAddress,
             handleCancel,
+            openMapsLink,
+            // Form refs
+            areaSelect,
+            mapsLinkField,
+            addressDetailsField,
+            formRefs,
         };
     },
 });
@@ -371,51 +417,10 @@ export default defineComponent({
     border-top: 1px solid #e9ecef;
 }
 
-.btn-primary,
-.btn-secondary {
-    padding: 0.75rem 1.5rem;
-    border: none;
-    border-radius: 0.375rem;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.btn-primary {
-    background: #007bff;
-    color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-    background: #0056b3;
-}
-
-.btn-primary:disabled {
-    background: #6c757d;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.btn-secondary {
-    background: #6c757d;
-    color: white;
-}
-
-.btn-secondary:hover {
-    background: #545b62;
-}
-
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .modal-footer {
         padding: 1rem;
-    }
-
-    .btn-primary,
-    .btn-secondary {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
     }
 }
 </style>
