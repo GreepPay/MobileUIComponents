@@ -26,10 +26,11 @@ import AppLoading from "./AppLoading";
 import AppEmptyState from "./AppEmptyState";
 import AppEmptyPage from "./AppEmptyPage";
 import AppVirtualScroller from "./AppVirtualScroller";
-import { AppHeaderText, AppNormalText, AppLinkText } from "./AppTypography";
 import AppSteps from "./AppSteps";
 import AppEvent from "./AppEvent";
 import AppExchangeAd from "./AppExchangeAd";
+import AppWorkflowChat from "./AppWorkflowChat";
+import { AppHeaderText, AppNormalText, AppLinkText } from "./AppTypography";
 import {
   AppCard,
   AppCouponCard,
@@ -70,7 +71,6 @@ import {
 } from "./AppList";
 import { AppOnboardingLayout, DefaultPageLayout } from "./AppLayouts";
 import { AppBottomBar } from "./AppNavigator";
-
 import {
   AppChat,
   ChatTopBar,
@@ -157,6 +157,7 @@ export {
   AppEvent,
   AppEmptyPage,
   AppChat,
+  AppWorkflowChat,
   ChatTopBar,
   ChatBottomBar,
   ChatMessage,

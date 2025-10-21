@@ -11,24 +11,26 @@
         } ${index !== 0 && 'border-t border-[#F0F3F6]'}`"
       >
         <app-normal-text
-          :class="` capitalize ${
-            invertBoldness
-              ? '!font-[500] !text-[#0A141E] !text-sm'
-              : '!text-[#616161]'
+          :class="` !whitespace-nowrap ${
+            invertBoldness ? '!font-[500] !text-[#0A141E]' : '!text-[#616161]'
           }`"
         >
-          {{ item.title }}
+          {{ capitalize(item.title) }}
         </app-normal-text>
-        <div class="w-full flex flex-row items-center justify-between">
+        <div class="w-full flex flex-row items-center justify-end">
           <app-normal-text
             :class="` ${
               invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
             } !text-sm break-words`"
             is-html
-            :htmlContent="item.content"
+            :htmlContent="capitalize(item.content.replaceAll('_', ' '))"
           >
           </app-normal-text>
-          <div v-if="item.can_copy" @click="Logic.Common.copytext(item.content)" class="flex flex-row items-center cursor-pointer">
+          <div
+            v-if="item.can_copy"
+            @click="Logic.Common.copytext(item.content)"
+            class="flex flex-row items-center cursor-pointer"
+          >
             <app-normal-text
               :class="`!text-primary !text-xs !font-normal cursor-pointer mr-1`"
             >
@@ -43,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, capitalize } from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppIcon from "../AppIcon";
 import { Logic } from "../../composable";
@@ -87,7 +89,7 @@ export default defineComponent({
     },
   },
   setup(props) {
-    return { Logic };
+    return { Logic, capitalize };
   },
 });
 </script>
