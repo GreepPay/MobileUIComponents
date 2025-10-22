@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed z-10 flex items-center justify-center bg-green bottom-24 right-4 box-shadow size-12 rounded-full"
+    class="fixed z-10 flex items-center justify-center bg-green bottom-10 right-4 box-shadow size-12 rounded-full"
   >
     <app-icon :name="icon" custom-class="!h-6" />
 
