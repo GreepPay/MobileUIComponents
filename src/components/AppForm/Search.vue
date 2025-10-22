@@ -42,7 +42,7 @@
     setup(_, { emit }) {
       const searchQuery = ref("")
 
-      watch(searchQuery, (newValue) => {
+      watch(searchQuery, (newValue) => { 
         emit("update:search", newValue)
       })
 
