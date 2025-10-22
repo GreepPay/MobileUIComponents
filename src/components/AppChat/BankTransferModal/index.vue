@@ -1,35 +1,46 @@
 <template>
-  <div v-if="show" class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end" @click="handleCancel">
-    <div class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
-      @click.stop>
-      <div class="p-4 pb-8">
-        <!-- Handle bar -->
-        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
-
+  <div
+    v-if="show"
+    class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end"
+    @click="handleCancel"
+  >
+    <div
+      class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto border-t border-gray-200"
+      @click.stop
+    >
+      <div class="px-4 pt-4">
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center justify-between mb-4">
           <div class="flex items-center space-x-2">
-            <span class="text-xl">🏦</span>
-            <span class="text-lg font-semibold text-gray-800">Bank Account Details</span>
+            <app-header-text> Bank Account Details </app-header-text>
           </div>
-          <button @click="handleCancel" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+
+          <div class="w-[28px] h-[28px]">
+            <app-icon name="close" custom-class="h-[22px]" />
+          </div>
         </div>
 
         <!-- Saved Bank Accounts Section -->
         <div v-if="shouldShowSavedAccounts">
-          <p class="modal-description">💳 Choose from your saved bank accounts</p>
+          <p class="modal-description">
+            💳 Choose from your saved bank accounts
+          </p>
 
           <div class="saved-accounts-list">
-            <div v-for="account in savedBankAccounts" :key="account.uuid" @click="selectSavedAccount(account)"
-              class="saved-account-item">
+            <div
+              v-for="account in savedBankAccounts"
+              :key="account.uuid"
+              @click="selectSavedAccount(account)"
+              class="saved-account-item"
+            >
               <div class="account-info">
                 <div class="bank-name">{{ account.bank_name }}</div>
-                <div class="account-details">{{ account.account_number }} • {{ account.account_name }}</div>
-                <div v-if="account.currency" class="account-currency">{{ account.currency }}</div>
+                <div class="account-details">
+                  {{ account.account_number }} • {{ account.account_name }}
+                </div>
+                <div v-if="account.currency" class="account-currency">
+                  {{ account.currency }}
+                </div>
               </div>
               <div class="select-icon">→</div>
             </div>
@@ -42,70 +53,126 @@
 
         <!-- Add New Bank Account Form -->
         <div v-if="shouldShowForm">
-          <p class="modal-description">
-            {{ savedBankAccounts && savedBankAccounts.length > 0 ? 'Add a new bank account' : 'Enter your bank account details for the transfer' }}
-          </p>
-
-          <div class="bank-form">
-            <div class="form-group">
-              <label for="bank-name">Bank Name:</label>
-              <input id="bank-name" v-model="bankForm.bankName" type="text" placeholder="e.g. First Bank of Nigeria"
-                class="form-input" ref="bankInputRef" />
+          <app-normal-text class="!text-gray-600">
+            {{
+              savedBankAccounts && savedBankAccounts.length > 0
+                ? "Add a new bank account"
+                : "Enter your bank account details for the transfer"
+            }}
+          </app-normal-text>
+          <div class="w-full flex flex-col py-4 pt-7">
+            <div class="w-full flex flex-col pb-3">
+              <app-text-field
+                v-model="bankForm.bankName"
+                :has-title="true"
+                type="text"
+                placeholder="Bank Name"
+                ref="bankInputRef"
+                name="Bank Name"
+                use-floating-label
+                :rules="[FormValidations.RequiredRule]"
+                custom-class="!border-gray-300 focus:!border-primary"
+              />
             </div>
 
-            <div class="form-group">
-              <label for="account-number">Account Number:</label>
-              <input id="account-number" v-model="bankForm.accountNumber" type="text" placeholder="e.g. 1234567890"
-                class="form-input" maxlength="20" />
+            <div class="w-full flex flex-col pb-3">
+              <app-text-field
+                v-model="bankForm.accountNumber"
+                :has-title="true"
+                type="tel"
+                placeholder="Account Number"
+                ref="accountNumberRef"
+                name="Account Number"
+                use-floating-label
+                :rules="[FormValidations.RequiredRule]"
+                custom-class="!border-gray-300 focus:!border-primary"
+              />
             </div>
 
-            <div class="form-group">
-              <label for="account-name">Account Holder Name:</label>
-              <input id="account-name" v-model="bankForm.accountName" type="text" placeholder="e.g. John Doe"
-                class="form-input" />
+            <div class="w-full flex flex-col pb-3">
+              <app-text-field
+                v-model="bankForm.accountName"
+                :has-title="true"
+                type="text"
+                placeholder="Account Name"
+                ref="accountNameRef"
+                name="Account Name"
+                use-floating-label
+                :rules="[FormValidations.RequiredRule]"
+                custom-class="!border-gray-300 focus:!border-primary"
+              />
             </div>
 
-            <div class="form-group">
-              <label for="currency">Currency:</label>
-              <select id="currency" v-model="bankForm.currency" class="form-select">
-                <option value="TRY">TRY - Turkish Lira</option>
-                <option value="NGN">NGN - Nigerian Naira</option>
-                <option value="USD">USD - US Dollar</option>
-                <option value="GHS">GHS - Ghanaian Cedi</option>
-                <option value="KES">KES - Kenyan Shilling</option>
-                <option value="ZAR">ZAR - South African Rand</option>
-              </select>
+            <div class="w-full flex flex-col pb-3">
+              <app-select
+                :placeholder="'Currency'"
+                :hasTitle="false"
+                :paddings="'py-4 !px-4'"
+                :options="availableOptionForCurrency"
+                name="Ad Type"
+                customClass=" !font-[500]"
+                ref="AdType"
+                v-model="bankForm.currency"
+              >
+              </app-select>
             </div>
 
-            <div v-if="savedBankAccounts && savedBankAccounts.length > 0" class="back-button-container">
-              <button @click="showAddNewForm = false" class="back-to-saved-btn">
-                ← Back to Saved Accounts
-              </button>
+            <div
+              v-if="savedBankAccounts && savedBankAccounts.length > 0"
+              class="back-button-container"
+            >
+              <app-button class="w-full" @click="showAddNewForm = false">
+                Back to Saved Accounts
+              </app-button>
             </div>
           </div>
         </div>
 
         <!-- Error Message -->
-        <div v-if="errorMessage" class="error-message">
-          <span class="error-icon">⚠️</span>
-          {{ errorMessage }}
+        <div v-if="errorMessage" class="w-full flex flex-col">
+          <app-info-box class="!bg-red-100">
+            {{ errorMessage }}
+          </app-info-box>
         </div>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-secondary" @click="handleCancel">
-          Cancel
-        </button>
-        <button class="btn-primary" @click="handleConfirm" :disabled="!canConfirm || isSubmitting">
-          {{ confirmButtonText }}
-        </button>
+      <div class="w-full grid grid-cols-2 gap-3 px-4 pb-6">
+        <div class="col-span-1 flex flex-col">
+          <app-button
+            @click="handleCancel"
+            class="w-full !py-4"
+            outlined
+            variant="secondary"
+          >
+            Cancel
+          </app-button>
+        </div>
+        <div class="col-span-1 flex flex-col">
+          <app-button
+            @click="handleConfirm"
+            class="w-full !py-4"
+            :disabled="!canConfirm || isSubmitting"
+            variant="secondary"
+            :loading="createAccountIsLoading"
+          >
+            {{ confirmButtonText }}
+          </app-button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, nextTick, onMounted, watch } from 'vue';
+import { ref, computed, nextTick, onMounted, watch, reactive } from "vue";
+import { AppHeaderText, AppNormalText } from "../../AppTypography";
+import AppIcon from "../../AppIcon";
+import { AppTextField, AppSelect } from "../../AppForm";
+import { Logic } from "../../../composable";
+import { SelectOption } from "@/types";
+import { availableCurrencies } from "../../../composable";
+import AppButton from "../../AppButton";
+import AppInfoBox from "../../AppInfoBox";
 
 interface BankAccount {
   uuid: string;
@@ -137,37 +204,52 @@ const props = withDefaults(defineProps<Props>(), {
   isProcessing: false,
 });
 
+const availableOptionForCurrency = reactive<SelectOption[]>([]);
+const createAccountIsLoading = ref(false);
+
+const FormValidations = Logic.Form;
+
 const emit = defineEmits<{
-  'bank-details-submitted': [bankDetails: BankForm, savedAccount?: BankAccount];
-  'saved-account-selected': [account: BankAccount];
-  'cancel': [];
-  'confirm': [data: any];
+  "bank-details-submitted": [bankDetails: BankForm, savedAccount?: BankAccount];
+  "saved-account-selected": [account: BankAccount];
+  cancel: [];
+  confirm: [data: any];
 }>();
 
 // Reactive data
 const showAddNewForm = ref(false);
 const isSubmitting = ref(false);
-const errorMessage = ref('');
+const errorMessage = ref("");
 const bankInputRef = ref<HTMLInputElement>();
 
 // Watch for saved accounts and ensure we show the list first
-watch(() => props.savedBankAccounts, (newAccounts) => {
-  if (newAccounts && newAccounts.length > 0) {
-    showAddNewForm.value = false; // Always show saved accounts first
-  }
-}, { immediate: true });
+watch(
+  () => props.savedBankAccounts,
+  (newAccounts) => {
+    if (newAccounts && newAccounts.length > 0) {
+      showAddNewForm.value = false; // Always show saved accounts first
+    }
+  },
+  { immediate: true }
+);
 
 const bankForm = ref<BankForm>({
-  bankName: '',
-  accountNumber: '',
-  accountName: '',
-  currency: 'NGN'
+  bankName: "",
+  accountNumber: "",
+  accountName: "",
+  currency: "NGN",
 });
 
 // Computed properties
 const hasSavedAccounts = computed(() => {
-  const hasAccounts = props.savedBankAccounts && props.savedBankAccounts.length > 0;
-  console.log("🔧 BankTransferModal hasSavedAccounts:", hasAccounts, "showAddNewForm:", showAddNewForm.value);
+  const hasAccounts =
+    props.savedBankAccounts && props.savedBankAccounts.length > 0;
+  console.log(
+    "🔧 BankTransferModal hasSavedAccounts:",
+    hasAccounts,
+    "showAddNewForm:",
+    showAddNewForm.value
+  );
   return hasAccounts;
 });
 
@@ -189,8 +271,10 @@ const canConfirm = computed(() => {
 });
 
 const confirmButtonText = computed(() => {
-  if (isSubmitting.value) return 'Saving...';
-  return props.savedBankAccounts && props.savedBankAccounts.length > 0 ? 'Save & Continue' : 'Continue';
+  if (isSubmitting.value) return "Saving...";
+  return props.savedBankAccounts && props.savedBankAccounts.length > 0
+    ? "Save & Continue"
+    : "Continue";
 });
 
 // Methods
@@ -198,44 +282,44 @@ const handleConfirm = async () => {
   if (!canConfirm.value) return;
 
   isSubmitting.value = true;
-  errorMessage.value = '';
+  errorMessage.value = "";
 
   try {
     // Just create the bank account object from form data
     const bankAccount: BankAccount = {
-      uuid: '', // Will be set by the API in parent component
+      uuid: "", // Will be set by the API in parent component
       bank_name: bankForm.value.bankName,
       account_number: bankForm.value.accountNumber,
       account_name: bankForm.value.accountName,
-      currency: bankForm.value.currency
+      currency: bankForm.value.currency,
     };
 
     // Emit the form data - let parent handle the API call
-    emit('bank-details-submitted', bankForm.value, bankAccount);
+    emit("bank-details-submitted", bankForm.value, bankAccount);
 
     // Also emit confirm for backward compatibility
-    emit('confirm', bankAccount);
+    emit("confirm", bankAccount);
 
     // Call prop function if provided (for backward compatibility)
     if (props.onConfirm) {
       props.onConfirm(bankAccount);
     }
   } catch (error) {
-    console.error('Failed to process bank account:', error);
-    errorMessage.value = 'Failed to process bank account. Please try again.';
+    console.error("Failed to process bank account:", error);
+    errorMessage.value = "Failed to process bank account. Please try again.";
   } finally {
     isSubmitting.value = false;
   }
 };
 
 const selectSavedAccount = (account: BankAccount) => {
-  console.log('🏦 Selecting saved account:', account);
+  console.log("🏦 Selecting saved account:", account);
 
   // Emit the saved account selection
-  emit('saved-account-selected', account);
+  emit("saved-account-selected", account);
 
   // Also emit confirm for backward compatibility
-  emit('confirm', account);
+  emit("confirm", account);
 
   // Call prop function if provided (for backward compatibility)
   if (props.onConfirm) {
@@ -244,15 +328,15 @@ const selectSavedAccount = (account: BankAccount) => {
 };
 
 const handleCancel = () => {
-  console.log('🏦 BankTransferModal: Cancelling');
+  console.log("🏦 BankTransferModal: Cancelling");
 
   // Reset form
   resetForm();
 
   // Emit cancel event
-  emit('cancel');
+  emit("cancel");
 
-  // Call prop function if provided (for backward compatibility)  
+  // Call prop function if provided (for backward compatibility)
   if (props.onCancel) {
     props.onCancel();
   }
@@ -261,20 +345,23 @@ const handleCancel = () => {
 const resetForm = () => {
   showAddNewForm.value = false;
   bankForm.value = {
-    bankName: '',
-    accountNumber: '',
-    accountName: '',
-    currency: 'NGN'
+    bankName: "",
+    accountNumber: "",
+    accountName: "",
+    currency: "NGN",
   };
-  errorMessage.value = '';
+  errorMessage.value = "";
 };
 
 // Reset form when modal is closed
-watch(() => props.show, (newVal) => {
-  if (!newVal) {
-    resetForm();
+watch(
+  () => props.show,
+  (newVal) => {
+    if (!newVal) {
+      resetForm();
+    }
   }
-});
+);
 
 // Initialize on mount
 onMounted(() => {
@@ -289,210 +376,15 @@ onMounted(() => {
       });
     }
   });
+
+  availableOptionForCurrency.length = 0;
+  availableCurrencies
+    ?.filter((item) => !item.is_crypto)
+    .forEach((item) => {
+      availableOptionForCurrency.push({
+        key: item.code,
+        value: item.name,
+      });
+    });
 });
 </script>
-
-<style scoped>
-.modal-description {
-  margin: 0 0 1.5rem 0;
-  color: #6c757d;
-  line-height: 1.5;
-}
-
-/* Saved Bank Accounts Styles */
-.saved-accounts-list {
-  margin-bottom: 1rem;
-}
-
-.saved-account-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  border: 1px solid #e9ecef;
-  border-radius: 0.375rem;
-  margin-bottom: 0.5rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.saved-account-item:hover {
-  border-color: #007bff;
-  background: #f8f9fa;
-}
-
-.account-info {
-  flex: 1;
-}
-
-.bank-name {
-  font-weight: 500;
-  color: #495057;
-  margin-bottom: 0.25rem;
-}
-
-.account-details {
-  font-size: 0.85rem;
-  color: #6c757d;
-  margin-bottom: 0.25rem;
-}
-
-.account-currency {
-  font-size: 0.75rem;
-  color: #007bff;
-  font-weight: 500;
-}
-
-.select-icon {
-  color: #007bff;
-  font-weight: bold;
-}
-
-.add-new-btn {
-  width: 100%;
-  padding: 0.75rem;
-  border: 2px dashed #ced4da;
-  background: transparent;
-  color: #6c757d;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.add-new-btn:hover {
-  border-color: #007bff;
-  color: #007bff;
-}
-
-/* Form Styles */
-.bank-form {
-  margin-top: 1rem;
-}
-
-.form-group {
-  margin-bottom: 1rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #495057;
-}
-
-.form-input,
-.form-select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ced4da;
-  border-radius: 0.375rem;
-  font-size: 0.9rem;
-  font-family: inherit;
-  transition: all 0.2s ease;
-}
-
-.form-input:focus,
-.form-select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-}
-
-.back-button-container {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid #e9ecef;
-}
-
-.back-to-saved-btn {
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid #ced4da;
-  color: #6c757d;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.back-to-saved-btn:hover {
-  background: #f8f9fa;
-  border-color: #007bff;
-  color: #007bff;
-}
-
-.error-message {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 0.375rem;
-  color: #721c24;
-  font-size: 0.85rem;
-  margin-top: 1rem;
-}
-
-.error-icon {
-  font-size: 1rem;
-}
-
-/* Footer Styles */
-.modal-footer {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  padding: 1rem 1.5rem 1.5rem;
-  border-top: 1px solid #e9ecef;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: #007bff;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #0056b3;
-}
-
-.btn-primary:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #545b62;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .saved-account-item {
-    padding: 0.75rem;
-  }
-
-  .bank-name {
-    font-size: 0.9rem;
-  }
-
-  .account-details {
-    font-size: 0.8rem;
-  }
-}
-</style>

@@ -1,8 +1,13 @@
 <template>
   <!-- Address Input Modal -->
-  <div class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end" @click="handleCancel">
-    <div class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
-      @click.stop>
+  <div
+    class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end"
+    @click="handleCancel"
+  >
+    <div
+      class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
+      @click.stop
+    >
       <div class="p-4 pb-8">
         <!-- Handle bar -->
         <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
@@ -11,11 +16,26 @@
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-2">
             <span class="text-xl">📍</span>
-            <span class="text-lg font-semibold text-gray-800">{{ addressType }}</span>
+            <span class="text-lg font-semibold text-gray-800">{{
+              addressType
+            }}</span>
           </div>
-          <button @click="handleCancel" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          <button
+            @click="handleCancel"
+            class="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <svg
+              class="w-5 h-5 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              ></path>
             </svg>
           </button>
         </div>
@@ -24,14 +44,30 @@
         <div class="space-y-4">
           <!-- Address search input -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ addressType }}</label>
-            <app-select :placeholder="placeholderText" :hasTitle="false" v-model="selectedAddress" ref="addressSelect"
-              @OnSearch="handleAddressSearch" :options="addressOptions" autoComplete :hasSearch="true"
-              name="DeliveryAddress" usePermanentFloatingLabel :searchMessage="searchMessage"
-              :searchIsLoading="addressSearchIsLoading" />
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{
+              addressType
+            }}</label>
+            <app-select
+              :placeholder="placeholderText"
+              :hasTitle="false"
+              v-model="selectedAddress"
+              ref="addressSelect"
+              @OnSearch="handleAddressSearch"
+              :options="addressOptions"
+              autoComplete
+              :hasSearch="true"
+              name="DeliveryAddress"
+              usePermanentFloatingLabel
+              :searchMessage="searchMessage"
+              :searchIsLoading="addressSearchIsLoading"
+            />
             <!-- Use current location -->
-            <button type="button" @click="useCurrentLocation" class="text-xs text-blue-600 hover:underline mt-1"
-              :disabled="isLocating">
+            <button
+              type="button"
+              @click="useCurrentLocation"
+              class="text-xs text-blue-600 hover:underline mt-1"
+              :disabled="isLocating"
+            >
               <span v-if="isLocating">📍 Detecting your location...</span>
               <span v-else>📍 Use my current location</span>
             </button>
@@ -39,29 +75,50 @@
 
           <!-- Additional details input -->
           <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Address Details</label>
-            <app-text-field :has-title="false" type="text" :placeholder="detailsPlaceholder" ref="addressDetailsField"
-              name="AddressDetails" v-model="addressDetails" usePermanentFloatingLabel is-textarea
-              :max-character="500" />
-            <div class="text-xs text-gray-500 text-right">{{ addressDetailsLength }}/500</div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Address Details</label
+            >
+            <app-text-field
+              :has-title="false"
+              type="text"
+              :placeholder="detailsPlaceholder"
+              ref="addressDetailsField"
+              name="AddressDetails"
+              v-model="addressDetails"
+              usePermanentFloatingLabel
+              is-textarea
+              :max-character="500"
+            />
+            <div class="text-xs text-gray-500 text-right">
+              {{ addressDetailsLength }}/500
+            </div>
           </div>
 
           <!-- Address preview -->
-          <div v-if="selectedAddress" class="bg-blue-50 p-3 rounded-lg border border-blue-200">
-            <div class="text-sm font-medium text-blue-800 mb-1">{{ addressType }}:</div>
+          <div
+            v-if="selectedAddress"
+            class="bg-blue-50 p-3 rounded-lg border border-blue-200"
+          >
+            <div class="text-sm font-medium text-blue-800 mb-1">
+              {{ addressType }}:
+            </div>
             <div class="text-sm text-blue-700">{{ selectedAddress }}</div>
-            <div v-if="addressDetails" class="text-sm text-blue-600 mt-1">{{ addressDetails }}</div>
+            <div v-if="addressDetails" class="text-sm text-blue-600 mt-1">
+              {{ addressDetails }}
+            </div>
           </div>
         </div>
       </div>
 
       <!-- Modal Footer -->
       <div class="modal-footer">
-        <button class="btn-secondary" @click="handleCancel">
-          Cancel
-        </button>
-        <button class="btn-primary" @click="confirmAddress" :disabled="!selectedAddress || isProcessing">
-          {{ isProcessing ? 'Confirming...' : '✓ Continue' }}
+        <button class="btn-secondary" @click="handleCancel">Cancel</button>
+        <button
+          class="btn-primary"
+          @click="confirmAddress"
+          :disabled="!selectedAddress || isProcessing"
+        >
+          {{ isProcessing ? "Confirming..." : "✓ Continue" }}
         </button>
       </div>
     </div>
@@ -70,8 +127,7 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref, computed, onMounted } from "vue";
-import { AppSelect, AppTextField } from "../..";
-import { Logic } from "@greep/logic";
+import { AppSelect, AppTextField } from "../../AppForm";
 
 interface SelectOption {
   key: string;
@@ -107,13 +163,16 @@ export default defineComponent({
     },
     addressType: {
       type: String,
-      default: 'Delivery Address',
+      default: "Delivery Address",
       validator: (value: string) => {
-        return ['Delivery Address', 'Pickup Address'].includes(value) || value.length > 0;
-      }
+        return (
+          ["Delivery Address", "Pickup Address"].includes(value) ||
+          value.length > 0
+        );
+      },
     },
   },
-  emits: ['address-confirm', 'cancel'],
+  emits: ["address-confirm", "cancel"],
   setup(props, { emit }) {
     const selectedAddress = ref("");
     const addressDetails = ref("");
@@ -129,24 +188,28 @@ export default defineComponent({
 
     // Computed properties for dynamic text based on address type
     const placeholderText = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes('pickup');
-      return isPickup ? 'Search for pickup address...' : 'Search for your address...';
+      const isPickup = props.addressType.toLowerCase().includes("pickup");
+      return isPickup
+        ? "Search for pickup address..."
+        : "Search for your address...";
     });
 
     const searchMessage = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes('pickup');
-      return isPickup ? 'Type to search for pickup addresses' : 'Type to search for addresses';
+      const isPickup = props.addressType.toLowerCase().includes("pickup");
+      return isPickup
+        ? "Type to search for pickup addresses"
+        : "Type to search for addresses";
     });
 
     const detailsPlaceholder = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes('pickup');
+      const isPickup = props.addressType.toLowerCase().includes("pickup");
       return isPickup
-        ? 'Add helpful details for pickup (apartment, floor, landmark, etc.)'
-        : 'Add helpful details (apartment, floor, landmark, etc.)';
+        ? "Add helpful details for pickup (apartment, floor, landmark, etc.)"
+        : "Add helpful details (apartment, floor, landmark, etc.)";
     });
 
     const handleDetailsInput = (values: any) => {
-      addressDetails.value = values.AddressDetails || '';
+      addressDetails.value = values.AddressDetails || "";
     };
 
     const debounce = (func: Function, delay: number) => {
@@ -168,7 +231,9 @@ export default defineComponent({
           await initPlacesService();
 
           if (!autocompleteSuggestion.value) {
-            console.error("❌ Failed to initialize Google Places AutocompleteSuggestion");
+            console.error(
+              "❌ Failed to initialize Google Places AutocompleteSuggestion"
+            );
             return;
           }
         }
@@ -176,10 +241,11 @@ export default defineComponent({
         addressSearchIsLoading.value = true;
         console.log("🔍 Searching for addresses:", searchValue);
 
-        const predictions = await autocompleteSuggestion.value.fetchAutocompleteSuggestions({
-          input: searchValue,
-          sessionToken: sessionToken.value,
-        });
+        const predictions =
+          await autocompleteSuggestion.value.fetchAutocompleteSuggestions({
+            input: searchValue,
+            sessionToken: sessionToken.value,
+          });
 
         if (predictions.suggestions) {
           predictions.suggestions.forEach((prediction: any) => {
@@ -188,10 +254,14 @@ export default defineComponent({
               key: currentPrediction.text.text,
               value: currentPrediction.text.text,
               title: "",
-              icon: ""
+              icon: "",
             });
           });
-          console.log("✅ Found", predictions.suggestions.length, "address suggestions");
+          console.log(
+            "✅ Found",
+            predictions.suggestions.length,
+            "address suggestions"
+          );
         } else {
           console.log("📭 No address suggestions found");
         }
@@ -216,7 +286,9 @@ export default defineComponent({
             const { latitude, longitude } = position.coords;
 
             if (!geocoder.value) {
-              console.error("Google Maps Geocoder not initialized. Attempting to initialize...");
+              console.error(
+                "Google Maps Geocoder not initialized. Attempting to initialize..."
+              );
               await initPlacesService();
 
               if (!geocoder.value) {
@@ -230,9 +302,15 @@ export default defineComponent({
               (results: any, status: any) => {
                 if (status === "OK" && results[0]) {
                   selectedAddress.value = results[0].formatted_address;
-                  console.log("✅ Current location address found:", results[0].formatted_address);
+                  console.log(
+                    "✅ Current location address found:",
+                    results[0].formatted_address
+                  );
                 } else {
-                  console.error("Unable to fetch address for current location. Status:", status);
+                  console.error(
+                    "Unable to fetch address for current location. Status:",
+                    status
+                  );
                 }
               }
             );
@@ -249,7 +327,7 @@ export default defineComponent({
         {
           timeout: 10000, // 10 second timeout
           enableHighAccuracy: true,
-          maximumAge: 300000 // 5 minutes
+          maximumAge: 300000, // 5 minutes
         }
       );
     };
@@ -266,7 +344,7 @@ export default defineComponent({
 
       try {
         props.onAddressConfirm(fullAddress);
-        emit('address-confirm', fullAddress);
+        emit("address-confirm", fullAddress);
         selectedAddress.value = "";
         addressDetails.value = "";
         addressOptions.splice(0, addressOptions.length);
@@ -281,7 +359,7 @@ export default defineComponent({
       addressOptions.splice(0, addressOptions.length);
       try {
         props.onCancel();
-        emit('cancel');
+        emit("cancel");
       } catch (error) {
         console.error("Error cancelling address:", error);
       }
@@ -290,7 +368,7 @@ export default defineComponent({
     const initPlacesService = async () => {
       try {
         // Check if Google Maps API is loaded
-        if (typeof window !== 'undefined' && (window as any).google?.maps) {
+        if (typeof window !== "undefined" && (window as any).google?.maps) {
           const { AutocompleteSuggestion, AutocompleteSessionToken, Geocoder } =
             await (window as any).google.maps.importLibrary("places");
 
@@ -304,13 +382,18 @@ export default defineComponent({
           await waitForGoogleMaps();
 
           if ((window as any).google?.maps) {
-            const { AutocompleteSuggestion, AutocompleteSessionToken, Geocoder } =
-              await (window as any).google.maps.importLibrary("places");
+            const {
+              AutocompleteSuggestion,
+              AutocompleteSessionToken,
+              Geocoder,
+            } = await (window as any).google.maps.importLibrary("places");
 
             autocompleteSuggestion.value = AutocompleteSuggestion;
             sessionToken.value = new AutocompleteSessionToken();
             geocoder.value = new (window as any).google.maps.Geocoder();
-            console.log("✅ Google Maps Places service initialized successfully (after wait)");
+            console.log(
+              "✅ Google Maps Places service initialized successfully (after wait)"
+            );
           } else {
             console.error("❌ Google Maps API failed to load");
           }
