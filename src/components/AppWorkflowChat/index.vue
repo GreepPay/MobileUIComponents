@@ -351,7 +351,7 @@
         <!-- P2P WORKFLOWS: Simple Payment Confirmation -->
         <template v-else>
           <payment-confirmation
-            :isOpen="showPaymentConfirmation && !paymentConfirmed"
+            :isOpen="showPaymentConfirmation"
             :paymentConfirmed="paymentConfirmed"
             :isBusinessUser="isBusinessUser"
             :countdownSeconds="1800"
@@ -413,7 +413,6 @@
         :authUser="Logic.Auth.AuthUser"
         :show-address-mode="false"
         :disabled="isProcessing"
-        :order-confirmed="true"
         :proof-uploaded="proofUploaded"
         @click-address-input="() => {}"
         @upload-proof="showProofModal = true"
@@ -465,6 +464,14 @@
         @upload-success="handleProofUploadSuccess"
         @upload-error="handleProofUploadError"
       />
+
+      <!-- Payment Method Modal -->
+      <payment-method-modal
+        v-if="showSelectMerchantMethods"
+        :show="true"
+        @method-selected="handlePaymentMethodSelected"
+        @cancel="handlePaymentMethodCancel"
+      />
     </div>
   </app-wrapper>
 </template>
@@ -496,9 +503,11 @@ import {
   PaymentConfirmation,
   PickupLocationModal,
   ProofUploadModal,
+  PaymentMethodModal,
 } from "../AppChat";
 import AppCountdownTimer from "../AppCountdownTimer";
-import { Conversation } from "@greep/logic/src/gql/graphql";
+import { Conversation, P2pPaymentMethod } from "@greep/logic/src/gql/graphql";
+import { IonItem } from "@ionic/vue";
 
 export default defineComponent({
   name: "AppWorkflowChat",
@@ -513,6 +522,7 @@ export default defineComponent({
     ProofUploadModal,
     PaymentConfirmation,
     AppCountdownTimer,
+    PaymentMethodModal,
   },
   props: {
     conversationId: {
@@ -536,7 +546,7 @@ export default defineComponent({
     // Workflow engine with business user support
     const workflowEngine = useWorkflowEngine({
       conversationId: props.conversationId,
-      workflowType: props.workflowType,
+      workflowType: props.conversation?.entity_type || props.workflowType,
       enableDirectMessaging: true,
     });
 
@@ -574,6 +584,8 @@ export default defineComponent({
     // New reactive variables for proof upload modal
     const showProofModal = ref(false);
     const proofUploaded = ref(false);
+
+    const showSelectMerchantMethods = ref(false);
 
     // ✅ Reactive computed properties for delivery data extraction
     const deliveryData = computed(() => {
@@ -906,6 +918,7 @@ export default defineComponent({
       handleUploadProof,
       handleProofUploadFiles,
       handleProofCancel,
+      handleMerchantAccountSelected,
     } = workflowInput;
 
     // Handle the new upload success event from the modal
@@ -952,6 +965,17 @@ export default defineComponent({
       await scrollToBottom();
     };
 
+    const handlePaymentMethodSelected = async (method: P2pPaymentMethod) => {
+      showSelectMerchantMethods.value = false;
+      console.log("✅ Payment method selected:", method);
+      await handleMerchantAccountSelected(method);
+    };
+
+    const handlePaymentMethodCancel = () => {
+      console.log("❌ Payment method selection cancelled");
+      showSelectMerchantMethods.value = false;
+    };
+
     // ✅ Countdown visibility logic
     const isCountdownActive = computed(() => {
       return (
@@ -960,9 +984,6 @@ export default defineComponent({
         !businessJoined.value
       );
     });
-
-    // Mark proof as uploaded to hide upload button and disable bottom box
-    proofUploaded.value = true;
 
     // ✅ Countdown text
     const countdownText = computed(() => {
@@ -1650,7 +1671,8 @@ export default defineComponent({
     };
 
     const showMessageAction = (message: WorkflowMessage) => {
-      const isAIMessage = message.sender?.uuid == "user";
+      const isAIMessage =
+        message.sender?.uuid == "user" || message.sender?.uuid == "greep_ai";
 
       if (!isAIMessage) {
         return false;
@@ -1659,7 +1681,7 @@ export default defineComponent({
       let isLastAIMessage = false;
 
       const allAIMessages = messages?.filter(
-        (item) => item.sender?.uuid == "user"
+        (item) => item.sender?.uuid == "user" || item.sender?.uuid == "greep_ai"
       );
 
       const lastAIMessage = allAIMessages[allAIMessages.length - 1];
@@ -1673,7 +1695,9 @@ export default defineComponent({
 
         const previousNonAIMessages = messages?.filter(
           (item, index) =>
-            index < indexOfAIMessage && item.sender?.uuid != "user"
+            index < indexOfAIMessage &&
+            item.sender?.uuid != "user" &&
+            item.sender?.uuid != "greep_ai"
         );
 
         if (previousNonAIMessages.length) {
@@ -1940,11 +1964,69 @@ export default defineComponent({
       cleanupWebSocket();
     });
 
+    const checkIfToShowMethods = () => {
+      showSelectMerchantMethods.value = false;
+      const humanMessages = messages?.filter(
+        (item) =>
+          item.sender?.uuid !== "user" && item.sender?.uuid != "greep-ai"
+      );
+      if (!humanMessages?.length) return;
+      const lastHumanMessage = humanMessages[humanMessages.length - 1];
+
+      if (!lastHumanMessage) return;
+
+      let userOwnExchangeAd = false;
+      let entityType = Logic.Messaging.SingleConversation?.entity_type || "";
+
+      if (Logic.Messaging.SingleConversation?.exchangeAd) {
+        const adOwnerId =
+          Logic.Messaging.SingleConversation.exchangeAd.business?.auth_user_id;
+        const currentUserId = parseInt(Logic.Auth.AuthUser?.id || "0");
+        userOwnExchangeAd = adOwnerId === currentUserId;
+      }
+
+      if (userOwnExchangeAd && entityType == "p2p_deposit") {
+        const lastMessageMetadata: any = lastHumanMessage.metadata || {};
+        if (
+          lastMessageMetadata?.workflow_data?.selected_option ==
+            "online_payment" ||
+          lastMessageMetadata?.extras?.input_type == "online_payment"
+        ) {
+          showSelectMerchantMethods.value = true;
+        }
+      }
+
+      if (entityType == "p2p_deposit") {
+        const lastAIMessage = getLastAIMessage();
+        if (!lastAIMessage) return;
+        const metadata: any = lastAIMessage.metadata || {};
+
+        const options = metadata?.options || [];
+
+        const firstOption = options[0] || {};
+        if (firstOption.value == "confirm_payment" && !userOwnExchangeAd) {
+          showProofModal.value = true;
+        } else {
+          showProofModal.value = false;
+        }
+      }
+    };
+
+    const reactToMessage = () => {
+      checkIfToShowMethods();
+    };
+
+    onMounted(() => {
+      checkIfToShowMethods();
+    });
+
     // Auto-scroll when new messages arrive
     watch(
       messages,
       async () => {
         await scrollToBottom();
+        reactToMessage();
+        localStorage.setItem("messages_latest", JSON.stringify(messages));
       },
       { deep: true }
     );
@@ -1973,9 +2055,15 @@ export default defineComponent({
           showPaymentConfirmation: showPaymentConfirmation.value,
         });
 
+        let allowToMoveForConfirmation = isBusinessUser.value;
+
+        if (props.conversation?.entity_type == "p2p_deposit") {
+          allowToMoveForConfirmation = !isBusinessUser.value;
+        }
+
         // Only check for user-side and when not already confirmed
         if (
-          isBusinessUser.value ||
+          allowToMoveForConfirmation ||
           paymentConfirmed.value ||
           showPaymentConfirmation.value
         ) {
@@ -2102,6 +2190,9 @@ export default defineComponent({
       handleProofUploadSuccess,
       handleProofUploadError,
       proofUploaded,
+      showSelectMerchantMethods,
+      handlePaymentMethodSelected,
+      handlePaymentMethodCancel,
     };
   },
 });

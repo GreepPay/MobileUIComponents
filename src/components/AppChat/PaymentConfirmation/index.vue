@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="isOpen && !paymentConfirmed && !isBusinessUser"
+    v-if="isOpen && !paymentConfirmed"
     class="w-full flex flex-row items-center justify-between"
   >
     <div class="w-full flex flex-row justify-start">

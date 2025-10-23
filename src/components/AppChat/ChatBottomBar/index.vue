@@ -89,6 +89,28 @@
         </div>
       </div>
     </div>
+
+    <!-- Amount exchange in USD -->
+    <div class="w-full flex flex-col px-4" v-if="showUSDAmount">
+      <div
+        :class="`w-full flex flex-row justify-between items-center px-3 py-2 mt-3 ${
+          USDAmountIsValid ? 'bg-gray-100' : '!bg-red/10  '
+        } rounded-[6px]  `"
+      >
+        <div class="flex flex-row space-x-[2px]">
+          <span class="!text-gray-600">You will get:</span>
+          <span class="!font-semibold">
+            ${{ Logic.Common.convertToMoney(amountInUSD, true, "") }}
+          </span>
+        </div>
+
+        <div class="flex flex-row !text-[12px] text-gray-500">
+          (Minimum: ${{
+            Logic.Common.convertToMoney(minimumUSDAmount, true, "")
+          }})
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -110,7 +132,12 @@ import {
   ExchangeAd,
   Participant,
 } from "@greep/logic/src/gql/graphql";
-import { participantOwnExchangeAd } from "../../../composable/useWorkflowEngine";
+import {
+  getChatMetadata,
+  participantOwnExchangeAd,
+  useWorkflowEngine,
+} from "../../../composable/useWorkflowEngine";
+import { Logic } from "../../../composable";
 
 type InputMode =
   | "search"
@@ -175,6 +202,9 @@ export default defineComponent({
     const chatContent = ref("");
     const lastAIMessageRef = toRef(props, "lastAIMessage");
     const inputmode = ref<InputMode>("text");
+    const showUSDAmount = ref(false);
+    const minimumUSDAmount = ref(2);
+    const localExchangeRate = ref(0);
 
     // Check if user is seller
     const isSeller = computed(() => {
@@ -208,16 +238,18 @@ export default defineComponent({
         allowUploadProof = true;
       }
 
-      if (adType == "buy" && !participantIsAdOwner) {
-        allowUploadProof = true;
-      }
+      // if (adType == "buy" && !participantIsAdOwner) {
+      //   allowUploadProof = true;
+      // }
 
       return allowUploadProof;
     });
 
     // Check if proof upload should be shown
     const showProofUpload = computed(() => {
-      const stage = props.conversation?.stage || "";
+      const stage =
+        props.conversation?.stage?.replaceAll("_0", "")?.replaceAll("_1", "") ||
+        "";
       return (
         (stage === "send_payment" || stage.includes("payment")) &&
         !props.proofUploaded
@@ -248,8 +280,32 @@ export default defineComponent({
     };
 
     const onInput = (event: any) => {
-      const innerText = event.target.innerText;
-      setContentAndPositionCursor(innerText);
+      const innerText = event.target.innerText || "";
+
+      if (isFormatted.value) {
+        // Normalize to digits and at most one dot (decimal)
+        let numericOnly = innerText.replace(/[^0-9.]/g, "");
+        // keep only first dot if multiple
+        const parts = numericOnly.split(".");
+        if (parts.length > 1) {
+          numericOnly = parts.shift() + "." + parts.join("");
+        }
+
+        // If empty or just ".", keep as is (no formatting)
+        if (numericOnly === "" || numericOnly === ".") {
+          setContentAndPositionCursor(numericOnly);
+          return;
+        }
+
+        // Use Logic.Common.convertToMoney to format display
+        // convertToMoney expects a number/string; pass numericOnly
+        const formatted = Logic?.Common?.convertToMoney
+          ? Logic.Common.convertToMoney(numericOnly, false, "")
+          : numericOnly;
+        setContentAndPositionCursor(formatted);
+      } else {
+        setContentAndPositionCursor(innerText);
+      }
     };
 
     const isNumber = (evt: any) => {
@@ -313,6 +369,8 @@ export default defineComponent({
     };
 
     const setInputState = () => {
+      showUSDAmount.value = false;
+
       if (props.disabled) {
         chatEnabled.value = false;
         placeholder.value = "Chat disabled";
@@ -337,9 +395,18 @@ export default defineComponent({
           chatEnabled.value = false;
           placeholder.value = "Choose an option";
         } else {
+          if (metadata?.extras?.show_usd_amount) {
+            showUSDAmount.value = true;
+            minimumUSDAmount.value = metadata.extras.minimum_usd_amount || 2;
+            const exchangeAd = Logic.Messaging.SingleConversation?.exchangeAd;
+            localExchangeRate.value = exchangeAd?.rate || 10;
+          } else {
+            showUSDAmount.value = false;
+          }
           chatEnabled.value = true;
           if (!isSeller.value) {
-            placeholder.value = "Enter message here";
+            placeholder.value =
+              metadata?.extras?.input_placeholder || "Enter message here";
           }
         }
       } else {
@@ -363,7 +430,17 @@ export default defineComponent({
         return;
       }
 
-      const canSend = props.sendMessage(chatContent.value);
+      if (showUSDAmount.value && !USDAmountIsValid.value) {
+        return;
+      }
+
+      // If formatted, remove commas before sending so the value is numeric
+      let toSend = chatContent.value;
+      if (isFormatted.value && typeof toSend === "string") {
+        toSend = toSend.replace(/,/g, "");
+      }
+
+      const canSend = props.sendMessage(toSend);
       if (canSend) {
         chatContent.value = "";
         const messageBox = document.getElementById("messageContainerInput");
@@ -401,6 +478,29 @@ export default defineComponent({
         return;
       }
     };
+
+    const amountInUSD = computed(() => {
+      if (!showUSDAmount.value) {
+        return 0;
+      }
+
+      const content = chatContent.value || "0";
+      const numericContent = parseFloat(content.replace(/[^0-9.]/g, "") || "0");
+
+      if (localExchangeRate.value > 0) {
+        return numericContent / localExchangeRate.value;
+      } else {
+        return numericContent;
+      }
+    });
+
+    const USDAmountIsValid = computed(() => {
+      if (!showUSDAmount.value) {
+        return true;
+      }
+
+      return amountInUSD.value >= minimumUSDAmount.value;
+    });
 
     watch(lastAIMessageRef, () => {
       setInputAttributes();
@@ -447,6 +547,13 @@ export default defineComponent({
       isSeller,
       showProofUpload,
       openProofUpload,
+      isFormatted,
+      showUSDAmount,
+      minimumUSDAmount,
+      localExchangeRate,
+      amountInUSD,
+      Logic,
+      USDAmountIsValid,
     };
   },
 });
