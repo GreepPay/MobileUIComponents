@@ -4,9 +4,10 @@
       class="w-full flex justify-between items-center px-4"
       :class="headerClass"
     >
-      <app-normal-text class="font-semibold !text-black !text-sm">
+      <app-normal-text class="font-semibold !text-black !text-sm !flex-1">
         {{ title }}
       </app-normal-text>
+
       <app-normal-text class="text-primary" @click="emit('view-more')">
         {{ actionText }}
       </app-normal-text>
@@ -21,13 +22,18 @@
           <slot />
         </div>
       </template>
-      <div v-else class="p-4 !pt-2">
+      <div v-else class="px-4 pt-4 !pt-2 flex flex-col gap-4">
         <app-empty-state
           :title="emptyTitle"
           :description="emptyDescription"
           :useIcon="useEmptyStateIcon"
         />
+
+        <slot name="empty-state-extra" />
       </div>
+
+
+      <slot name="extra-data" />
     </div>
   </div>
 </template>
