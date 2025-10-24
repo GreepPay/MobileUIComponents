@@ -1,5 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { Logic } from "./";
+import { P2pPaymentMethod } from "@greep/logic/src/gql/graphql";
 
 export interface WorkflowInputOptions {
   workflowType: "p2p_withdrawal" | "deliveries";
@@ -22,7 +23,12 @@ export interface InputHandler {
 
 export const useWorkflowInput = (
   options: WorkflowInputOptions,
-  sendMessage: (content: string, metadata?: any) => Promise<boolean>,
+  sendMessage: (
+    content: string,
+    metadata?: any,
+    forceDirect?: boolean,
+    forceWorkflow?: boolean
+  ) => Promise<boolean>,
   manualModalOverride: any
 ) => {
   // Reactive state
@@ -261,6 +267,24 @@ export const useWorkflowInput = (
     return success;
   };
 
+  const handleMerchantAccountSelected = async (
+    account: P2pPaymentMethod
+  ): Promise<boolean> => {
+    const displayText = `{payment_method_summary}`;
+
+    const success = await sendMessage(
+      displayText,
+      {
+        merchant_payment_method: account,
+        selected_option: "confirm",
+      },
+      false,
+      true
+    );
+
+    return success;
+  };
+
   const handleBankTransferCancel = () => {
     manualModalOverride.value = "closed";
   };
@@ -368,5 +392,6 @@ export const useWorkflowInput = (
     handleUploadProof,
     handleProofUploadFiles,
     handleProofCancel,
+    handleMerchantAccountSelected,
   };
 };

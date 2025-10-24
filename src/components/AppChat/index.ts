@@ -9,6 +9,7 @@ import BankTransferModal from "./BankTransferModal";
 import ProofUploadModal from "./ProofUploadModal";
 import PaymentConfirmation from "./PaymentConfirmation";
 import PickupLocationModal from "./PickupLocationModal";
+import PaymentMethodModal from "./PaymentMethod";
 
 export {
   AppChat,
@@ -21,4 +22,5 @@ export {
   ProofUploadModal,
   PaymentConfirmation,
   PickupLocationModal,
+  PaymentMethodModal,
 };

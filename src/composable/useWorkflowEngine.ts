@@ -67,7 +67,7 @@ export interface WorkflowMessage {
 // Configuration interfaces
 export interface WorkflowEngineOptions {
   conversationId: number;
-  workflowType: "p2p_withdrawal" | "deliveries";
+  workflowType: "p2p_withdrawal" | "deliveries" | "p2p_deposit";
   enableDirectMessaging?: boolean;
 }
 
@@ -75,7 +75,7 @@ const detectBusinessUser = (conversationData?: any) => {};
 
 export interface WorkflowEngineOptions {
   conversationId: number;
-  workflowType: "p2p_withdrawal" | "deliveries";
+  workflowType: "p2p_withdrawal" | "deliveries" | "p2p_deposit";
   enableDirectMessaging?: boolean;
 }
 
@@ -206,6 +206,8 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       const exchangeAd = conversationData?.exchangeAd;
       const exchangeRate = exchangeAd?.rate || 10;
       const sellAmount = amount * exchangeRate;
+      const buyAmount = amount;
+      const buyAmountUSD = amount / exchangeRate;
 
       const structuredResponse = {
         currency: "USDC",
@@ -217,7 +219,19 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           true,
           ""
         ),
+        usd_amount: buyAmountUSD.toFixed(2),
+        usd_amount_formatted: Logic.Common.convertToMoney(
+          buyAmountUSD.toFixed(2),
+          true,
+          ""
+        ),
+        buy_amount: Logic.Common.convertToMoney(buyAmount.toFixed(2), true, ""),
         sell_rate: Logic.Common.convertToMoney(
+          exchangeRate.toFixed(2),
+          true,
+          ""
+        ),
+        buy_rate: Logic.Common.convertToMoney(
           exchangeRate.toFixed(2),
           true,
           ""
@@ -307,6 +321,29 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     return messages.filter((msg) => !msg.isUser).pop();
   };
 
+  const getChatMetadata = () => {
+    let messagesMetadata = {};
+
+    messages?.forEach((message) => {
+      const metadata = message.metadata;
+
+      messagesMetadata = { ...messagesMetadata, ...metadata };
+    });
+
+    return messagesMetadata;
+  };
+
+  const fillUpMessageTemplate = (message: string) => {
+    let messagesMetadata = getChatMetadata();
+
+    //  replace {value} template with actual values from metadata
+    let filledMessage = message;
+    for (const key in messagesMetadata) {
+      filledMessage = filledMessage.replace(`{${key}}`, messagesMetadata[key]);
+    }
+    return filledMessage;
+  };
+
   // Convert backend message to display format
   const convertToDisplayMessage = (backendMessage: any): WorkflowMessage => {
     const metadata = backendMessage.metadata
@@ -320,7 +357,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         label: option.content,
         value: option.value,
         type: option.type || "primary",
-        message: option.message || option.content,
+        message: option.message?.content || option.content,
         disabled:
           isProcessing.value ||
           (option.value === "confirm" && orderCreated.value),
@@ -338,6 +375,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
           // Use the actual action handler with debouncing
           handleActionClick({
+            message: option.message?.content || option.content,
             label: option.content,
             value: option.value,
             type: option.type || "primary",
@@ -484,6 +522,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     // ✅ Process templates in content
     let processedContent =
       backendMessage.content || backendMessage.text_content || "";
+
+    processedContent = fillUpMessageTemplate(processedContent);
+
     let isOrderSummary = false;
     let orderSummaryData = null;
 
@@ -748,7 +789,10 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
   };
 
   // Send regular chat message (bypassing workflow with chat_message metadata)
-  const sendRegularChatMessage = async (content: string): Promise<boolean> => {
+  const sendRegularChatMessage = async (
+    content: string,
+    metadata?: any
+  ): Promise<boolean> => {
     if (!content.trim() || isProcessing.value) return false;
 
     try {
@@ -774,6 +818,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           uuid: Logic.Auth.AuthUser?.uuid || "user",
           name: Logic.Auth.AuthUser?.first_name || "You",
         },
+        metadata: {
+          ...(metadata || {}),
+        },
       };
 
       addMessage(userMessage);
@@ -792,6 +839,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             sender_uuid: Logic.Auth.AuthUser?.uuid,
             is_regular_chat: true,
             conversation_type: options.workflowType,
+            ...(metadata || {}),
           }),
         },
       };
@@ -979,6 +1027,27 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       const deliveryFee = summary.method === "cash_delivery" ? 3 : 0;
       const totalAmount = summary.amount + deliveryFee;
 
+      const entityType = Logic.Messaging.SingleConversation?.entity_type || "";
+
+      if (entityType === "p2p_deposit") {
+        const chatMetadata: any = getChatMetadata();
+
+        return {
+          youSell: `${
+            chatMetadata.currency_symbol || ""
+          }${Logic.Common.convertToMoney(chatMetadata.buy_amount, false, "")}`,
+          youGet: `${chatMetadata.usd_amount_formatted} USDC`,
+          fee: "0 USDC",
+          deliveryFee: `${deliveryFee} USDC`,
+          youPay: `${
+            chatMetadata.currency_symbol || ""
+          }${Logic.Common.convertToMoney(chatMetadata.buy_amount, false, "")}`,
+          paymentType: "Online Payment",
+          payoutOption: "",
+          deliveryAddress: "",
+        };
+      }
+
       return {
         youSell: `${summary.amount} USDC`,
         youGet: `${summary.currency_symbol}${summary.sell_amount}`,
@@ -1059,14 +1128,20 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
   const sendMessage = async (
     content: string,
     metadata?: any,
-    forceDirect = false
+    forceDirect = false,
+    forceWorkflow = false
   ): Promise<boolean> => {
     if (!content.trim() || isProcessing.value) return false;
 
+    const workflowType = Logic.Messaging.SingleConversation?.entity_type || "";
+
     // ✅ NEW: If business has joined, use regular chat messaging
-    if (businessJoined.value || directMessagingEnabled.value || forceDirect) {
+    if (
+      (businessJoined.value || directMessagingEnabled.value || forceDirect) &&
+      !forceWorkflow
+    ) {
       console.log("🔧 Using sendRegularChatMessage");
-      return sendRegularChatMessage(content);
+      return sendRegularChatMessage(content, metadata);
     }
 
     // ✅ DEFAULT: Use workflow message for regular flow
@@ -1231,6 +1306,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           uuid: Logic.Auth.AuthUser?.uuid || "user",
           name: Logic.Auth.AuthUser?.first_name || "You",
         },
+        metadata: {
+          ...(metadata || {}),
+        },
       };
       addMessage(userMessage);
 
@@ -1261,6 +1339,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           last_name: Logic.Auth.AuthUser?.last_name,
           uuid: Logic.Auth.AuthUser?.uuid,
         },
+        ...(metadata || {}),
       };
 
       // Send to backend - same API as current system
@@ -1346,6 +1425,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           const displayMessage = convertToDisplayMessage(messageData);
 
           messages.splice(tempMessageIndex, 1, displayMessage);
+          localStorage.setItem("messages_latest", JSON.stringify(messages));
           console.log("  ✅ Messages after temp replacement:", messages.length);
 
           // ✅ CRITICAL: Return here to prevent duplicate processing
@@ -1712,6 +1792,10 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         }
 
         console.log("🔧 Adding message to array...");
+        displayMessage.content = fillUpMessageTemplate(displayMessage.content);
+        displayMessage.text_content = fillUpMessageTemplate(
+          displayMessage.text_content
+        );
         addMessage(displayMessage);
         console.log("🔧 Messages array length after adding:", messages.length);
 
@@ -1914,6 +1998,22 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           // Get wallet balance like the backup did
           const balance = Logic.Auth.AuthUser?.wallet?.total_balance || "0";
 
+          let startingStage = "withdrawal_amount";
+
+          if (
+            Logic.Messaging.SingleConversation?.entity_type === "p2p_deposit"
+          ) {
+            startingStage = "deposit_amount";
+          }
+
+          const exchangeAd = Logic.Messaging.SingleConversation?.exchangeAd;
+
+          const exchangeCurreny = exchangeAd?.from_currency;
+
+          const currencyInfo = availableCurrencies.find(
+            (currency) => currency.code === exchangeCurreny
+          );
+
           // Set up message form
           Logic.Messaging.CreateMessageForm = {
             input: {
@@ -1930,7 +2030,16 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
                   "",
                   false
                 ),
-                stage: "withdrawal_amount",
+                sell_currency_name: currencyInfo?.name || "",
+                sell_currency_code: currencyInfo?.code || "",
+                currency_symbol: currencyInfo?.symbol || "",
+                buy_rate: Logic.Common.convertToMoney(
+                  exchangeAd?.rate || "0",
+                  true,
+                  "",
+                  false
+                ),
+                stage: startingStage,
                 trigger_conversation: true,
                 structured_response: {},
                 conversation_metadata: conversationMetadata || {},
@@ -1992,34 +2101,37 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         return false;
       }
 
-      // Create P2P Order when confirm is clicked
-      if (action.value === "confirm") {
-        console.log("📋 Confirm button clicked - creating P2P order");
-        await createP2POrder();
-        return true;
+      const entityType = Logic.Messaging.SingleConversation?.entity_type;
+
+      if (entityType == "p2p_withdrawal" || entityType == "p2p_deposit") {
+        // Create P2P Order when confirm is clicked
+        if (action.value === "confirm") {
+          console.log("📋 Confirm button clicked - creating P2P order");
+          await createP2POrder();
+          return true;
+        }
+
+        // ✅ NEW: Handle fund release when "yes" is clicked in payment-related stages
+        if (action.value === "yes") {
+          console.log(
+            "� DEBUG: 'Yes' button clicked - checking for fund release conditions"
+          );
+          console.log("� DEBUG: Current stage:", currentStage.value);
+          console.log(
+            "🔧 DEBUG: Stage includes 'finalize':",
+            currentStage.value.includes("finalize")
+          );
+          console.log(
+            "🔧 DEBUG: Stage includes 'payment':",
+            currentStage.value.includes("payment")
+          );
+
+          // The "Yes, release USDC" button is unique in the workflow, so always trigger fund release
+          console.log("💰 Yes button clicked - attempting to release funds");
+          await releaseFunds();
+          return true;
+        }
       }
-
-      // ✅ NEW: Handle fund release when "yes" is clicked in payment-related stages
-      if (action.value === "yes") {
-        console.log(
-          "� DEBUG: 'Yes' button clicked - checking for fund release conditions"
-        );
-        console.log("� DEBUG: Current stage:", currentStage.value);
-        console.log(
-          "🔧 DEBUG: Stage includes 'finalize':",
-          currentStage.value.includes("finalize")
-        );
-        console.log(
-          "🔧 DEBUG: Stage includes 'payment':",
-          currentStage.value.includes("payment")
-        );
-
-        // The "Yes, release USDC" button is unique in the workflow, so always trigger fund release
-        console.log("💰 Yes button clicked - attempting to release funds");
-        await releaseFunds();
-        return true;
-      }
-
       // ✅ FIX: Map button values to workflow expected values
       let workflowOption = action.value;
 
@@ -2078,7 +2190,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
       // ✅ CRITICAL: Always use sendWorkflowMessage for action buttons
       // This ensures workflow state transitions work even after business joins
-      await sendWorkflowMessage(action.value, {
+      await sendWorkflowMessage(action.message, {
         selected_option: workflowOption,
       });
       return true;
@@ -2101,6 +2213,8 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
       console.log("🔍 Parsed conversation metadata:", conversationMetadata);
 
+      showPaymentConfirmation.value = false; // Close confirmation modal if open
+
       // Try to get orderUuid from multiple sources
       let orderUuid = currentOrderUuid.value; // First try our stored reactive variable
       let amount = conversationMetadata?.amount;
@@ -2117,6 +2231,17 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         if (entityUuid) {
           orderUuid = entityUuid;
         }
+      }
+
+      Logic.Common.showLoader({
+        show: true,
+        loading: true,
+      });
+
+      if (!orderUuid) {
+        await Logic.Messaging.GetSingleConversation(conversationData?.uuid);
+
+        orderUuid = Logic.Messaging.SingleConversation?.p2p_order?.uuid || null;
       }
 
       if (!orderUuid) {
@@ -2284,11 +2409,22 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       }
 
       // Extract amount from order summary
-      const amount =
-        parseFloat(orderSummary.youSell.replace(/[^\d.]/g, "")) || 0;
+      let amount = parseFloat(orderSummary.youSell.replace(/[^\d.]/g, "")) || 0;
 
       if (amount <= 0) {
         throw new Error("Invalid amount for P2P order creation");
+      }
+
+      const entityType = conversationData?.entity_type;
+
+      if (entityType == "p2p_deposit") {
+        const chatMetadata: any = getChatMetadata();
+
+        if (chatMetadata) {
+          amount = parseFloat(chatMetadata.usd_amount) || amount;
+          paymentType = "online_payment";
+          payoutOption = "online_payment";
+        }
       }
 
       // ✅ Prepare order data
@@ -2365,7 +2501,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           console.log("  👤 Business joined status:", businessJoined.value);
 
           // ✅ FIXED: Only clear messages if business hasn't joined yet
-          if (!businessJoined.value) {
+          if (false) {
             console.log("  �️ Clearing", messages.length, "messages");
             console.log(
               "🔧 Selective clearing - preserving business/chat messages"
@@ -2439,21 +2575,21 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           }
 
           // Create order summary message only
-          const orderSummaryMessage: WorkflowMessage = {
-            id: `order_summary_${Date.now()}`,
-            content: "Order Summary",
-            text_content: "Order Summary",
-            user_uuid: "greep_ai",
-            user_name: "GreepPay AI",
-            type: "text" as const,
-            isUser: false,
-            timestamp: new Date(),
-            sender: { uuid: "greep_ai", name: "GreepPay AI" },
-            isOrderSummary: true,
-            orderSummary: orderSummary,
-          };
+          // const orderSummaryMessage: WorkflowMessage = {
+          //   id: `order_summary_${Date.now()}`,
+          //   content: "Order Summary",
+          //   text_content: "Order Summary",
+          //   user_uuid: "greep_ai",
+          //   user_name: "GreepPay AI",
+          //   type: "text" as const,
+          //   isUser: false,
+          //   timestamp: new Date(),
+          //   sender: { uuid: "greep_ai", name: "GreepPay AI" },
+          //   isOrderSummary: true,
+          //   orderSummary: orderSummary,
+          // };
 
-          addMessage(orderSummaryMessage);
+          // addMessage(orderSummaryMessage);
 
           // ✅ Start countdown timer
           setTimeout(() => {
@@ -2477,49 +2613,67 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
           // ✅ IMPORTANT: Send workflow message to trigger step transition to send_payment
           console.log("🎯 Sending workflow transition message to backend");
-          await sendWorkflowMessage("Order confirmed", {
-            selected_option: "success",
-          });
+
+          isProcessing.value = false;
+          if (options.workflowType == "p2p_deposit") {
+            // await sendWorkflowMessage(
+            //   "Your order has been confirmed. Please follow the payment instructions.",
+            //   {
+            //     selected_option: "confirm",
+            //   }
+            // );
+          } else {
+            await sendWorkflowMessage("Order confirmed", {
+              selected_option: "success",
+            });
+          }
 
           // ✅ NEW: Add delay and then check if stage transition occurred
-          setTimeout(async () => {
-            try {
-              console.log(
-                "🔍 Checking if workflow stage transitioned after order creation..."
-              );
+          const entityType = conversationData?.entity_type;
 
-              // Refresh conversation to get updated stage
-              const conversationId = Logic.Messaging.SingleConversation?.id;
-              if (conversationId) {
-                await Logic.Messaging.GetSingleConversation(
-                  conversationId.toString()
+          if (entityType == "p2p_withdrawal") {
+            setTimeout(async () => {
+              try {
+                console.log(
+                  "🔍 Checking if workflow stage transitioned after order creation..."
                 );
-                const updatedStage = Logic.Messaging.SingleConversation?.stage;
-                console.log("🔍 Updated conversation stage:", updatedStage);
 
-                if (updatedStage && updatedStage.includes("send_payment")) {
-                  console.log(
-                    "✅ Workflow successfully transitioned to send_payment stage"
+                // Refresh conversation to get updated stage
+                const conversationId = Logic.Messaging.SingleConversation?.id;
+                if (conversationId) {
+                  await Logic.Messaging.GetSingleConversation(
+                    conversationId.toString()
                   );
-                } else {
-                  console.warn(
-                    "⚠️ Workflow still in order_summary stage - transition may have failed"
-                  );
-                  console.log("🔄 Attempting to resend transition message...");
+                  const updatedStage =
+                    Logic.Messaging.SingleConversation?.stage;
+                  console.log("🔍 Updated conversation stage:", updatedStage);
 
-                  // Try sending the transition message again
-                  await sendWorkflowMessage("Transition to send_payment", {
-                    selected_option: "success",
-                  });
+                  if (updatedStage && updatedStage.includes("send_payment")) {
+                    console.log(
+                      "✅ Workflow successfully transitioned to send_payment stage"
+                    );
+                  } else {
+                    console.warn(
+                      "⚠️ Workflow still in order_summary stage - transition may have failed"
+                    );
+                    console.log(
+                      "🔄 Attempting to resend transition message..."
+                    );
+
+                    // // Try sending the transition message again
+                    // await sendWorkflowMessage("Transition to send_payment", {
+                    //   selected_option: "success",
+                    // });
+                  }
                 }
+              } catch (error) {
+                console.error(
+                  "❌ Error checking workflow stage transition:",
+                  error
+                );
               }
-            } catch (error) {
-              console.error(
-                "❌ Error checking workflow stage transition:",
-                error
-              );
-            }
-          }, 3000); // Wait 3 seconds for backend processing
+            }, 3000); // Wait 3 seconds for backend processing
+          }
 
           return createdOrder;
         }
@@ -3061,6 +3215,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     releaseFunds,
     updateDeliveryStatus,
     handleProofUploadComplete,
+    getChatMetadata,
 
     // Payment confirmation state
     showPaymentConfirmation,
@@ -3080,4 +3235,34 @@ export const participantOwnExchangeAd = (
   }
 
   return participantIsBusinessOwner;
+};
+
+export const getChatMetadata = () => {
+  let messagesMetadata = {};
+
+  const messagesFromLocal = localStorage.getItem("messages_latest");
+
+  if (messagesFromLocal) {
+    try {
+      const parsedMessages = JSON.parse(messagesFromLocal);
+      parsedMessages.forEach((message: any) => {
+        const metadata =
+          typeof message.metadata == "string"
+            ? JSON.parse(message.metadata || "{}")
+            : message.metadata;
+        messagesMetadata = { ...messagesMetadata, ...metadata };
+      });
+      return messagesMetadata;
+    } catch (error) {
+      //
+    }
+  }
+
+  Logic.Messaging.SingleConversation?.messages?.forEach((message) => {
+    const metadata = JSON.parse(message.metadata || "{}");
+
+    messagesMetadata = { ...messagesMetadata, ...metadata };
+  });
+
+  return messagesMetadata;
 };

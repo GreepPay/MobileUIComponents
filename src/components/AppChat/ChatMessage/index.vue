@@ -206,33 +206,35 @@
                     message.orderSummary.paymentType
                   }}</span>
                 </li>
-                <li class="list-disc">
+                <li class="list-disc" v-if="message.orderSummary.payoutOption">
                   Payout Option is
                   <span class="font-semibold">{{
                     message.orderSummary.payoutOption
                   }}</span>
                 </li>
 
-                <li
-                  class="list-disc"
-                  v-if="message.orderSummary.payoutOption == 'Bank Transfer'"
-                >
-                  Your bank account info is
-                  <span class="font-semibold">{{
-                    message.orderSummary.deliveryAddress
-                  }}</span>
-                </li>
+                <template v-if="message.orderSummary.payoutOption">
+                  <li
+                    class="list-disc"
+                    v-if="message.orderSummary.payoutOption == 'Bank Transfer'"
+                  >
+                    Your bank account info is
+                    <span class="font-semibold">{{
+                      message.orderSummary.deliveryAddress
+                    }}</span>
+                  </li>
 
-                <li class="list-disc" v-else>
-                  {{
-                    message.orderSummary.payoutOption === "Pickup"
-                      ? "Pickup location - "
-                      : "We deliver cash to you at - "
-                  }}
-                  <span class="font-semibold">{{
-                    message.orderSummary.deliveryAddress
-                  }}</span>
-                </li>
+                  <li class="list-disc" v-else>
+                    {{
+                      message.orderSummary.payoutOption === "Pickup"
+                        ? "Pickup location - "
+                        : "We deliver cash to you at - "
+                    }}
+                    <span class="font-semibold">{{
+                      message.orderSummary.deliveryAddress
+                    }}</span>
+                  </li>
+                </template>
               </ul>
             </template>
           </div>
@@ -242,6 +244,7 @@
             v-else-if="
               message.text_content &&
               !message.text_content.includes('{order_summary_text}') &&
+              !message.text_content.includes('{payment_method_summary}') &&
               !clickableImageUrl &&
               !derivedPdfUrl
             "
@@ -256,6 +259,43 @@
               }`"
             >
             </app-normal-text>
+          </template>
+
+          <template
+            v-else-if="
+              message.text_content.includes('{payment_method_summary}')
+            "
+          >
+            <app-normal-text :class="`${isUserMessage ? '!text-white' : ''}`">
+              Hello, please complete the payment using the details below:
+            </app-normal-text>
+
+            <div class="w-full flex flex-col mt-2">
+              <div
+                v-for="(value, key) in getPaymentMethodMetadata(message)"
+                :key="key"
+                class="w-full flex flex-row mb-3 justify-between items-center"
+              >
+                <div class="text-left">
+                  <app-normal-text
+                    :class="`${isUserMessage ? '!text-white' : ''}`"
+                  >
+                    {{ value.title }}:
+                    <span class="font-semibold capitalize">{{
+                      value.content
+                    }}</span>
+                  </app-normal-text>
+                </div>
+                <div class="text-right">
+                  <app-icon
+                    v-if="value.can_copy"
+                    :name="`${isUserMessage ? 'copy-white' : 'copy'}`"
+                    custom-class="h-[16px] cursor-pointer"
+                    @click="Logic.Common.copytext(value.content)"
+                  />
+                </div>
+              </div>
+            </div>
           </template>
 
           <!-- Media: show image clickable; opens original file in a new tab -->
@@ -316,6 +356,8 @@ import AppNormalText from "../../AppTypography/normalText.vue";
 import AppIcon from "../../AppIcon/index.vue";
 import AppImageLoader from "../../AppImageLoader/index.vue";
 import AppButton from "../../AppButton/index.vue";
+import { get } from "lodash";
+import { Logic } from "../../../composable";
 
 export default defineComponent({
   name: "ChatMessage",
@@ -361,6 +403,68 @@ export default defineComponent({
         case "primary":
           return "!border-purple !text-purple-500";
       }
+    };
+
+    const getPaymentMethodMetadata = (message: any) => {
+      const textContent: string = (
+        message?.text_content ||
+        message?.content ||
+        ""
+      ).toString();
+
+      if (!textContent.includes("{payment_method_summary}")) return null;
+
+      const metadata = message.metadata || {};
+
+      const paymentMethodData = metadata.merchant_payment_method || null;
+
+      if (paymentMethodData) {
+        if (typeof paymentMethodData.meta_data === "string") {
+          paymentMethodData.meta_data = JSON.parse(
+            JSON.parse(paymentMethodData.meta_data)
+          );
+        }
+      }
+
+      const accountType = paymentMethodData
+        ? paymentMethodData.meta_data.type || "N/A"
+        : "N/A";
+
+      const listItems = [
+        {
+          title: "Payment Method",
+          content: paymentMethodData
+            ? paymentMethodData.meta_data.type.replaceAll("_", " ")
+            : "N/A",
+        },
+        {
+          title:
+            accountType == "bank_account"
+              ? "Bank Name"
+              : "Mobile Money Provider",
+          content: paymentMethodData
+            ? paymentMethodData.bank_name || "N/A"
+            : "N/A",
+          can_copy: true,
+        },
+        {
+          title:
+            accountType == "bank_account" ? "Account Number" : "Phone Number",
+          content: paymentMethodData
+            ? paymentMethodData.account_number || "N/A"
+            : "N/A",
+          can_copy: true,
+        },
+        {
+          title: "Account Name",
+          content: paymentMethodData
+            ? paymentMethodData.account_name || "N/A"
+            : "N/A",
+          can_copy: true,
+        },
+      ];
+
+      return listItems;
     };
 
     // Try to derive an image URL from the message content if media is not explicitly provided
@@ -432,6 +536,8 @@ export default defineComponent({
       pdfFileName,
       getActionClass,
       capitalize,
+      getPaymentMethodMetadata,
+      Logic,
     };
   },
 });

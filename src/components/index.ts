@@ -30,6 +30,7 @@ import AppSteps from "./AppSteps";
 import AppEvent from "./AppEvent";
 import AppExchangeAd from "./AppExchangeAd";
 import AppWorkflowChat from "./AppWorkflowChat";
+import AppProduct from "./AppProduct";
 import { AppHeaderText, AppNormalText, AppLinkText } from "./AppTypography";
 import {
   AppCard,
@@ -158,6 +159,7 @@ export {
   AppEmptyPage,
   AppChat,
   AppWorkflowChat,
+  AppProduct,
   ChatTopBar,
   ChatBottomBar,
   ChatMessage,
