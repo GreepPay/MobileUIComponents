@@ -1,6 +1,9 @@
 import { ref, computed, watch } from "vue";
 import { Logic } from "./";
-import { P2pPaymentMethod } from "@greep/logic/src/gql/graphql";
+import {
+  DeliveryAddress,
+  P2pPaymentMethod,
+} from "@greep/logic/src/gql/graphql";
 
 export interface WorkflowInputOptions {
   workflowType: "p2p_withdrawal" | "deliveries";
@@ -289,10 +292,12 @@ export const useWorkflowInput = (
     manualModalOverride.value = "closed";
   };
 
-  const handlePickupSelection = async (location: any): Promise<boolean> => {
+  const handlePickupSelection = async (
+    location: DeliveryAddress
+  ): Promise<boolean> => {
     // if (options.workflowType !== "p2p_withdrawal") return false;
 
-    const displayText = `${location.name} - ${location.address}, ${location.city}, ${location.country}`;
+    const displayText = `${location.name} - ${location.description}. <a class="!underline" href="${location.google_map_link}" target="_blank" rel="noopener noreferrer">See on map</a>`;
 
     const success = await sendMessage(`Pickup: ${displayText}`, {
       selected_option: "branch_selected",

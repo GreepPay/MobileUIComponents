@@ -92,7 +92,7 @@
       <div
         class="absolute w-full h-full top-0 left-0 flex items-center justify-center"
       >
-        <app-normal-text class="!text-white !text-xl !font-semibold rotate-90">
+        <app-normal-text class="!text-white !text-xl !font-semibold -rotate-90">
           {{ variant.ticket_name }}
         </app-normal-text>
       </div>
@@ -101,36 +101,36 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from "vue"
-  import { AppHeaderText, AppNormalText } from "../AppTypography"
+import { defineComponent } from "vue";
+import { AppHeaderText, AppNormalText } from "../AppTypography";
 
-  export default defineComponent({
-    name: "AppVariantCard",
-    components: {
-      AppHeaderText,
-      AppNormalText,
-    },
-    props: {
-      variant: {
-        type: Object as () => {
-          id: string
-          sku: string
-          ticket_name: string
-          name: string
-          price: string
-          color: string
-          time: string
-          date: string
-        },
-        required: true,
+export default defineComponent({
+  name: "AppVariantCard",
+  components: {
+    AppHeaderText,
+    AppNormalText,
+  },
+  props: {
+    variant: {
+      type: Object as () => {
+        id: string;
+        sku: string;
+        ticket_name: string;
+        name: string;
+        price: string;
+        color: string;
+        time: string;
+        date: string;
       },
-      customClass: {
-        type: String,
-        default: "",
-      },
+      required: true,
     },
-    setup() {
-      return {}
+    customClass: {
+      type: String,
+      default: "",
     },
-  })
+  },
+  setup() {
+    return {};
+  },
+});
 </script>

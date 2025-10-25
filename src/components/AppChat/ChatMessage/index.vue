@@ -230,9 +230,10 @@
                         ? "Pickup location - "
                         : "We deliver cash to you at - "
                     }}
-                    <span class="font-semibold">{{
-                      message.orderSummary.deliveryAddress
-                    }}</span>
+                    <span
+                      class="font-semibold"
+                      v-html="message.orderSummary.deliveryAddress"
+                    ></span>
                   </li>
                 </template>
               </ul>

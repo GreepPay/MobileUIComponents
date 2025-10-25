@@ -2330,17 +2330,15 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           : conversationData.metadata
         : {};
 
+      const chatMetadata: any = getChatMetadata();
+
       // ✅ Extract pickup location data from conversation metadata
-      const isCashPickupOrder = conversationMetadata.pickup_location
-        ? true
-        : false;
-      const pickupLocation = conversationMetadata.pickup_location;
-      const pickupLocationName = conversationMetadata.pickup_location_name;
-      const pickupLocationAddress =
-        conversationMetadata.pickup_location_address;
-      const pickupLocationCity = conversationMetadata.pickup_location_city;
-      const pickupLocationCountry =
-        conversationMetadata.pickup_location_country;
+      const isCashPickupOrder = chatMetadata.pickup_location ? true : false;
+      const pickupLocation = `${chatMetadata.pickup_location.name} - ${chatMetadata.pickup_location.description}. <a class="!underline" href="${chatMetadata.pickup_location.google_map_link}" target="_blank" rel="noopener noreferrer">See on map</a>`;
+      const pickupLocationName = "";
+      const pickupLocationAddress = "";
+      const pickupLocationCity = "";
+      const pickupLocationCountry = "";
 
       const orderSummary = extractOrderSummary();
       if (!orderSummary) {
@@ -2367,7 +2365,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         payoutOption = "pickup";
         deliveryAddress =
           pickupLocation ||
-          `Pickup: ${pickupLocationName} - ${pickupLocationAddress}, ${pickupLocationCity}, ${pickupLocationCountry}`;
+          `Pickup: ${pickupLocationName} - ${pickupLocationAddress}, ${pickupLocationCity}`;
         city = pickupLocationCity || "Lagos";
         country = pickupLocationCountry || "Nigeria";
       } else if (

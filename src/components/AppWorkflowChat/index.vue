@@ -3,7 +3,7 @@
     <div
       class="w-full flex flex-col lg:text-sm mdlg:text-[12px] relative text-xs font-poppins overflow-y-auto h-full"
       id="workflow-chat-page"
-      :style="mobileFullHeight"
+      :style="mobileFullHeight.height"
     >
       <!-- Top bar -->
       <chat-top-bar
@@ -584,6 +584,8 @@ export default defineComponent({
     // New reactive variables for proof upload modal
     const showProofModal = ref(false);
     const proofUploaded = ref(false);
+
+    const innerHeight = ref(window.innerHeight);
 
     const showSelectMerchantMethods = ref(false);
 
@@ -1355,10 +1357,6 @@ export default defineComponent({
       return baseConversation;
     });
 
-    const mobileFullHeight = computed(() => {
-      return "height: 100vh;";
-    });
-
     // Methods
     const refreshConversationData = async () => {
       try {
@@ -1588,6 +1586,12 @@ export default defineComponent({
         return "delivery";
       }
     };
+
+    const mobileFullHeight = computed(() => {
+      return {
+        height: `${innerHeight.value}px`,
+      };
+    });
 
     // Business action handlers
     const handleCompleteOrder = async () => {
@@ -2008,6 +2012,22 @@ export default defineComponent({
           showProofModal.value = true;
         } else {
           showProofModal.value = false;
+        }
+      }
+
+      if (entityType == "p2p_withdrawal") {
+        const lastAIMessage = getLastAIMessage();
+        if (!lastAIMessage) return;
+        const content: any = lastAIMessage.content || "";
+
+        const contentIsPickupLocation = content
+          .toLowerCase()
+          .includes("select your preferred pickup location");
+
+        if (!userOwnExchangeAd && contentIsPickupLocation) {
+          manualModalOverride.value = "cash_pickup";
+        } else {
+          manualModalOverride.value = null;
         }
       }
     };
