@@ -1,7 +1,8 @@
 // @ts-ignore
 import { Currency } from "../types";
 import { Logic as BaseLogic } from "@greep/logic";
-import { reactive } from "vue";
+import { getPlatforms } from "@ionic/vue";
+import { computed, reactive } from "vue";
 
 export let Logic: typeof BaseLogic = BaseLogic;
 
@@ -607,3 +608,12 @@ export const availableCurrencies = reactive<Currency[]>([
     is_crypto: true,
   },
 ]);
+
+export const getBottomPadding = computed(() => {
+  // Replace this with your actual platform detection logic
+  const isAndroid = getPlatforms()[0] === "android";
+
+  return isAndroid
+    ? "padding-bottom: calc(env(safe-area-inset-bottom) + 20px) !important;"
+    : "padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important;";
+});
