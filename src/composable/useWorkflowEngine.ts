@@ -3228,7 +3228,7 @@ export const participantOwnExchangeAd = (
 
   let participantIsBusinessOwner = false;
 
-  if (participant?.user_id?.toString() == businessOwnerId.toString()) {
+  if (participant?.user_id?.toString() == businessOwnerId?.toString()) {
     participantIsBusinessOwner = true;
   }
 

@@ -1,49 +1,66 @@
 <template>
   <div
-    :class="['fixed z-10 flex items-center justify-center bg-green bottom-10 right-4 box-shadow size-12 rounded-full', customClass]"
-   
+    :class="[
+      'fixed z-10 flex items-center justify-center  bottom-10 right-4',
+      customClass,
+    ]"
+    :style="`
+      ${getBottomPadding}
+    `"
   >
-    <app-icon :name="icon" custom-class="!h-6" />
-
-    <app-normal-text
-      v-if="badge"
-      class="absolute !text-green top-2 right-2 text-center bg-white rounded-full !text-[10px] !font-semibold size-4"
+    <div
+      :class="[
+        'flex items-center justify-center bg-green box-shadow size-12 rounded-full',
+      ]"
     >
-      {{ badge }}
-    </app-normal-text>
+      <app-icon :name="icon" custom-class="!h-6" />
+
+      <app-normal-text
+        v-if="badge"
+        class="absolute !text-green top-2 right-2 text-center bg-white rounded-full !text-[10px] !font-semibold size-4"
+      >
+        {{ badge }}
+      </app-normal-text>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-  /**
-   * AppFloatingIcon
-   *
-   * Reusable floating icon button with optional badge.
-   */
+/**
+ * AppFloatingIcon
+ *
+ * Reusable floating icon button with optional badge.
+ */
 
-  import { defineComponent } from "vue"
-  import AppIcon from "../AppIcon"
-  import { AppNormalText } from "../AppTypography"
+import { defineComponent } from "vue";
+import AppIcon from "../AppIcon";
+import { AppNormalText } from "../AppTypography";
+import { getBottomPadding } from "../../composable";
 
-  export default defineComponent({
-    name: "AppFloatingIcon",
-    components: {
-      AppIcon,
-      AppNormalText,
+export default defineComponent({
+  name: "AppFloatingIcon",
+  components: {
+    AppIcon,
+    AppNormalText,
+  },
+  props: {
+    icon: {
+      type: String,
+      default: "bag",
     },
-    props: {
-      icon: {
-        type: String,
-        default: "bag",
-      },
-      badge: {
-        type: [String, Number],
-        default: null,
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
+    badge: {
+      type: [String, Number],
+      default: null,
     },
-  })
+    customClass: {
+      type: String,
+      default: "",
+    },
+  },
+  setup() {
+    return {
+      getBottomPadding,
+    };
+  },
+});
 </script>
