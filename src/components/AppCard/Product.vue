@@ -191,7 +191,7 @@
   import { AppNormalText } from "../AppTypography"
   import AppSwiper from "../AppSwiper"
   import { SwiperSlide } from "swiper/vue"
-  import { Logic } from "@greep/logic"
+  import { Logic } from "../../composable"
 
   /**
    * Merchant Product Card
@@ -266,8 +266,8 @@
         emit("view-product", props.product)
       }
       const viewMerchantDetails = () => {
-        // showProductDetailsModal.value = false
-        // Logic.Common.GoToRoute(`/shops/${props.product.businessUuid}`)
+        showProductDetailsModal.value = false
+        Logic.Common.GoToRoute(`/shops/${props.product.businessUuid}`)
       }
       const toggleCart = () => {
         if (props.isInCart) emit("remove-from-cart", props.product)
