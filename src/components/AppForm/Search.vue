@@ -8,7 +8,7 @@
       <input
         v-model="searchQuery"
         :placeholder="placeholder"
-        class="w-full text-gray-700 text-sm py-2 border-none outline-none"
+        class="w-full text-gray-700 py-2 border-none outline-none"
       />
 
       <button
@@ -23,34 +23,34 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, ref, watch } from "vue"
-  import AppIcon from "../AppIcon/index.vue"
+import { defineComponent, ref, watch } from "vue";
+import AppIcon from "../AppIcon/index.vue";
 
-  export default defineComponent({
-    name: "SearchComponent",
-    components: { AppIcon },
-    props: {
-      placeholder: {
-        type: String,
-        default: "Search...",
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
+export default defineComponent({
+  name: "SearchComponent",
+  components: { AppIcon },
+  props: {
+    placeholder: {
+      type: String,
+      default: "Search...",
     },
-    setup(_, { emit }) {
-      const searchQuery = ref("")
-
-      watch(searchQuery, (newValue) => { 
-        emit("update:search", newValue)
-      })
-
-      const clearSearch = () => {
-        searchQuery.value = ""
-      }
-
-      return { searchQuery, clearSearch }
+    customClass: {
+      type: String,
+      default: "",
     },
-  })
+  },
+  setup(_, { emit }) {
+    const searchQuery = ref("");
+
+    watch(searchQuery, (newValue) => {
+      emit("update:search", newValue);
+    });
+
+    const clearSearch = () => {
+      searchQuery.value = "";
+    };
+
+    return { searchQuery, clearSearch };
+  },
+});
 </script>
