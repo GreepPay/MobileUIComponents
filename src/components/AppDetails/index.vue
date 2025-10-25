@@ -77,7 +77,7 @@ export default defineComponent({
     },
     isVertical: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     customClass: {
       type: String,

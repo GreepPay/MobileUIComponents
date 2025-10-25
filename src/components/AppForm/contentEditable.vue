@@ -8,6 +8,7 @@
     @keypress="isNumber"
     ref="editable"
     :data-placeholder="placeholder"
+    :inputmode="type === 'number' || type === 'tel' ? 'numeric' : 'text'"
   >
   </span>
 </template>
