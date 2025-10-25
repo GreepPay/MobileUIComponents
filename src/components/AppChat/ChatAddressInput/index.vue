@@ -1,126 +1,214 @@
 <template>
   <!-- Address Input Modal -->
   <div
-    class="fixed inset-0 bg-white bg-opacity-60 z-50 flex items-end"
+    class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end"
     @click="handleCancel"
   >
     <div
-      class="w-full bg-white rounded-t-3xl max-h-[90vh] overflow-y-auto shadow-2xl border-t border-gray-200"
+      class="w-full bg-white rounded-t-3xl max-h-[60vh] overflow-y-auto shadow-2xl border-t border-gray-200 absolute"
       @click.stop
     >
-      <div class="p-4 pb-8">
-        <!-- Handle bar -->
-        <div class="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
-
-        <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center space-x-2">
-            <span class="text-xl">📍</span>
-            <span class="text-lg font-semibold text-gray-800">{{
-              addressType
-            }}</span>
-          </div>
-          <button
-            @click="handleCancel"
-            class="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <svg
-              class="w-5 h-5 text-gray-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
-          </button>
+      <!-- Header -->
+      <div
+        class="flex items-center justify-between pb-4 sticky top-0 bg-white pt-4 px-4 z-10"
+      >
+        <div class="flex items-center space-x-2">
+          <app-header-text class="!text-base">
+            {{ addressType }} ({{ expectedLocationCounts }})
+          </app-header-text>
         </div>
+
+        <div class="w-[28px] h-[28px]" @click="handleCancel">
+          <app-icon name="close" custom-class="h-[22px]" />
+        </div>
+      </div>
+      <div class="px-4 pb-4">
+        <template v-if="showAddLocationSection">
+          <div class="w-full flex flex-col">
+            <!-- Delivery Address Name -->
+
+            <div class="w-full flex flex-col mb-4">
+              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                Address Name
+              </app-normal-text>
+              <app-text-field
+                :has-title="true"
+                title="Address Name"
+                type="text"
+                placeholder="Enter address name (e.g., HQ, Branch Office)"
+                v-model="formData.name"
+                :rules="[FormValidations.RequiredRule]"
+              />
+            </div>
+
+            <!-- Delivery Location Area -->
+            <div class="w-full flex flex-col mb-4" v-if="showDeliverySelector">
+              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                Location Area
+              </app-normal-text>
+              <app-select
+                :placeholder="'Select Location Area'"
+                :hasTitle="false"
+                :paddings="'py-4 !px-4'"
+                :options="deliveryLocationOptions"
+                ref="deliveryArea"
+                usePermanentFloatingLabel
+                v-on:update:model-value="
+                  (data) => {
+                    formData.delivery_location_id = data;
+                  }
+                "
+                v-model="deliveryLocationId"
+                auto-complete
+              >
+              </app-select>
+            </div>
+
+            <!-- Google Maps Link  -->
+            <div class="w-full flex flex-col mb-4">
+              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                Google Maps Link
+              </app-normal-text>
+              <app-text-field
+                :has-title="true"
+                title="Google Maps Link"
+                type="url"
+                placeholder="Google Map Link"
+                v-model="formData.google_map_link"
+                :rules="[FormValidations.RequiredRule]"
+              />
+            </div>
+
+            <!-- Description -->
+            <div class="w-full flex flex-col mb-4">
+              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                Description
+              </app-normal-text>
+              <app-text-field
+                :has-title="true"
+                title="Description"
+                type="text"
+                placeholder="Description"
+                v-model="formData.description"
+                :is-textarea="true"
+                text-area-row="4"
+                :rules="[FormValidations.RequiredRule]"
+              />
+            </div>
+
+            <div class="w-full grid grid-cols-2 gap-3 mt-2">
+              <div class="col-span-1 flex flex-col">
+                <app-button
+                  @click="showAddLocationSection = false"
+                  class="!w-full px-4 py-3"
+                  variant="secondary"
+                  outlined
+                >
+                  Cancel
+                </app-button>
+              </div>
+
+              <div class="col-span-1 flex flex-col">
+                <app-button
+                  @click="addDeliveryAddress"
+                  :is-loading="isLoading"
+                  class="!w-full px-4 py-3"
+                  variant="secondary"
+                >
+                  Confirm Address
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </template>
+        <template v-else>
+          <template v-if="deliveryAddresses.length > 0">
+            <div class="space-y-3">
+              <div class="w-full flex flex-col">
+                <app-button
+                  custom-class="!w-full px-4 py-3 mb-2 !border-secondary !border-[1.5px]"
+                  variant="secondary"
+                  @click="showAddLocationSection = true"
+                >
+                  + Add new location
+                </app-button>
+              </div>
+              <div
+                v-for="location in deliveryAddresses"
+                :key="location.name || location.id"
+                :class="` ${
+                  selectedLocations.includes(location)
+                    ? '!border-primary !border-[2px]'
+                    : '!border-gray-200 !border'
+                } rounded-lg p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors`"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="w-full flex flex-col">
+                    <div class="pb-[2px]">
+                      <app-normal-text class="font-semibold text-gray-900 mb-1">
+                        {{ location.name }}
+                      </app-normal-text>
+                    </div>
+                    <div class="pb-2">
+                      <app-normal-text class="text-gray-600 mb-1">
+                        {{ location.description }}
+                      </app-normal-text>
+                    </div>
+                    <div>
+                      <app-normal-text class="!text-primary !underline">
+                        <a :href="location.google_map_link" target="_blank">
+                          See on map
+                        </a>
+                      </app-normal-text>
+                    </div>
+                  </div>
+
+                  <div>
+                    <app-button
+                      variant="secondary"
+                      class="!py-1 px-4 !w-fit"
+                      @click="toggleLocationSelection(location)"
+                    >
+                      Select
+                    </app-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+          <!-- No Locations Available -->
+          <div
+            v-else
+            class="text-center flex flex-col justify-center items-center py-8 bg-gray-50 rounded-lg my-3 border border-gray-200"
+          >
+            <app-normal-text class="font-semibold text-gray-900 mb-2">
+              No pickup locations available
+            </app-normal-text>
+            <app-normal-text class="text-gray-600">
+              Please contact the business for pickup options
+            </app-normal-text>
+
+            <div class="w-full flex flex-col items-center mt-2 justify-center">
+              <app-button
+                class="!w-fit px-4 py-1 mt-2"
+                variant="secondary"
+                @click="showAddLocationSection = true"
+              >
+                + Add new location
+              </app-button>
+            </div>
+          </div>
+        </template>
 
         <!-- Content -->
-        <div class="space-y-4">
-          <!-- Address search input -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{
-              addressType
-            }}</label>
-            <app-select
-              :placeholder="placeholderText"
-              :hasTitle="false"
-              v-model="selectedAddress"
-              ref="addressSelect"
-              @OnSearch="handleAddressSearch"
-              :options="addressOptions"
-              autoComplete
-              :hasSearch="true"
-              name="DeliveryAddress"
-              usePermanentFloatingLabel
-              :searchMessage="searchMessage"
-              :searchIsLoading="addressSearchIsLoading"
-            />
-            <!-- Use current location -->
-            <button
-              type="button"
-              @click="useCurrentLocation"
-              class="text-xs text-blue-600 hover:underline mt-1"
-              :disabled="isLocating"
-            >
-              <span v-if="isLocating">📍 Detecting your location...</span>
-              <span v-else>📍 Use my current location</span>
-            </button>
-          </div>
+        <div class="space-y-4"></div>
 
-          <!-- Additional details input -->
-          <div class="space-y-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >Address Details</label
-            >
-            <app-text-field
-              :has-title="false"
-              type="text"
-              :placeholder="detailsPlaceholder"
-              ref="addressDetailsField"
-              name="AddressDetails"
-              v-model="addressDetails"
-              usePermanentFloatingLabel
-              is-textarea
-              :max-character="500"
-            />
-            <div class="text-xs text-gray-500 text-right">
-              {{ addressDetailsLength }}/500
-            </div>
-          </div>
-
-          <!-- Address preview -->
-          <div
-            v-if="selectedAddress"
-            class="bg-blue-50 p-3 rounded-lg border border-blue-200"
-          >
-            <div class="text-sm font-medium text-blue-800 mb-1">
-              {{ addressType }}:
-            </div>
-            <div class="text-sm text-blue-700">{{ selectedAddress }}</div>
-            <div v-if="addressDetails" class="text-sm text-blue-600 mt-1">
-              {{ addressDetails }}
-            </div>
-          </div>
-        </div>
+        <!-- Modal Footer -->
+        <div class="modal-footer"></div>
       </div>
 
-      <!-- Modal Footer -->
-      <div class="modal-footer">
-        <button class="btn-secondary" @click="handleCancel">Cancel</button>
-        <button
-          class="btn-primary"
-          @click="confirmAddress"
-          :disabled="!selectedAddress || isProcessing"
-        >
-          {{ isProcessing ? "Confirming..." : "✓ Continue" }}
-        </button>
-      </div>
+      <!-- Spacer -->
+      <div class="h-[30px]"></div>
     </div>
   </div>
 </template>
@@ -128,6 +216,13 @@
 <script lang="ts">
 import { defineComponent, reactive, ref, computed, onMounted } from "vue";
 import { AppSelect, AppTextField } from "../../AppForm";
+import { AppHeaderText, AppNormalText } from "../../AppTypography";
+import AppIcon from "../../AppIcon";
+import { DeliveryAddress } from "@greep/logic/src/gql/graphql";
+import { Logic } from "../../../composable";
+import AppButton from "../../AppButton";
+import { watch } from "vue";
+import { getChatMetadata } from "../../../composable/useWorkflowEngine";
 
 interface SelectOption {
   key: string;
@@ -147,6 +242,10 @@ export default defineComponent({
   components: {
     AppSelect,
     AppTextField,
+    AppHeaderText,
+    AppNormalText,
+    AppIcon,
+    AppButton,
   },
   props: {
     onAddressConfirm: {
@@ -178,176 +277,59 @@ export default defineComponent({
     const addressDetails = ref("");
     const addressSearchIsLoading = ref(false);
     const addressOptions = reactive<SelectOption[]>([]);
+    const showDeliverySelector = ref(true);
 
-    const autocompleteSuggestion = ref<any>();
-    const sessionToken = ref<any>();
-    const geocoder = ref<any>();
+    const formData = reactive<{
+      name: string;
+      description?: string;
+      google_map_link?: string;
+      delivery_location_id?: string;
+      is_default?: boolean;
+    }>({
+      name: "",
+      description: "",
+      google_map_link: "",
+      delivery_location_id: "",
+      is_default: true,
+    });
+
+    const showAddLocationSection = ref(false);
+    const deliveryLocationOptions = reactive<SelectOption[]>([]);
+    const isLoading = ref(false);
+    const deliveryArea = ref<any>(null);
+    const deliveryLocationId = ref("");
+    const expectedLocationCounts = ref(0);
+    const selectedLocations = reactive<DeliveryAddress[]>([]);
+
     const isLocating = ref(false);
 
-    const addressDetailsLength = computed(() => addressDetails.value.length);
+    const deliveryAddresses = ref<DeliveryAddress[]>([]);
 
-    // Computed properties for dynamic text based on address type
-    const placeholderText = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes("pickup");
-      return isPickup
-        ? "Search for pickup address..."
-        : "Search for your address...";
-    });
+    const FormValidations = Logic.Form;
 
-    const searchMessage = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes("pickup");
-      return isPickup
-        ? "Type to search for pickup addresses"
-        : "Type to search for addresses";
-    });
-
-    const detailsPlaceholder = computed(() => {
-      const isPickup = props.addressType.toLowerCase().includes("pickup");
-      return isPickup
-        ? "Add helpful details for pickup (apartment, floor, landmark, etc.)"
-        : "Add helpful details (apartment, floor, landmark, etc.)";
-    });
-
-    const handleDetailsInput = (values: any) => {
-      addressDetails.value = values.AddressDetails || "";
-    };
-
-    const debounce = (func: Function, delay: number) => {
-      let timeoutId: NodeJS.Timeout;
-      return (...args: any[]) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => func.apply(null, args), delay);
-      };
-    };
-
-    const handleAddressSearch = debounce(async (searchValue: string) => {
-      if (!searchValue || searchValue.length < 2) return;
-
-      addressOptions.splice(0, addressOptions.length);
-
-      try {
-        if (!autocompleteSuggestion.value || !searchValue) {
-          console.log("⏳ AutocompleteSuggestion not ready, initializing...");
-          await initPlacesService();
-
-          if (!autocompleteSuggestion.value) {
-            console.error(
-              "❌ Failed to initialize Google Places AutocompleteSuggestion"
-            );
-            return;
-          }
-        }
-
-        addressSearchIsLoading.value = true;
-        console.log("🔍 Searching for addresses:", searchValue);
-
-        const predictions =
-          await autocompleteSuggestion.value.fetchAutocompleteSuggestions({
-            input: searchValue,
-            sessionToken: sessionToken.value,
-          });
-
-        if (predictions.suggestions) {
-          predictions.suggestions.forEach((prediction: any) => {
-            const currentPrediction = prediction.placePrediction;
-            addressOptions.push({
-              key: currentPrediction.text.text,
-              value: currentPrediction.text.text,
-              title: "",
-              icon: "",
-            });
-          });
-          console.log(
-            "✅ Found",
-            predictions.suggestions.length,
-            "address suggestions"
-          );
+    const toggleLocationSelection = (location: DeliveryAddress) => {
+      const index = selectedLocations.indexOf(location);
+      if (index > -1) {
+        selectedLocations.splice(index, 1);
+      } else {
+        if (
+          expectedLocationCounts.value === 0 ||
+          selectedLocations.length < expectedLocationCounts.value
+        ) {
+          selectedLocations.push(location);
         } else {
-          console.log("📭 No address suggestions found");
+          confirmAddress(selectedLocations);
         }
-      } catch (error) {
-        console.error("Error searching addresses:", error);
-      } finally {
-        addressSearchIsLoading.value = false;
       }
-    }, 500);
-
-    const useCurrentLocation = () => {
-      if (!navigator.geolocation) {
-        console.error("Geolocation is not supported by your browser.");
-        return;
-      }
-
-      isLocating.value = true;
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            const { latitude, longitude } = position.coords;
-
-            if (!geocoder.value) {
-              console.error(
-                "Google Maps Geocoder not initialized. Attempting to initialize..."
-              );
-              await initPlacesService();
-
-              if (!geocoder.value) {
-                console.error("Failed to initialize Google Maps Geocoder.");
-                return;
-              }
-            }
-
-            geocoder.value.geocode(
-              { location: { lat: latitude, lng: longitude } },
-              (results: any, status: any) => {
-                if (status === "OK" && results[0]) {
-                  selectedAddress.value = results[0].formatted_address;
-                  console.log(
-                    "✅ Current location address found:",
-                    results[0].formatted_address
-                  );
-                } else {
-                  console.error(
-                    "Unable to fetch address for current location. Status:",
-                    status
-                  );
-                }
-              }
-            );
-          } catch (error) {
-            console.error("Error fetching current location:", error);
-          } finally {
-            isLocating.value = false;
-          }
-        },
-        (error) => {
-          isLocating.value = false;
-          console.error("Unable to retrieve your location:", error);
-        },
-        {
-          timeout: 10000, // 10 second timeout
-          enableHighAccuracy: true,
-          maximumAge: 300000, // 5 minutes
-        }
-      );
     };
 
-    const confirmAddress = () => {
-      if (!selectedAddress.value) {
-        console.error("Please select an address first.");
-        return;
-      }
-
-      const fullAddress = addressDetails.value
-        ? `${selectedAddress.value}, ${addressDetails.value}`
-        : selectedAddress.value;
-
+    const confirmAddress = (locations: DeliveryAddress[]) => {
       try {
-        props.onAddressConfirm(fullAddress);
-        emit("address-confirm", fullAddress);
+        props.onAddressConfirm(locations);
+        emit("address-confirm", locations);
+
         selectedAddress.value = "";
         addressDetails.value = "";
-        addressOptions.splice(0, addressOptions.length);
       } catch (error) {
         console.error("Error confirming address:", error);
       }
@@ -356,7 +338,7 @@ export default defineComponent({
     const cancelAddress = () => {
       selectedAddress.value = "";
       addressDetails.value = "";
-      addressOptions.splice(0, addressOptions.length);
+
       try {
         props.onCancel();
         emit("cancel");
@@ -365,148 +347,193 @@ export default defineComponent({
       }
     };
 
-    const initPlacesService = async () => {
-      try {
-        // Check if Google Maps API is loaded
-        if (typeof window !== "undefined" && (window as any).google?.maps) {
-          const { AutocompleteSuggestion, AutocompleteSessionToken, Geocoder } =
-            await (window as any).google.maps.importLibrary("places");
-
-          autocompleteSuggestion.value = AutocompleteSuggestion;
-          sessionToken.value = new AutocompleteSessionToken();
-          geocoder.value = new (window as any).google.maps.Geocoder();
-          console.log("✅ Google Maps Places service initialized successfully");
-        } else {
-          // Wait for Google Maps API to load
-          console.log("⏳ Waiting for Google Maps API to load...");
-          await waitForGoogleMaps();
-
-          if ((window as any).google?.maps) {
-            const {
-              AutocompleteSuggestion,
-              AutocompleteSessionToken,
-              Geocoder,
-            } = await (window as any).google.maps.importLibrary("places");
-
-            autocompleteSuggestion.value = AutocompleteSuggestion;
-            sessionToken.value = new AutocompleteSessionToken();
-            geocoder.value = new (window as any).google.maps.Geocoder();
-            console.log(
-              "✅ Google Maps Places service initialized successfully (after wait)"
-            );
-          } else {
-            console.error("❌ Google Maps API failed to load");
-          }
-        }
-      } catch (error) {
-        console.error("Error initializing Google Places service:", error);
+    watch(selectedLocations, () => {
+      if (
+        expectedLocationCounts.value > 0 &&
+        selectedLocations.length === expectedLocationCounts.value
+      ) {
+        confirmAddress(selectedLocations);
       }
-    };
-
-    const waitForGoogleMaps = (): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        let attempts = 0;
-        const maxAttempts = 20; // Wait up to 10 seconds (20 * 500ms)
-
-        const checkGoogleMaps = () => {
-          attempts++;
-
-          if ((window as any).google?.maps) {
-            resolve();
-          } else if (attempts >= maxAttempts) {
-            reject(new Error("Google Maps API failed to load within timeout"));
-          } else {
-            setTimeout(checkGoogleMaps, 500);
-          }
-        };
-
-        checkGoogleMaps();
-      });
-    };
+    });
 
     const handleCancel = () => {
       cancelAddress();
     };
 
-    onMounted(() => {
-      initPlacesService();
+    const fetchDeliveryLocations = async () => {
+      try {
+        // GetDeliveryLocations endpoint is in Commerce service
+        // Parameters: page, count, orderType, order, whereQuery
+
+        await (Logic.Commerce
+          ? Logic.Commerce
+          : // @ts-expect-error
+            Logic.Delivery
+        ).GetDeliveryLocations(1, 100, "CREATED_AT", "DESC", "");
+        const locations =
+          (Logic.Commerce
+            ? Logic.Commerce
+            : // @ts-expect-error
+              Logic.Delivery
+          ).ManyDeliveryLocations?.data || [];
+
+        deliveryLocationOptions.length = 0;
+        deliveryLocationOptions.push(
+          // @ts-ignore
+          ...locations.map((location: any) => ({
+            key: location.id?.toString() || "",
+            value: location.area || "", // area is the primary field
+            extraInfo: location.country || "", // country as extra info
+          }))
+        );
+      } catch (error) {
+        console.error("Error fetching delivery locations:", error);
+      }
+    };
+
+    const fetchDeliveryAddresses = async () => {
+      try {
+        const response = await Logic.User.GetP2PDeliveryAddresses(
+          10,
+          1,
+          "UPDATED_AT",
+          "DESC",
+          `{
+        column: AUTH_USER_ID,
+        operator: EQ,
+        value: ${Logic.Auth.AuthUser?.id}
+        }`
+        );
+
+        if (response?.data) {
+          deliveryAddresses.value = response.data;
+        }
+      } catch (error) {
+        console.error("Error fetching delivery addresses:", error);
+      }
+    };
+
+    const addDeliveryAddress = async () => {
+      if (
+        formData.delivery_location_id === "" ||
+        !formData.delivery_location_id
+      ) {
+        Logic.Common.showAlert({
+          show: true,
+          message: "Please select a delivery location area.",
+          type: "error",
+        });
+        return;
+      }
+
+      if (!formData.name || formData.name.trim() === "") {
+        Logic.Common.showAlert({
+          show: true,
+          message: "Please enter an address name.",
+          type: "error",
+        });
+        return;
+      }
+
+      if (!formData.google_map_link || formData.google_map_link.trim() === "") {
+        Logic.Common.showAlert({
+          show: true,
+          message: "Please enter a Google Maps link.",
+          type: "error",
+        });
+        return;
+      }
+      isLoading.value = true;
+
+      try {
+        Logic.User.AddDeliveryAddressForm = {
+          name: formData.name,
+          description: formData.description,
+          google_map_link: formData.google_map_link,
+          delivery_location_id: formData.delivery_location_id,
+          is_default: formData.is_default,
+        };
+
+        // Add delivery address
+        const result = await Logic.User.AddDeliveryAddress();
+
+        if (result) {
+          Logic.Common.showAlert({
+            show: true,
+            message: "Address added successfully!",
+            type: "success",
+          });
+        }
+
+        fetchDeliveryAddresses();
+        showAddLocationSection.value = false;
+      } catch (error) {
+        console.error("Error adding delivery address:", error);
+        Logic.Common.showAlert({
+          show: true,
+          message: "Failed to add address. Please try again.",
+          type: "error",
+        });
+      } finally {
+        isLoading.value = false;
+      }
+    };
+
+    // Sync deliveryLocationId with formData when options update
+    watch(deliveryLocationId, () => {
+      formData.delivery_location_id = deliveryLocationId.value;
+    });
+
+    // Watch for when deliveryLocationOptions are updated and remount the select
+    watch(deliveryLocationOptions, () => {
+      if (deliveryLocationOptions.length > 0) {
+        showDeliverySelector.value = false;
+        setTimeout(() => {
+          showDeliverySelector.value = true;
+        }, 100);
+      }
+    });
+
+    onMounted(async () => {
+      fetchDeliveryAddresses();
+      fetchDeliveryLocations();
+
+      const chatMetadata: any = getChatMetadata();
+
+      if (chatMetadata?.selected_option) {
+        // Handle the selected option
+        const selectedOptionIsNumeric = !isNaN(
+          Number(chatMetadata.selected_option)
+        );
+
+        if (selectedOptionIsNumeric) {
+          expectedLocationCounts.value = Number(chatMetadata.selected_option);
+        }
+      }
     });
 
     return {
       selectedAddress,
       addressDetails,
-      addressDetailsLength,
       addressSearchIsLoading,
       addressOptions,
       isLocating,
-      placeholderText,
-      searchMessage,
-      detailsPlaceholder,
-      handleAddressSearch,
       confirmAddress,
       cancelAddress,
       handleCancel,
-      useCurrentLocation,
+      deliveryAddresses,
+      showAddLocationSection,
+      formData,
+      FormValidations,
+      showDeliverySelector,
+      deliveryLocationOptions,
+      deliveryLocationId,
+      addDeliveryAddress,
+      isLoading,
+      selectedLocations,
+      toggleLocationSelection,
+      expectedLocationCounts,
     };
   },
 });
 </script>
-
-<style scoped>
-/* Modal Footer Styles */
-.modal-footer {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: flex-end;
-  padding: 1rem 1.5rem 1.5rem;
-  border-top: 1px solid #e9ecef;
-}
-
-.btn-primary,
-.btn-secondary {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 0.375rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-primary {
-  background: #007bff;
-  color: white;
-}
-
-.btn-primary:hover:not(:disabled) {
-  background: #0056b3;
-}
-
-.btn-primary:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.btn-secondary {
-  background: #6c757d;
-  color: white;
-}
-
-.btn-secondary:hover {
-  background: #545b62;
-}
-
-/* Mobile optimizations */
-@media (max-width: 768px) {
-  .modal-footer {
-    padding: 1rem;
-  }
-
-  .btn-primary,
-  .btn-secondary {
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
-  }
-}
-</style>

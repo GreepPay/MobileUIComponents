@@ -165,19 +165,28 @@ export const useWorkflowInput = (
   };
 
   // Input handlers
-  const handleAddressSelection = async (address: any): Promise<boolean> => {
+  const handleAddressSelection = async (
+    addresses: DeliveryAddress[]
+  ): Promise<boolean> => {
+    console.log("📍 Address(es) selected:", addresses);
     // Handle both string addresses and object addresses
-    const addressText =
-      typeof address === "string"
-        ? address
-        : address.formatted || address.name || address.address || address;
+    let addressText = "Here are the selected addresses:<br/>";
 
-    console.log("📍 Address selection:", { address, addressText });
+    addresses.forEach((addr, index) => {
+      addressText += `{${index + 1}. ${addr.name} - ${
+        addr.description
+      }. <a class="!underline" href="${
+        addr.google_map_link
+      }" target="_blank" rel="noopener noreferrer">See on map</a><br/>`;
+    });
+
+    console.log("📍 Address selection:", { addresses, addressText });
 
     // Determine if this is pickup or delivery address
     const addressType = getAddressType();
     const metadata: any = {
       selected_option: "string",
+      selected_delivery_addresses: addresses,
     };
 
     // Set the correct field based on address type
