@@ -14,7 +14,21 @@
     </div>
 
     <div class="py-2">
-      <template v-if="hasItems">
+      <div
+        v-if="!hasItems || isLoading"
+        class="px-4 pt-4 !pt-2 flex flex-col gap-4"
+      >
+        <app-empty-state
+          :title="emptyTitle"
+          :description="emptyDescription"
+          :useIcon="useEmptyStateIcon"
+          :isLoading="isLoading"
+        />
+
+        <slot name="empty-state-extra" v-if="!isLoading" />
+      </div>
+
+      <template v-else>
         <div
           class="flex items-center gap-4 overflow-x-auto h-fit scrollbar-hide px-4"
           :class="contentClass"
@@ -22,16 +36,6 @@
           <slot />
         </div>
       </template>
-      <div v-else class="px-4 pt-4 !pt-2 flex flex-col gap-4">
-        <app-empty-state
-          :title="emptyTitle"
-          :description="emptyDescription"
-          :useIcon="useEmptyStateIcon"
-        />
-
-        <slot name="empty-state-extra" />
-      </div>
-
 
       <slot name="extra-data" />
     </div>
@@ -85,6 +89,10 @@
       contentClass: {
         type: String,
         default: "",
+      },
+      isLoading: {
+        type: Boolean,
+        default: true,
       },
     },
     emits: ["view-more"],
