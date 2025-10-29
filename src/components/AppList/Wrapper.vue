@@ -92,7 +92,7 @@
       },
       isLoading: {
         type: Boolean,
-        default: true,
+        default: false,
       },
     },
     emits: ["view-more"],
