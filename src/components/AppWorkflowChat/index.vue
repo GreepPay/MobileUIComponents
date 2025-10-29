@@ -4,6 +4,10 @@
       class="w-full flex flex-col lg:text-sm mdlg:text-[12px] relative text-xs font-poppins overflow-y-auto h-full"
       id="workflow-chat-page"
       :style="mobileFullHeight.height"
+      style="
+        padding-top: calc(env(safe-area-inset-top)) !important;
+        padding-bottom: calc(env(safe-area-inset-bottom)) !important;
+      "
     >
       <!-- Top bar -->
       <chat-top-bar
