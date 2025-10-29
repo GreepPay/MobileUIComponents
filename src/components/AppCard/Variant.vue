@@ -92,7 +92,9 @@
       <div
         class="absolute w-full h-full top-0 left-0 flex items-center justify-center"
       >
-        <app-normal-text class="!text-white !text-xl !font-semibold rotate-90">
+        <app-normal-text
+          class="!text-white !text-xl !font-semibold !rotate-90 !line-clamp-1 text-center"
+        >
           {{ variant.ticket_name }}
         </app-normal-text>
       </div>

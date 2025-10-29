@@ -4,6 +4,7 @@
       chatEnabled ? '' : '!opacity-[50%]'
     }`"
     :style="bottomPadding"
+    style="padding-bottom: calc(env(safe-area-inset-bottom) + 16px) !important"
   >
     <!-- Extra widget slot -->
     <slot name="extra-widget" />
