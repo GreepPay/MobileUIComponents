@@ -14,8 +14,8 @@
           maskUnits="userSpaceOnUse"
           x="0"
           y="0"
-          width="256"
-          height="146"
+          width="100%"
+          height="100%"
           fill="black"
         >
           <rect fill="white" width="256" height="146" />
@@ -90,12 +90,14 @@
       </svg>
 
       <div
-        class="absolute w-full h-full top-0 left-0 flex items-center justify-center"
+        class="absolute truncate w-full h-full top-0 left-0 flex items-center justify-center"
       >
         <app-normal-text
-          class="!text-white !text-xl !font-semibold !rotate-90 !line-clamp-1 text-center"
+          class="!text-white !text-lg vertical-rl !font-semibold truncate"
         >
-          {{ variant.ticket_name }}
+          {{
+            Logic.Common.TruncateText(variant.ticket_name, false, 10).truncated
+          }}
         </app-normal-text>
       </div>
     </div>
@@ -103,36 +105,37 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { AppHeaderText, AppNormalText } from "../AppTypography";
+  import { defineComponent } from "vue"
+  import { AppHeaderText, AppNormalText } from "../AppTypography"
+  import { Logic } from "../../composable"
 
-export default defineComponent({
-  name: "AppVariantCard",
-  components: {
-    AppHeaderText,
-    AppNormalText,
-  },
-  props: {
-    variant: {
-      type: Object as () => {
-        id: string;
-        sku: string;
-        ticket_name: string;
-        name: string;
-        price: string;
-        color: string;
-        time: string;
-        date: string;
+  export default defineComponent({
+    name: "AppVariantCard",
+    components: {
+      AppHeaderText,
+      AppNormalText,
+    },
+    props: {
+      variant: {
+        type: Object as () => {
+          id: string
+          sku: string
+          ticket_name: string
+          name: string
+          price: string
+          color: string
+          time: string
+          date: string
+        },
+        required: true,
       },
-      required: true,
+      customClass: {
+        type: String,
+        default: "",
+      },
     },
-    customClass: {
-      type: String,
-      default: "",
+    setup() {
+      return { Logic }
     },
-  },
-  setup() {
-    return {};
-  },
-});
+  })
 </script>
