@@ -2,14 +2,14 @@
   <component :is="Teleport" to="body">
     <transition name="fade" appear>
       <div
-        :class="`fixed top-0 w-screen rounded-t-[20px]  bg-black/30 flex flex-col overflow-y-hidden items-center mdlg:justify-center! justify-end ${customClass}`"
+        :class="`fixed top-0 w-screen  bg-black/30 flex flex-col overflow-y-hidden items-center mdlg:justify-center! justify-end ${customClass}`"
         :style="`height: ${
           mobileFullHeight ? mobileFullHeight.height : ''
         }; z-index: 9999999999999999;`"
         @click="canClose ? closeModal() : null"
       >
         <div
-          :class="`w-full bg-white rounded-t-[20px]    pb-0 min-h-[100px] relative max-h-[80%] ${innerClass}`"
+          :class="`w-full bg-white rounded-t-[20px]    pb-0 min-h-[100px] relative max-h-[90%] ${innerClass}`"
           @click.stop="null"
         >
           <div
@@ -63,136 +63,136 @@
   </component>
 </template>
 <script lang="ts">
-  import {
-    computed,
-    defineComponent,
-    onMounted,
-    onUnmounted,
-    ref,
-    Teleport as teleport_,
-    TeleportProps,
-    VNodeProps,
-  } from "vue"
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  onUnmounted,
+  ref,
+  Teleport as teleport_,
+  TeleportProps,
+  VNodeProps,
+} from "vue";
 
-  const Teleport = teleport_ as {
-    new (): {
-      $props: VNodeProps & TeleportProps
-    }
-  }
+const Teleport = teleport_ as {
+  new (): {
+    $props: VNodeProps & TeleportProps;
+  };
+};
 
-  import { AppHeaderText } from "../AppTypography"
-  import AppIcon from "../AppIcon"
+import { AppHeaderText } from "../AppTypography";
+import AppIcon from "../AppIcon";
 
-  /**
-   *  Modal component that displays content in an overlay.
-   */
-  export default defineComponent({
-    name: "AppModal",
-    components: {
-      AppHeaderText,
-      AppIcon,
+/**
+ *  Modal component that displays content in an overlay.
+ */
+export default defineComponent({
+  name: "AppModal",
+  components: {
+    AppHeaderText,
+    AppIcon,
+  },
+  props: {
+    /**
+     * Determines whether the modal can be closed by clicking outside or pressing the close icon.
+     */
+    canClose: {
+      type: Boolean,
+      default: true,
     },
-    props: {
-      /**
-       * Determines whether the modal can be closed by clicking outside or pressing the close icon.
-       */
-      canClose: {
-        type: Boolean,
-        default: true,
-      },
-      hasBackButton: {
-        type: Boolean,
-        default: false,
-      },
-      /**
-       * Title of the modal, displayed in the header.
-       */
-      title: {
-        type: String,
-        default: "",
-      },
-      /**
-       * Function to execute when the modal is closed.
-       * @required
-       */ close: {
-        type: Function,
-        required: true,
-      },
-      /**
-       * @required
-       */
-      hasTitle: {
-        type: Boolean,
-        required: false,
-      },
-      /**
-       * Custom CSS classes to apply to the modal container.
-       */
-      customClass: {
-        type: String,
-        default: "",
-      },
-      contentClass: {
-        type: String,
-        default: "",
-      },
-      titleClass: {
-        type: String,
-        default: "",
-      },
-      /**
-       * Custom CSS classes to apply to the inner modal container.
-       */
-      innerClass: {
-        type: String,
-        default: "",
-      },
-
-      /**  * Custom CSS classes to apply to the bottom section.
-       */
-      bottomSectionClass: {
-        type: String,
-        default: "",
-      },
+    hasBackButton: {
+      type: Boolean,
+      default: false,
     },
-    emits: ["back"],
-    setup(props, { emit }) {
-      const closeModal = (fromButton = false) => {
-        if (props.canClose || fromButton) {
-          props.close()
-        }
+    /**
+     * Title of the modal, displayed in the header.
+     */
+    title: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Function to execute when the modal is closed.
+     * @required
+     */ close: {
+      type: Function,
+      required: true,
+    },
+    /**
+     * @required
+     */
+    hasTitle: {
+      type: Boolean,
+      required: false,
+    },
+    /**
+     * Custom CSS classes to apply to the modal container.
+     */
+    customClass: {
+      type: String,
+      default: "",
+    },
+    contentClass: {
+      type: String,
+      default: "",
+    },
+    titleClass: {
+      type: String,
+      default: "",
+    },
+    /**
+     * Custom CSS classes to apply to the inner modal container.
+     */
+    innerClass: {
+      type: String,
+      default: "",
+    },
+
+    /**  * Custom CSS classes to apply to the bottom section.
+     */
+    bottomSectionClass: {
+      type: String,
+      default: "",
+    },
+  },
+  emits: ["back"],
+  setup(props, { emit }) {
+    const closeModal = (fromButton = false) => {
+      if (props.canClose || fromButton) {
+        props.close();
       }
-      const goBack = () => {
-        emit("back")
-      }
+    };
+    const goBack = () => {
+      emit("back");
+    };
 
-      const innerHeight = ref(window.innerHeight)
+    const innerHeight = ref(window.innerHeight);
 
-      const updateHeight = () => {
-        innerHeight.value = window.innerHeight
-      }
+    const updateHeight = () => {
+      innerHeight.value = window.innerHeight;
+    };
 
-      onMounted(() => {
-        updateHeight()
-        window.addEventListener("resize", updateHeight)
-      })
+    onMounted(() => {
+      updateHeight();
+      window.addEventListener("resize", updateHeight);
+    });
 
-      onUnmounted(() => {
-        window.removeEventListener("resize", updateHeight)
-      })
+    onUnmounted(() => {
+      window.removeEventListener("resize", updateHeight);
+    });
 
-      const mobileFullHeight = computed(() => {
-        return {
-          height: `${innerHeight.value}px`,
-        }
-      })
-
+    const mobileFullHeight = computed(() => {
       return {
-        closeModal,
-        Teleport,
-        mobileFullHeight,
-        goBack,
-      }
-    },
-  })
+        height: `${innerHeight.value}px`,
+      };
+    });
+
+    return {
+      closeModal,
+      Teleport,
+      mobileFullHeight,
+      goBack,
+    };
+  },
+});
 </script>

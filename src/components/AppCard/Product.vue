@@ -74,7 +74,7 @@
             >
               <app-image-loader
                 :photoUrl="image.url"
-                class="rounded-[12px] h-[180px] w-full border-[1px] border-gray-200 dark:!border-gray-700 cursor-pointer"
+                class="rounded-[12px] h-[200px] w-full border-[1px] border-gray-200 dark:!border-gray-700 cursor-pointer"
               />
             </swiper-slide>
           </app-swiper>
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Description -->
-        <div class="w-full flex flex-col pt-2 !pb-3">
+        <div class="w-full flex flex-col pt-4 !pb-3">
           <app-normal-text class="!text-sm !font-semibold !text-left mb-1 px-4">
             Description
           </app-normal-text>
@@ -148,7 +148,7 @@
 
       <template #bottom-section>
         <div
-          class="w-full px-4 py-2 shadow-lg bg-white grid grid-cols-2 items-center gap-4"
+          class="w-full px-4 py-4 shadow-lg bg-white grid grid-cols-2 items-center gap-4"
           :style="`
             ${getBottomPadding}
           `"
