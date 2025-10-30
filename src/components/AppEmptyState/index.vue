@@ -3,6 +3,7 @@
     <div
       v-if="isLoading"
       class="w-full flex h-28 items-center justify-center css-gradient rounded-xl animate-pulse border border-[#F0F3F6] rounded-xl py-8 px-4"
+      :class="custonClass"
     >
       <span class="-mt-2">
         <Vue3Lottie :animation-link="'/loader.json'" :height="90" :width="90" />
