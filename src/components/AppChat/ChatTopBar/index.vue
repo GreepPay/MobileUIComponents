@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full flex flex-col sticky top-0 left-0 pt-4 bg-white z-5">
+  <div
+    class="w-full flex flex-col sticky top-0 left-0 pt-4 bg-white z-5"
+    style="padding-top: calc(env(safe-area-inset-top) + 16px) !important"
+  >
     <!-- Top bar -->
     <div
       class="w-full flex flex-row items-center justify-between border-b-[1.5px] border-[#F0F3F6] px-4 pb-4"
