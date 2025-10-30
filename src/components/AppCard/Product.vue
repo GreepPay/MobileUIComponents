@@ -62,7 +62,7 @@
             :space-between="10"
             :slide-per-view="1"
             :currentSlidePosition="currentSlidePosition"
-            custom-class="h-[180px]"
+            custom-class="h-[200px]"
             :swiperClass="''"
             v-model="slidePosition"
             id="swiperContainerProducts"
@@ -121,7 +121,7 @@
         </div>
 
         <!-- Description -->
-        <div class="w-full flex flex-col pt-2 !pb-4">
+        <div class="w-full flex flex-col pt-2 !pb-3">
           <app-normal-text class="!text-sm !font-semibold !text-left mb-1 px-4">
             Description
           </app-normal-text>

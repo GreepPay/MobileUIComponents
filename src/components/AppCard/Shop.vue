@@ -2,12 +2,13 @@
   <div class="bg-white flex flex-col items-center min-w-[80vw]">
     <app-image-loader
       class="w-full justify-between relative bg-white top-0 z-10 h-40 rounded-2xl"
-      :photo-url="shop.image"
+      :photo-url="shop.banner || shop.logo || ''"
     >
       <div class="relative w-full h-full rounded-2xl bg-[#0a141e20]">
         <div
           class="absolute px-4 top-4 flex items-center w-full space-x-2"
           :class="showShopStatus ? 'justify-between' : 'justify-end'"
+          v-if="false"
         >
           <app-normal-text
             v-if="showShopStatus"
@@ -16,7 +17,9 @@
             Featured
           </app-normal-text>
 
-          <app-icon :name="shop.isFavourite ? 'favourite-red' : 'favourite-inactive'" />
+          <app-icon
+            :name="shop.isFavourite ? 'favourite-red' : 'favourite-inactive'"
+          />
         </div>
 
         <div
@@ -33,22 +36,19 @@
     </app-image-loader>
 
     <div class="bg-white flex items-center w-full py-3">
-      <app-avatar :src="shop.logo" custom-class="!h-12" />
+      <div
+        class="!size-10 rounded-full bg-white flex items-center justify-center"
+      >
+        <app-avatar :src="shop.logo" class="!size-10" />
+      </div>
 
-      <div class="ml-3 gap-4 bg-white truncate">
+      <div class="ml-3 bg-white truncate flex flex-col w-full">
         <app-header-text customClass="leading-6 !text-sm !text-black truncate">
           {{ shop.name }}
         </app-header-text>
-
-        <div class="bg-white flex items-center truncate">
-          <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-            {{ shop.category }}
-          </app-normal-text>
-          <span class="!text-gray-two px-2">●</span>
-          <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-            From {{ shop.price }}
-          </app-normal-text>
-        </div>
+        <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
+          {{ Logic.Common.TruncateText(shop.description, false, 50).truncated }}
+        </app-normal-text>
       </div>
     </div>
   </div>
@@ -67,6 +67,8 @@
   import AppIcon from "../AppIcon"
   import { AppHeaderText, AppNormalText } from "../AppTypography"
   import AppAvatar from "../AppAvatar"
+
+  import { Logic } from "../../composable"
 
   export default defineComponent({
     name: "AppShopCard",
@@ -94,6 +96,12 @@
         type: Boolean,
         default: false,
       },
+    },
+
+    setup() {
+      return {
+        Logic,
+      }
     },
   })
 </script>
