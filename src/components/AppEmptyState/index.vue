@@ -1,13 +1,10 @@
 <template>
   <div>
-    <div
-      v-if="isLoading"
-      class="w-full flex h-28 items-center justify-center css-gradient rounded-xl animate-pulse border border-[#F0F3F6] rounded-xl py-8 px-4"
-      :class="custonClass"
-    >
-      <span class="-mt-2">
-        <Vue3Lottie :animation-link="'/loader.json'" :height="90" :width="90" />
-      </span>
+    <div v-if="isLoading" class="w-full" :class="custonClass">
+      <app-skeleton-loader
+        :type="typeOfLoader"
+        :number-of-loaders="numberOfLoaders"
+      />
     </div>
 
     <div
@@ -51,7 +48,7 @@
   import AppIcon from "../AppIcon"
   import { AppNormalText } from "../AppTypography"
   import AppButton from "../AppButton"
-  import { Vue3Lottie } from "vue3-lottie"
+  import { AppSkeletonLoader } from "../AppSkeletonLoader"
 
   /**
    * AppEmptyState Component
@@ -64,29 +61,71 @@
       AppIcon,
       AppNormalText,
       AppButton,
-      Vue3Lottie,
+      AppSkeletonLoader,
     },
     props: {
+      /**
+       * Whether to display an icon above the title.
+       * @type {boolean}
+       * @default true
+       */
       useIcon: {
         type: Boolean,
         default: true,
       },
+
+      /**
+       * The name of the icon to display.
+       * Used only if `useIcon` is true.
+       * @type {string}
+       * @default "no-transaction"
+       */
       icon: {
         type: String,
         default: "no-transaction",
       },
+
+      /**
+       * The main title text shown in the empty state.
+       * Typically a short message like “No Data Found”.
+       * @type {string}
+       * @default ""
+       */
       title: {
         type: String,
         default: "",
       },
+
+      /**
+       * The descriptive text below the title.
+       * Used to give more context or explanation to users.
+       * @type {string}
+       * @default ""
+       */
       description: {
         type: String,
         default: "",
       },
+
+      /**
+       * Custom class(es) to extend or override the default container styles.
+       * Can be used to adjust layout or colors.
+       * @type {string}
+       * @default ""
+       */
       custonClass: {
         type: String,
         default: "",
       },
+
+      /**
+       * Optional button configuration.
+       * Contains the button label and the action callback when clicked.
+       * @example
+       * buttonData={{ label: 'Retry', action: retryFetch }}
+       * @type {{ label: string, action: Function }}
+       * @required false
+       */
       buttonData: {
         type: Object as () => {
           label: string
@@ -94,9 +133,38 @@
         },
         required: false,
       },
+
+      /**
+       * Whether to show the skeleton loader instead of the empty state.
+       * When true, the loader replaces all other content.
+       * @type {boolean}
+       * @default false
+       */
       isLoading: {
         type: Boolean,
         default: false,
+      },
+
+      /**
+       * Type of loader to display when `isLoading` is true.
+       * This is passed to the <app-skeleton-loader> component.
+       * @type {string}
+       * @default "default"
+       */
+      typeOfLoader: {
+        type: String,
+        default: "default",
+      },
+
+      /**
+       * Number of skeleton loader items to display.
+       * Useful for simulating multiple placeholders.
+       * @type {number}
+       * @default 10
+       */
+      numberOfLoaders: {
+        type: Number,
+        default: 10,
       },
     },
     setup() {

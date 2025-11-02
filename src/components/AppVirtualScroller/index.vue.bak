@@ -7,9 +7,12 @@
         :item="item"
         :index="index"
       />
-
-      <slot v-if="contentLoading" name="skeleton-loaders" />
-
+      <slot
+        v-if="contentLoading"
+        name="skeleton-loaders"
+        v-for="(item, index) in 2"
+        :key="index"
+      />
       <div
         class="h-[40px] w-fullz-50"
         :id="`sideAnchor-${uniqueId}`"
@@ -68,25 +71,25 @@
 
       const onScrolledToEnd = (event: [IntersectionObserverEntry]) => {
         console.log("scrolled to end", event)
-        // console.log("muteFetchMore", muteFetchMore.value)
-        // console.log("contentLoading", contentLoading.value)
+        console.log("muteFetchMore", muteFetchMore.value)
+        console.log("contentLoading", contentLoading.value)
         if (muteFetchMore.value || contentLoading.value) return
 
         const observer = event[0]
-        // console.log("observer", observer)
+        console.log("observer", observer)
         if (!observer?.isIntersecting) return
 
-        // console.log("Fetching more data...")
+        console.log("Fetching more data...")
 
         const currentPage = props.pagination?.currentPage || 0
         const totalPage = props.pagination?.lastPage || 0
 
-        // console.log("currentPage", currentPage)
-        // console.log("totalPage", totalPage)
+        console.log("currentPage", currentPage)
+        console.log("totalPage", totalPage)
 
         let nextPage = currentPage
 
-        // console.log("nextPage", nextPage)
+        console.log("nextPage", nextPage)
 
         if (currentPage < totalPage) nextPage += 1
         else nextPage = -1
