@@ -62,38 +62,41 @@
     emits: ["update:modelValue"],
     name: "AppVirtualScroller",
     setup(props, context) {
+      // State
       const uniqueId = Logic.Common.makeid(16)
       const contentLoading = ref(false)
       const muteFetchMore = ref(false)
 
+      // Methods
+      /**
+       * Handles infinite scrolling logic when the user reaches the end of the list.
+       *
+       * Triggered automatically by the IntersectionObserver when the
+       * bottom or side "anchor" element enters the viewport.
+       *
+       * - Checks if more data can be fetched based on pagination info.
+       * - Prevents duplicate requests when already loading (`contentLoading`)
+       *   or when further fetches are muted (`muteFetchMore`).
+       * - Calls the `fetchMore` function prop with the next page number.
+       * - Resets the loading state once new data is loaded.
+       *
+       * @param {IntersectionObserverEntry[]} event - Array containing observer entries.
+       */
       const onScrolledToEnd = (event: [IntersectionObserverEntry]) => {
-        console.log("scrolled to end", event)
-        // console.log("muteFetchMore", muteFetchMore.value)
-        // console.log("contentLoading", contentLoading.value)
         if (muteFetchMore.value || contentLoading.value) return
 
         const observer = event[0]
-        // console.log("observer", observer)
         if (!observer?.isIntersecting) return
-
-        // console.log("Fetching more data...")
-
         const currentPage = props.pagination?.currentPage || 0
         const totalPage = props.pagination?.lastPage || 0
 
-        // console.log("currentPage", currentPage)
-        // console.log("totalPage", totalPage)
-
         let nextPage = currentPage
-
-        // console.log("nextPage", nextPage)
 
         if (currentPage < totalPage) nextPage += 1
         else nextPage = -1
 
         if (nextPage > 1) {
           if (contentLoading.value) return
-
           contentLoading.value = true
 
           if (props.fetchMore) {
@@ -105,38 +108,6 @@
               .finally(() => (contentLoading.value = false))
           }
         }
-
-        /* 
-          if (muteFetchMore.value || contentLoading.value) return
-
-        const observer = event[0]
-        if (!observer?.isIntersecting) return
-
-        const currentPage = props.pagination?.currentPage || 0
-        const totalPage = props.pagination?.lastPage || 0
-
-        // let nextPage = currentPage
-
-        if (currentPage >= totalPage) {
-          // no more pages to fetch, stop observing
-          const target = document.getElementById(`bottomAnchor-${uniqueId}`)
-          if (target)
-            observer.target && observer.target.id === target.id
-              ? observer.target // noop
-              : null
-          return
-        }
-
-        const nextPage = currentPage + 1
-        contentLoading.value = true
-
-        props
-          .fetchMore(nextPage)
-          .then((responseData) => {
-            // handle success (if needed)
-            console.log("responseData", responseData)
-          })
-          .finally(() => (contentLoading.value = false)) */
       }
 
       const createObserver = () => {
