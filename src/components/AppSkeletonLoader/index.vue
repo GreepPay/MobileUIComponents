@@ -23,7 +23,27 @@
       </div>
     </template>
 
-    <template v-else-if="type === 'shop'"> </template>
+    <template v-else-if="type === 'shop'">
+      <div
+        v-for="n in numberOfLoaders"
+        :key="n"
+        class="mb-2"
+        :class="customClass"
+      >
+        <app-shop-skeleton-loader />
+      </div>
+    </template>
+
+    <template v-else-if="type === 'ticket'">
+      <div
+        v-for="n in numberOfLoaders"
+        :key="n"
+        class="mb-2"
+        :class="customClass"
+      >
+        <app-ticket-skeleton-loader />
+      </div>
+    </template>
 
     <template v-else>
       <div
@@ -56,6 +76,7 @@
     AppProductCardSkeletonLoader,
     AppNotificationSkeletonLoader,
     AppSkeletonDefaultLoader,
+    AppTicketSkeletonLoader,
   } from "./"
 
   export default defineComponent({
@@ -64,6 +85,7 @@
       AppProductCardSkeletonLoader,
       AppNotificationSkeletonLoader,
       AppNotificationSkeletonLoader,
+      AppTicketSkeletonLoader,
     },
     props: {
       type: {

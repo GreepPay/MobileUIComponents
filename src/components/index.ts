@@ -56,6 +56,7 @@ import { AppMerchant, AppMerchantProduct } from "./AppMerchant"
 import {
   AppSkeletonLoader,
   AppNotificationSkeletonLoader,
+  AppTicketSkeletonLoader,
 } from "./AppSkeletonLoader"
 import {
   AppSelect,
@@ -175,4 +176,5 @@ export {
   PickupLocationModal,
   AppSkeletonLoader,
   AppNotificationSkeletonLoader,
+  AppTicketSkeletonLoader,
 }
