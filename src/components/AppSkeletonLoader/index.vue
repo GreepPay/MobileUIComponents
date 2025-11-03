@@ -45,6 +45,39 @@
       </div>
     </template>
 
+    <template v-else-if="type === 'delivery-address'">
+      <div
+        v-for="n in numberOfLoaders"
+        :key="n"
+        class="mb-2"
+        :class="customClass"
+      >
+        <app-delivery-address-skeleton-loader />
+      </div>
+    </template>
+
+    <template v-else-if="type === 'order'">
+      <div
+        v-for="n in numberOfLoaders"
+        :key="n"
+        class="mb-2"
+        :class="customClass"
+      >
+        <app-order-skeleton-loader />
+      </div>
+    </template>
+
+    <template v-else-if="type === 'transaction'">
+      <div
+        v-for="n in numberOfLoaders"
+        :key="n"
+        class="mb-2"
+        :class="customClass"
+      >
+        <app-transaction-skeleton-loader />
+      </div>
+    </template>
+
     <template v-else>
       <div
         v-for="n in numberOfLoaders"
@@ -68,8 +101,10 @@
     | "order"
     | "notification"
     | "message"
+    | "transaction"
     | "event-card"
     | "event-list"
+    | "delivery-address"
     | "default"
 
   import {
@@ -77,6 +112,9 @@
     AppNotificationSkeletonLoader,
     AppSkeletonDefaultLoader,
     AppTicketSkeletonLoader,
+    AppDeliveryAddressSkeletonLoader,
+    AppOrderSkeletonLoader,
+    AppTransactionSkeletonLoader,
   } from "./"
 
   export default defineComponent({
@@ -86,6 +124,9 @@
       AppNotificationSkeletonLoader,
       AppNotificationSkeletonLoader,
       AppTicketSkeletonLoader,
+      AppDeliveryAddressSkeletonLoader,
+      AppOrderSkeletonLoader,
+      AppTransactionSkeletonLoader,
     },
     props: {
       type: {
