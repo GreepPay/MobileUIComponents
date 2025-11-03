@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white flex flex-col items-center min-w-[80vw]">
     <app-image-loader
-      class="w-full justify-between relative bg-white top-0 z-10 h-40 rounded-2xl"
-      :photo-url="shop.banner || shop.logo || ''"
+      class="w-full justify-between relative bg-white top-0 z-10 h-40 rounded-2xl border-[1px] border-light-gray-two"
+      :photo-url="shop.banner"
     >
       <div class="relative w-full h-full rounded-2xl bg-[#0a141e20]">
         <div
@@ -47,7 +47,7 @@
           {{ shop.name }}
         </app-header-text>
         <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
-          {{ Logic.Common.TruncateText(shop.description, false, 50).truncated }}
+          {{ capitalize(shop.category?.replaceAll("-", " ") || "General") }}
         </app-normal-text>
       </div>
     </div>
@@ -55,53 +55,56 @@
 </template>
 
 <script lang="ts">
-  /**
-   * AppShopCard
-   *
-   * Reusable shop showcase card.
-   * Displays image, rating, name, category, and price with favorite and featured indicators.
-   */
+/**
+ * AppShopCard
+ *
+ * Reusable shop showcase card.
+ * Displays image, rating, name, category, and price with favorite and featured indicators.
+ */
 
-  import { defineComponent } from "vue"
-  import AppImageLoader from "../AppImageLoader"
-  import AppIcon from "../AppIcon"
-  import { AppHeaderText, AppNormalText } from "../AppTypography"
-  import AppAvatar from "../AppAvatar"
+import { defineComponent } from "vue";
+import AppImageLoader from "../AppImageLoader";
+import AppIcon from "../AppIcon";
+import { AppHeaderText, AppNormalText } from "../AppTypography";
+import AppAvatar from "../AppAvatar";
 
-  import { Logic } from "../../composable"
+import { Logic } from "../../composable";
+import { capitalize } from "lodash";
 
-  export default defineComponent({
-    name: "AppShopCard",
-    components: {
-      AppImageLoader,
-      AppIcon,
-      AppHeaderText,
-      AppNormalText,
-      AppAvatar,
-    },
-    props: {
-      shop: {
-        type: Object as () => {
-          name: string
-          category: string
-          price: string
-          rating: string
-          image: string
-          logo: string
-          isFavourite: boolean
-        },
-        required: true,
+export default defineComponent({
+  name: "AppShopCard",
+  components: {
+    AppImageLoader,
+    AppIcon,
+    AppHeaderText,
+    AppNormalText,
+    AppAvatar,
+  },
+  props: {
+    shop: {
+      type: Object as () => {
+        name: string;
+        category: string;
+        price: string;
+        rating: string;
+        image: string;
+        logo: string;
+        banner: string;
+        isFavourite: boolean;
       },
-      showShopStatus: {
-        type: Boolean,
-        default: false,
-      },
+      required: true,
     },
+    showShopStatus: {
+      type: Boolean,
+      default: false,
+    },
+  },
 
-    setup() {
-      return {
-        Logic,
-      }
-    },
-  })
+  setup() {
+    return {
+      Logic,
+      capitalize,
+    };
+  },
+});
 </script>

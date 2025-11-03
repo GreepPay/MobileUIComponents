@@ -148,7 +148,7 @@
 
       <template #bottom-section>
         <div
-          class="w-full px-4 py-2 shadow-lg bg-white grid grid-cols-2 items-center gap-4"
+          class="w-full px-4 py-4 shadow-lg bg-white grid grid-cols-2 items-center gap-4"
           :style="`
             ${getBottomPadding}
           `"
