@@ -1,6 +1,5 @@
 <template>
   <div>
-    <app-product-card-skeleton />
     <template v-if="type === 'product'">
       <div
         v-for="n in numberOfLoaders"
@@ -8,7 +7,7 @@
         class="mb-2"
         :class="customClass"
       >
-        <app-product-card-skeleton-loader />
+        <app-product-skeleton-loader />
       </div>
     </template>
 
@@ -108,7 +107,7 @@
     | "default"
 
   import {
-    AppProductCardSkeletonLoader,
+    AppProductSkeletonLoader,
     AppNotificationSkeletonLoader,
     AppSkeletonDefaultLoader,
     AppTicketSkeletonLoader,
@@ -120,7 +119,7 @@
   export default defineComponent({
     name: "AppSkeletonLoaderIndex",
     components: {
-      AppProductCardSkeletonLoader,
+      AppProductSkeletonLoader,
       AppNotificationSkeletonLoader,
       AppNotificationSkeletonLoader,
       AppTicketSkeletonLoader,
