@@ -584,6 +584,7 @@ export default defineComponent({
     // New reactive variables for proof upload modal
     const showProofModal = ref(false);
     const proofUploaded = ref(false);
+    const isInitialized = ref(false);
 
     const innerHeight = ref(window.innerHeight);
 
@@ -1943,8 +1944,7 @@ export default defineComponent({
       }
     };
 
-    // Initialize
-    onMounted(async () => {
+    const startChat = async () => {
       console.log("🚀 WorkflowChat mounted");
       console.log("🔍 Initial state:", {
         isBusinessUser: isBusinessUser.value,
@@ -1958,9 +1958,37 @@ export default defineComponent({
       }
 
       await initializeFromConversation(props.conversation);
-      setupChatWebSocket();
       await scrollToBottom();
+    };
+
+    // Initialize
+    onMounted(async () => {
+      setupChatWebSocket();
+      if (isConnected.value && !isInitialized.value) {
+        console.log(
+          "✅ WebSocket already connected on mount - setting up chat WebSocket"
+        );
+        await startChat();
+      } else {
+        console.log(
+          "⏳ WebSocket not connected yet on mount - waiting for connection"
+        );
+      }
     });
+
+    watch(
+      isConnected,
+      async (newValue) => {
+        console.log("🔔 WebSocket connection status changed:", newValue);
+        if (newValue && !isInitialized.value) {
+          console.log("✅ WebSocket connected - re-setup chat WebSocket");
+          await startChat();
+        } else {
+          console.log("❌ WebSocket disconnected");
+        }
+      },
+      { immediate: true }
+    );
 
     // Cleanup
     onUnmounted(() => {

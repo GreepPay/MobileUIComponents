@@ -272,6 +272,40 @@ export const availableCurrencies = reactive<Currency[]>([
     ],
   },
   {
+    code: "CDF",
+    name: "DR Congo CDF",
+    country_name: "Democratic Republic of the Congo",
+    symbol: "FC",
+    country_code: "CD",
+    use_country_code: true,
+    loading: false,
+    payin_fees: [
+      {
+        type: "percentage",
+        min: 1,
+        value: 2,
+        method: "momo",
+      },
+    ],
+  },
+  {
+    code: "SLE",
+    name: "Sierra Leonean Leone",
+    country_name: "Sierra Leone",
+    symbol: "Le",
+    country_code: "SL",
+    use_country_code: true,
+    loading: false,
+    payin_fees: [
+      {
+        type: "percentage",
+        min: 1,
+        value: 2,
+        method: "momo",
+      },
+    ],
+  },
+  {
     code: "XAF",
     name: "Equatorial Guinea CFA Franc",
     country_name: "Equatorial Guinea",

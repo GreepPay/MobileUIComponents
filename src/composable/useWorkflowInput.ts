@@ -1,9 +1,11 @@
 import { ref, computed, watch } from "vue";
-import { Logic } from "./";
+import { availableCurrencies, Logic } from "./";
 import {
   DeliveryAddress,
+  DeliveryPricing,
   P2pPaymentMethod,
 } from "@greep/logic/src/gql/graphql";
+import { getChatMetadata } from "./useWorkflowEngine";
 
 export interface WorkflowInputOptions {
   workflowType: "p2p_withdrawal" | "deliveries";
@@ -173,7 +175,7 @@ export const useWorkflowInput = (
     let addressText = "Here are the selected addresses:<br/>";
 
     addresses.forEach((addr, index) => {
-      addressText += `{${index + 1}. ${addr.name} - ${
+      addressText += `${index + 1}. ${addr.name} - ${
         addr.description
       }. <a class="!underline" href="${
         addr.google_map_link
@@ -189,14 +191,111 @@ export const useWorkflowInput = (
       selected_delivery_addresses: addresses,
     };
 
+    const chatMetaData: any = getChatMetadata();
+
     // Set the correct field based on address type
     if (addressType === "pickup") {
       metadata.pickup_address = addressText;
+
+      if (chatMetaData.pickup_address_data) {
+        metadata.pickup_address_data_to = addresses;
+      } else {
+        metadata.pickup_address_data = addresses;
+      }
     } else {
       metadata.delivery_address = addressText;
+
+      if (chatMetaData.delivery_address_data) {
+        metadata.delivery_address_data_to = addresses;
+      } else {
+        metadata.delivery_address_data = addresses;
+      }
     }
 
-    console.log("📍 Sending address with metadata:", metadata);
+    if (
+      chatMetaData.delivery_address_data &&
+      metadata.delivery_address_data_to
+    ) {
+      const fromAddresses: DeliveryAddress[] =
+        chatMetaData.delivery_address_data;
+      const toAddresses: DeliveryAddress[] = metadata.delivery_address_data_to;
+
+      // The concept is that, if fromAddress is more than 1, then to addeess must be 1
+      // If toAddress it more than 1, then from address can be more than one
+      let deliveryCost = 0;
+      let deliveryCurrency = "";
+
+      if (fromAddresses.length > 1 && toAddresses.length > 1) {
+        Logic.Common.showAlert({
+          show: true,
+          type: "error",
+          message: "Pickup and delivery to multiple locations is not supported",
+        });
+        return;
+      }
+
+      const allPromiseRequests: Promise<DeliveryPricing>[] = [];
+
+      if (fromAddresses.length >= 1 && toAddresses.length == 1) {
+        fromAddresses.forEach((location) => {
+          const requestAction = () => {
+            return new Promise<DeliveryPricing>((resolve, reject) => {
+              // @ts-expect-error
+              Logic.Delivery.GetDeliveryPricing(
+                parseInt(location.delivery_location_id),
+                parseInt(toAddresses[0]?.delivery_location_id)
+              )?.then((DeliveryPricing) => {
+                deliveryCurrency = DeliveryPricing.currency;
+                deliveryCost += DeliveryPricing.price;
+
+                resolve(DeliveryPricing);
+              });
+            });
+          };
+
+          allPromiseRequests.push(requestAction());
+        });
+      }
+
+      if (fromAddresses.length == 1 && toAddresses.length > 1) {
+        toAddresses?.forEach((location) => {
+          const requestAction = () => {
+            return new Promise<DeliveryPricing>((resolve, reject) => {
+              // @ts-expect-error
+              Logic.Delivery.GetDeliveryPricing(
+                parseInt(fromAddresses[0]?.delivery_location_id),
+                parseInt(location.delivery_location_id)
+              ).then((DeliveryPricing) => {
+                deliveryCurrency = DeliveryPricing.currency;
+                deliveryCost += DeliveryPricing.price;
+
+                resolve(DeliveryPricing);
+              });
+            });
+          };
+
+          allPromiseRequests.push(requestAction());
+        });
+      }
+
+      await Promise.all(allPromiseRequests);
+
+      metadata.delivery_cost = deliveryCost;
+      metadata.delivery_cost_formated = Logic.Common.convertToMoney(
+        deliveryCost,
+        false,
+        ""
+      );
+      metadata.delivery_currency = deliveryCurrency;
+
+      const currencyInfo = availableCurrencies.filter(
+        (item) => item.code == deliveryCurrency
+      )[0];
+
+      metadata.delivery_currency_symbol = currencyInfo
+        ? currencyInfo.symbol
+        : "";
+    }
 
     const success = await sendMessage(addressText, metadata);
 

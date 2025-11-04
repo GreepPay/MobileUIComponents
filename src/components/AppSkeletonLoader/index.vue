@@ -90,56 +90,55 @@
   </div>
 </template>
 <script lang="ts">
-  import { defineComponent, onMounted, ref, toRef } from "vue"
+import { defineComponent, onMounted, ref, toRef } from "vue";
 
-  type SkeletonType =
-    | "product"
-    | "variant"
-    | "shop"
-    | "ticket"
-    | "order"
-    | "notification"
-    | "message"
-    | "transaction"
-    | "event-card"
-    | "event-list"
-    | "delivery-address"
-    | "default"
+type SkeletonType =
+  | "product"
+  | "variant"
+  | "shop"
+  | "ticket"
+  | "order"
+  | "notification"
+  | "message"
+  | "transaction"
+  | "event-card"
+  | "event-list"
+  | "delivery-address"
+  | "default";
 
-  import {
+import {
+  AppProductSkeletonLoader,
+  AppNotificationSkeletonLoader,
+  AppSkeletonDefaultLoader,
+  AppTicketSkeletonLoader,
+  AppDeliveryAddressSkeletonLoader,
+  AppOrderSkeletonLoader,
+  AppTransactionSkeletonLoader,
+} from "./";
+
+export default defineComponent({
+  name: "AppSkeletonLoaderIndex",
+  components: {
     AppProductSkeletonLoader,
     AppNotificationSkeletonLoader,
-    AppSkeletonDefaultLoader,
     AppTicketSkeletonLoader,
     AppDeliveryAddressSkeletonLoader,
     AppOrderSkeletonLoader,
     AppTransactionSkeletonLoader,
-  } from "./"
-
-  export default defineComponent({
-    name: "AppSkeletonLoaderIndex",
-    components: {
-      AppProductSkeletonLoader,
-      AppNotificationSkeletonLoader,
-      AppNotificationSkeletonLoader,
-      AppTicketSkeletonLoader,
-      AppDeliveryAddressSkeletonLoader,
-      AppOrderSkeletonLoader,
-      AppTransactionSkeletonLoader,
+  },
+  props: {
+    type: {
+      type: String as () => SkeletonType,
+      default: "default",
     },
-    props: {
-      type: {
-        type: String as () => SkeletonType,
-        default: "default",
-      },
-      numberOfLoaders: {
-        type: Number,
-        default: 10,
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
+    numberOfLoaders: {
+      type: Number,
+      default: 10,
     },
-  })
+    customClass: {
+      type: String,
+      default: "",
+    },
+  },
+});
 </script>
