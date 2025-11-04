@@ -1,5 +1,8 @@
 <template>
-  <div class="w-full flex justify-between items-center py-2 px-4">
+  <div
+    class="w-full flex justify-between items-center py-2 px-4"
+    :class="customClass"
+  >
     <app-image-loader
       class="size-[72px] rounded-2xl relative bg-black"
       :photo-url="event.image_url"
@@ -42,30 +45,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import AppImageLoader from "../AppImageLoader";
-import AppIcon from "../AppIcon";
-import { AppNormalText } from "../AppTypography";
+  import { defineComponent, computed } from "vue"
+  import AppImageLoader from "../AppImageLoader"
+  import AppIcon from "../AppIcon"
+  import { AppNormalText } from "../AppTypography"
 
-export default defineComponent({
-  name: "AppEventListItem",
-  components: {
-    AppImageLoader,
-    AppIcon,
-    AppNormalText,
-  },
-  props: {
-    event: {
-      type: Object as () => any,
-      required: true,
+  export default defineComponent({
+    name: "AppEventListItem",
+    components: {
+      AppImageLoader,
+      AppIcon,
+      AppNormalText,
     },
-    showFeaturedText: {
-      type: Boolean,
-      default: false,
+    props: {
+      event: {
+        type: Object as () => any,
+        required: true,
+      },
+      showFeaturedText: {
+        type: Boolean,
+        default: false,
+      },
+      customClass: {
+        type: String,
+        default: "",
+      },
     },
-  },
-  setup() {
-    return {};
-  },
-});
+    setup() {
+      return {}
+    },
+  })
 </script>

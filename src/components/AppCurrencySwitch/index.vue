@@ -1,7 +1,9 @@
 <template>
   <div
     :class="`w-fit p-2 bg-white ${
-      isSwitchable ? 'rounded-[999px] px-3 !py-1' : 'rounded-[59px] px-3'
+      isSwitchable
+        ? 'rounded-[999px] px-[10px] !py-[1px]'
+        : 'rounded-[59px] px-2'
     } flex flex-row space-x-[6px] items-center`"
     @click="isSwitchable ? openSelector() : null"
   >
@@ -12,7 +14,7 @@
             ? selectedCurrency.country_code?.toLocaleLowerCase()
             : selectedCurrency.code?.toLocaleLowerCase()
         }.${selectedCurrency?.icon_extension || 'svg'}`"
-        class="h-[25px] w-[25px] rounded-full"
+        class="h-4 w-4 rounded-full"
       />
       <app-normal-text class="!font-[500]">
         {{ selectedCurrency.code?.replace("_1", "").replace("_2", "") }}
@@ -32,7 +34,7 @@
     custom-class=""
     :close="
       () => {
-        showSelectModal = false;
+        showSelectModal = false
       }
     "
     :hasTitle="true"
@@ -117,289 +119,293 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  onMounted,
-  reactive,
-  ref,
-  toRef,
-  watch,
-} from "vue";
-import { AppNormalText, AppHeaderText } from "../AppTypography";
-import AppImageLoader from "../AppImageLoader";
-import AppIcon from "../AppIcon";
-import AppModal from "../AppModal";
-import AppLoading from "../AppLoading";
-import AppInfoBox from "../AppInfoBox";
-import { AppTabs } from "../AppTabs";
-import { Logic } from "../../composable";
-import { Currency } from "../../types";
+  import {
+    computed,
+    defineComponent,
+    onMounted,
+    reactive,
+    ref,
+    toRef,
+    watch,
+  } from "vue"
+  import { AppNormalText, AppHeaderText } from "../AppTypography"
+  import AppImageLoader from "../AppImageLoader"
+  import AppIcon from "../AppIcon"
+  import AppModal from "../AppModal"
+  import AppLoading from "../AppLoading"
+  import AppInfoBox from "../AppInfoBox"
+  import { AppTabs } from "../AppTabs"
+  import { Logic } from "../../composable"
+  import { Currency } from "../../types"
 
-export default defineComponent({
-  name: "AppCurrencySwitch",
-  components: {
-    AppNormalText,
-    AppHeaderText,
-    AppImageLoader,
-    AppIcon,
-    AppModal,
-    AppLoading,
-    AppInfoBox,
-    AppTabs,
-  },
-  props: {
-    default_currency: {
-      type: String,
-      required: true,
-      default: "",
+  export default defineComponent({
+    name: "AppCurrencySwitch",
+    components: {
+      AppNormalText,
+      AppHeaderText,
+      AppImageLoader,
+      AppIcon,
+      AppModal,
+      AppLoading,
+      AppInfoBox,
+      AppTabs,
     },
-    modelValue: {
-      type: String,
-      required: true,
-      default: "",
+    props: {
+      default_currency: {
+        type: String,
+        required: true,
+        default: "",
+      },
+      modelValue: {
+        type: String,
+        required: true,
+        default: "",
+      },
+      modelSymbol: {
+        type: String,
+        required: false,
+        default: "$", // Default to USD symbol
+      },
+      modelCountry: {
+        type: String,
+        required: true,
+        default: "",
+      },
+      isSwitchable: {
+        type: Boolean,
+        required: false,
+        default: true,
+      },
+      label: {
+        type: String,
+        required: false,
+        default: "Currency Focus",
+      },
+      informationText: {
+        type: String,
+        required: false,
+        default:
+          "See balance, transactions, prices, etc, in another currency of your choice.",
+      },
+      availableCurrencies: {
+        type: Array as () => Currency[],
+        default: () => [
+          {
+            code: "TRY",
+            name: "Turkish Lira",
+            symbol: "₺",
+            loading: false,
+          },
+          {
+            code: "USD",
+            name: "United States Dollar",
+            symbol: "$",
+            loading: false,
+          },
+          {
+            code: "USDC",
+            name: "USDC",
+            symbol: "$",
+            loading: false,
+          },
+          {
+            code: "NGN",
+            name: "Nigerian Naira",
+            symbol: "₦",
+            loading: false,
+          },
+          {
+            code: "GHS",
+            name: "Ghanaian Cedis",
+            symbol: "GH₵",
+            loading: false,
+          },
+          {
+            code: "XLM",
+            name: "XLM",
+            symbol: "XLM", // Or any appropriate symbol
+            loading: false,
+          },
+          {
+            code: "ZAR",
+            name: "South African Rand",
+            symbol: "R",
+            loading: false,
+          },
+          {
+            code: "EUR",
+            name: "Euro",
+            symbol: "€",
+            loading: false,
+          },
+        ],
+      },
     },
-    modelSymbol: {
-      type: String,
-      required: false,
-      default: "$", // Default to USD symbol
-    },
-    modelCountry: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    isSwitchable: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
-    label: {
-      type: String,
-      required: false,
-      default: "Currency Focus",
-    },
-    informationText: {
-      type: String,
-      required: false,
-      default:
-        "See balance, transactions, prices, etc, in another currency of your choice.",
-    },
-    availableCurrencies: {
-      type: Array as () => Currency[],
-      default: () => [
-        {
-          code: "TRY",
-          name: "Turkish Lira",
-          symbol: "₺",
-          loading: false,
-        },
-        {
-          code: "USD",
-          name: "United States Dollar",
-          symbol: "$",
-          loading: false,
-        },
-        {
-          code: "USDC",
-          name: "USDC",
-          symbol: "$",
-          loading: false,
-        },
-        {
-          code: "NGN",
-          name: "Nigerian Naira",
-          symbol: "₦",
-          loading: false,
-        },
-        {
-          code: "GHS",
-          name: "Ghanaian Cedis",
-          symbol: "GH₵",
-          loading: false,
-        },
-        {
-          code: "XLM",
-          name: "XLM",
-          symbol: "XLM", // Or any appropriate symbol
-          loading: false,
-        },
-        {
-          code: "ZAR",
-          name: "South African Rand",
-          symbol: "R",
-          loading: false,
-        },
-        {
-          code: "EUR",
-          name: "Euro",
-          symbol: "€",
-          loading: false,
-        },
-      ],
-    },
-  },
-  emits: ["update:modelValue", "update:modelSymbol", "update:modelCountry"],
-  setup(props, context) {
-    const defaultCurrencyRef = toRef(props, "default_currency");
+    emits: ["update:modelValue", "update:modelSymbol", "update:modelCountry"],
+    setup(props, context) {
+      const defaultCurrencyRef = toRef(props, "default_currency")
 
-    const defaultCurrency = computed<Currency>(() => {
-      return props.availableCurrencies.find(
-        (currency) => currency.code === defaultCurrencyRef.value
-      )!; // Non-null assertion since prop is required
-    });
+      const defaultCurrency = computed<Currency>(() => {
+        return props.availableCurrencies.find(
+          (currency) => currency.code === defaultCurrencyRef.value
+        )! // Non-null assertion since prop is required
+      })
 
-    const activeTab = ref("");
+      const activeTab = ref("")
 
-    const appTabs = reactive([
-      { key: "fiat", label: "Fiat" },
-      { key: "crypto", label: "Crypto" },
-    ]);
+      const appTabs = reactive([
+        { key: "fiat", label: "Fiat" },
+        { key: "crypto", label: "Crypto" },
+      ])
 
-    const isCryptoTab = computed(() => activeTab.value === "crypto");
+      const isCryptoTab = computed(() => activeTab.value === "crypto")
 
-    const selectedCurrency = ref<Currency>({
-      code: props.modelValue,
-      symbol: props.modelSymbol,
-      name: defaultCurrency.value?.name,
-    });
+      const selectedCurrency = ref<Currency>({
+        code: props.modelValue,
+        symbol: props.modelSymbol,
+        name: defaultCurrency.value?.name,
+      })
 
-    const showCurrencyImage = ref(true);
+      const showCurrencyImage = ref(true)
 
-    const selectedCurrencyUniqueCode = ref(
-      defaultCurrency.value?.code + defaultCurrency.value?.country_code
-    );
+      const selectedCurrencyUniqueCode = ref(
+        defaultCurrency.value?.code + defaultCurrency.value?.country_code
+      )
 
-    const showSelectModal = ref(false);
+      const showSelectModal = ref(false)
 
-    const fetchingRate = ref(false);
-    const currentCurrencyBeingFetched = ref("");
+      const fetchingRate = ref(false)
+      const currentCurrencyBeingFetched = ref("")
 
-    const currencyIsSelected = (currency: Currency) => {
-      return currency.code === selectedCurrency.value.code;
-    };
-
-    const selectCurrency = (currency: Currency) => {
-      currency.loading = true;
-
-      if ((currency.code + currency.country_code) == selectedCurrencyUniqueCode.value) {
-        return;
+      const currencyIsSelected = (currency: Currency) => {
+        return currency.code === selectedCurrency.value.code
       }
 
-      if (fetchingRate.value) {
-        return;
+      const selectCurrency = (currency: Currency) => {
+        currency.loading = true
+
+        if (
+          currency.code + currency.country_code ==
+          selectedCurrencyUniqueCode.value
+        ) {
+          return
+        }
+
+        if (fetchingRate.value) {
+          return
+        }
+
+        const baseCurrency = "USD"
+
+        let targetCurrency = currency.code
+
+        currentCurrencyBeingFetched.value =
+          currency.code + currency.country_code
+
+        if (targetCurrency == "USDC" || targetCurrency == "USDT") {
+          targetCurrency = "USD"
+        }
+
+        if (targetCurrency == "EURC") {
+          targetCurrency = "EUR"
+        }
+
+        fetchingRate.value = true
+
+        Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency)
+          .then((data) => {
+            if (data) {
+              selectedCurrency.value = currency
+              showSelectModal.value = false
+            } else {
+              showSelectModal.value = false
+            }
+            currency.loading = false
+            fetchingRate.value = false
+
+            selectedCurrencyUniqueCode.value =
+              currency.code + currency.country_code
+
+            context.emit("update:modelValue", selectedCurrency.value.code)
+          })
+          .finally(() => {
+            fetchingRate.value = false
+          })
       }
 
-      const baseCurrency = "USD";
+      watch(selectedCurrency, (newCurrency) => {
+        showCurrencyImage.value = false
+        context.emit("update:modelValue", newCurrency.code)
+        context.emit("update:modelSymbol", newCurrency.symbol)
+        context.emit("update:modelCountry", newCurrency.country_code)
+        setTimeout(() => {
+          showCurrencyImage.value = true
+        }, 100)
+      })
 
-      let targetCurrency = currency.code;
+      watch(defaultCurrencyRef, (newCurrency) => {
+        const currencyData = props.availableCurrencies.filter(
+          (currency) => currency.code === newCurrency
+        )
+        selectCurrency(currencyData[0])
+      })
 
-      currentCurrencyBeingFetched.value = currency.code + currency.country_code;
+      const setDefaultItems = () => {
+        activeTab.value = ""
+        if (selectedCurrency.value?.is_crypto) {
+          activeTab.value = "crypto"
+        } else {
+          activeTab.value = "fiat"
+        }
 
-      if (targetCurrency == "USDC" || targetCurrency == "USDT") {
-        targetCurrency = "USD";
-      }
+        if (props.modelValue) {
+          let targetCurrency = props.availableCurrencies?.filter(
+            (item) => item.code == props.modelValue
+          )
 
-      if (targetCurrency == "EURC") {
-        targetCurrency = "EUR";
-      }
-
-      fetchingRate.value = true;
-
-      Logic.Wallet.GetGlobalExchangeRate(baseCurrency, targetCurrency)
-        .then((data) => {
-          if (data) {
-            selectedCurrency.value = currency;
-            showSelectModal.value = false;
-          } else {
-            showSelectModal.value = false;
+          if (targetCurrency.length > 1) {
+            if (props.modelCountry) {
+              targetCurrency = targetCurrency.filter(
+                (item) => item.country_code == props.modelCountry
+              )
+            }
           }
-          currency.loading = false;
-          fetchingRate.value = false;
 
+          if (targetCurrency.length) {
+            selectedCurrency.value = targetCurrency[0]
+          }
+        }
+
+        if (selectedCurrency.value) {
           selectedCurrencyUniqueCode.value =
-            currency.code + currency.country_code;
-
-          context.emit("update:modelValue", selectedCurrency.value.code);
-        })
-        .finally(() => {
-          fetchingRate.value = false;
-        });
-    };
-
-    watch(selectedCurrency, (newCurrency) => {
-      showCurrencyImage.value = false;
-      context.emit("update:modelValue", newCurrency.code);
-      context.emit("update:modelSymbol", newCurrency.symbol);
-      context.emit("update:modelCountry", newCurrency.country_code);
-      setTimeout(() => {
-        showCurrencyImage.value = true;
-      }, 100);
-    });
-
-    watch(defaultCurrencyRef, (newCurrency) => {
-      const currencyData = props.availableCurrencies.filter(
-        (currency) => currency.code === newCurrency
-      );
-      selectCurrency(currencyData[0]);
-    });
-
-    const setDefaultItems = () => {
-      activeTab.value = "";
-      if (selectedCurrency.value?.is_crypto) {
-        activeTab.value = "crypto";
-      } else {
-        activeTab.value = "fiat";
-      }
-
-      if (props.modelValue) {
-        let targetCurrency = props.availableCurrencies?.filter(
-          (item) => item.code == props.modelValue
-        );
-
-        if (targetCurrency.length > 1) {
-          if (props.modelCountry) {
-            targetCurrency = targetCurrency.filter(
-              (item) => item.country_code == props.modelCountry
-            );
-          }
-        }
-
-        if (targetCurrency.length) {
-          selectedCurrency.value = targetCurrency[0];
+            selectedCurrency.value?.code + selectedCurrency?.value?.country_code
         }
       }
 
-      if (selectedCurrency.value) {
-        selectedCurrencyUniqueCode.value =
-          selectedCurrency.value?.code + selectedCurrency?.value?.country_code;
+      const openSelector = () => {
+        setDefaultItems()
+        showSelectModal.value = true
       }
-    };
 
-    const openSelector = () => {
-      setDefaultItems();
-      showSelectModal.value = true;
-    };
+      onMounted(() => {
+        setDefaultItems()
+      })
 
-    onMounted(() => {
-      setDefaultItems();
-    });
-
-    return {
-      selectedCurrency,
-      showSelectModal,
-      defaultCurrency,
-      currencyIsSelected,
-      showCurrencyImage,
-      selectCurrency,
-      fetchingRate,
-      currentCurrencyBeingFetched,
-      appTabs,
-      activeTab,
-      isCryptoTab,
-      selectedCurrencyUniqueCode,
-      openSelector,
-    };
-  },
-});
+      return {
+        selectedCurrency,
+        showSelectModal,
+        defaultCurrency,
+        currencyIsSelected,
+        showCurrencyImage,
+        selectCurrency,
+        fetchingRate,
+        currentCurrencyBeingFetched,
+        appTabs,
+        activeTab,
+        isCryptoTab,
+        selectedCurrencyUniqueCode,
+        openSelector,
+      }
+    },
+  })
 </script>
