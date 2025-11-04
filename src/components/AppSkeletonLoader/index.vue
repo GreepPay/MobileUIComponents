@@ -107,25 +107,25 @@
     | "default"
 
   import {
-    AppProductSkeletonLoader,
-    AppNotificationSkeletonLoader,
-    AppSkeletonDefaultLoader,
-    AppTicketSkeletonLoader,
-    AppDeliveryAddressSkeletonLoader,
     AppOrderSkeletonLoader,
+    AppTicketSkeletonLoader,
+    AppProductSkeletonLoader,
+    AppSkeletonDefaultLoader,
+    AppNotificationSkeletonLoader,
     AppTransactionSkeletonLoader,
+    AppDeliveryAddressSkeletonLoader,
   } from "./"
 
   export default defineComponent({
     name: "AppSkeletonLoaderIndex",
     components: {
-      AppProductSkeletonLoader,
-      AppNotificationSkeletonLoader,
-      AppNotificationSkeletonLoader,
-      AppTicketSkeletonLoader,
-      AppDeliveryAddressSkeletonLoader,
       AppOrderSkeletonLoader,
+      AppTicketSkeletonLoader,
+      AppProductSkeletonLoader,
+      AppSkeletonDefaultLoader,
+      AppNotificationSkeletonLoader,
       AppTransactionSkeletonLoader,
+      AppDeliveryAddressSkeletonLoader,
     },
     props: {
       type: {
