@@ -51,9 +51,21 @@
           </app-normal-text>
         </div>
 
-        <app-normal-text class="!text-black !text-xl !font-semibold">
-          {{ variant.price }}
-        </app-normal-text>
+        <div
+          class="flex flex-row items-center justify-between w-full space-x-2"
+        >
+          <app-normal-text class="!text-black !text-xl !font-semibold">
+            {{ variant.price }}
+          </app-normal-text>
+
+          <div class="flex flex-col pr-2" v-if="variant.is_vote">
+            <app-normal-text
+              class="!font-medium !text-sm !text-right !line-clamp-1"
+            >
+              Vote {{ variant.ticket_name }}
+            </app-normal-text>
+          </div>
+        </div>
       </div>
     </div>
     <div class="w-[25%] h-[135px] relative">
@@ -93,6 +105,7 @@
         class="absolute w-full h-full top-0 left-0 flex items-center justify-center"
       >
         <app-normal-text
+          v-if="!variant.is_vote"
           class="!text-white !text-base !font-semibold text-center"
           style="
             display: inline-block;
@@ -102,6 +115,12 @@
         >
           {{ variant.ticket_name }}
         </app-normal-text>
+        <app-image-loader
+          v-else
+          :photoUrl="variant.image_url || '/images/profile-image.svg'"
+          class="h-[45px] w-[45px] rounded-full"
+        >
+        </app-image-loader>
       </div>
     </div>
   </div>
@@ -110,12 +129,14 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { AppHeaderText, AppNormalText } from "../AppTypography";
+import AppImageLoader from "../AppImageLoader";
 
 export default defineComponent({
   name: "AppVariantCard",
   components: {
     AppHeaderText,
     AppNormalText,
+    AppImageLoader,
   },
   props: {
     variant: {
@@ -128,6 +149,8 @@ export default defineComponent({
         color: string;
         time: string;
         date: string;
+        is_vote?: boolean;
+        image_url?: string;
       },
       required: true,
     },

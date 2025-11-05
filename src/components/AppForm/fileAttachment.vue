@@ -60,6 +60,7 @@
 import { defineComponent, onMounted, ref, watch } from "vue";
 import AppNormalText from "../AppTypography/normalText.vue";
 import AppIcon from "../AppIcon/index.vue";
+import { Logic } from "../../composable";
 
 /**
  *  A file attachment component that provides a visually customizable way to handle file uploads.
@@ -114,6 +115,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    autoUploadToCloud: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: [
     /**
@@ -139,6 +144,8 @@ export default defineComponent({
      *  @param {string} data - The base64 data URL representing the file content.
      */
     "update:filesAndUrl",
+
+    "update:cloudFileUrl",
   ],
   name: "AppFileAttachment",
   setup(props: any, context: any) {
@@ -202,6 +209,12 @@ export default defineComponent({
                 if (completedCount === files.value.length) {
                   context.emit("update:localFileUrl", allDataLocalUrl.value);
                   context.emit("update:base64Data", allDataBase64.value);
+
+                  if (props.autoUploadToCloud) {
+                    Logic.User.UploadFile(files.value[0]).then((response) => {
+                      context.emit("update:cloudFileUrl", response);
+                    });
+                  }
 
                   const allFilesAndUrl: {
                     url: string;
