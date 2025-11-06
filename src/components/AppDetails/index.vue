@@ -19,7 +19,7 @@
         </app-normal-text>
         <div class="w-full flex flex-row items-center justify-end">
           <app-normal-text
-            :class="` ${
+            :class="` !text-right ${
               invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
             } !text-sm break-words`"
             is-html

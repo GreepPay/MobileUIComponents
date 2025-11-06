@@ -37,6 +37,7 @@
                 type="text"
                 placeholder="Enter address name (e.g., HQ, Branch Office)"
                 v-model="formData.name"
+                name="Address Name"
                 :rules="[FormValidations.RequiredRule]"
               />
             </div>
@@ -76,6 +77,7 @@
                 placeholder="Google Map Link"
                 v-model="formData.google_map_link"
                 :rules="[FormValidations.RequiredRule]"
+                name="Google Maps Link"
               />
             </div>
 
@@ -93,6 +95,7 @@
                 :is-textarea="true"
                 text-area-row="4"
                 :rules="[FormValidations.RequiredRule]"
+                name="Description"
               />
             </div>
 
@@ -446,16 +449,22 @@ export default defineComponent({
       isLoading.value = true;
 
       try {
-        Logic.User.AddDeliveryAddressForm = {
+        const requestData = {
           name: formData.name,
           description: formData.description,
           google_map_link: formData.google_map_link,
           delivery_location_id: formData.delivery_location_id,
           is_default: formData.is_default,
         };
+        if (Logic.User.AddDeliveryAddressForm) {
+          Logic.User.AddDeliveryAddressForm = requestData;
+        }
 
         // Add delivery address
-        const result = await Logic.User.AddDeliveryAddress();
+        const result = Logic.User.AddDeliveryAddress
+          ? await Logic.User.AddDeliveryAddress()
+          : // @ts-ignore
+            await Logic.Delivery.AddDeliveryAddress(requestData);
 
         if (result) {
           Logic.Common.showAlert({

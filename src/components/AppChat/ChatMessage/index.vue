@@ -32,7 +32,9 @@
         >
           <app-normal-text
             :class="`!text-left !font-semibold pb-1 ${
-              message.user_uuid == 'greep_ai' ? '!text-primary' : ''
+              message.user_uuid == 'greep_ai' || message.user_uuid == 'user'
+                ? '!text-primary'
+                : ''
             }`"
             v-if="!isUserMessage"
           >
@@ -246,6 +248,7 @@
               message.text_content &&
               !message.text_content.includes('{order_summary_text}') &&
               !message.text_content.includes('{payment_method_summary}') &&
+              !message.text_content.includes('{delivery_order_summary}') &&
               !clickableImageUrl &&
               !derivedPdfUrl
             "
@@ -299,6 +302,49 @@
             </div>
           </template>
 
+          <!-- Delivery Order Summary -->
+          <template
+            v-else-if="
+              message.text_content.includes('{delivery_order_summary}')
+            "
+          >
+            <app-normal-text :class="`${isUserMessage ? '!text-white' : ''}`">
+              Hello, here are the details of your delivery order:
+            </app-normal-text>
+
+            <div class="w-full flex flex-col mt-2">
+              <div
+                v-for="(value, key) in getOrderSummaryMetadata(message)"
+                :key="key"
+                class="w-full flex flex-col space-y-[2px] mb-3"
+              >
+                <div class="text-left">
+                  <app-normal-text
+                    :class="` !font-semibold ${
+                      isUserMessage ? '!text-white' : ''
+                    }`"
+                  >
+                    {{ value.title }}:
+                  </app-normal-text>
+                </div>
+
+                <div class="w-full flex flex-row justify-between items-center">
+                  <app-normal-text
+                    class="capitalize"
+                    :class="`${isUserMessage ? '!text-white' : ''}`"
+                    is-html
+                    :html-content="value.content"
+                  ></app-normal-text>
+                  <app-icon
+                    v-if="value.can_copy"
+                    :name="`${isUserMessage ? 'copy-white' : 'copy'}`"
+                    custom-class="h-[16px] cursor-pointer"
+                    @click="Logic.Common.copytext(value.content)"
+                  />
+                </div>
+              </div>
+            </div>
+          </template>
           <!-- Media: show image clickable; opens original file in a new tab -->
           <template v-if="clickableImageUrl">
             <a
@@ -352,7 +398,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, capitalize } from "vue";
+import { defineComponent, computed, capitalize, onMounted } from "vue";
 import AppNormalText from "../../AppTypography/normalText.vue";
 import AppIcon from "../../AppIcon/index.vue";
 import AppImageLoader from "../../AppImageLoader/index.vue";
@@ -468,6 +514,59 @@ export default defineComponent({
       return listItems;
     };
 
+    const getOrderSummaryMetadata = (message: any) => {
+      const textContent: string = (
+        message?.text_content ||
+        message?.content ||
+        ""
+      ).toString();
+
+      if (!textContent.includes("{delivery_order_summary}")) return null;
+
+      const metadata = message.metadata || {};
+
+      const listItems = [
+        {
+          title: "Items to deliver",
+          content: metadata.item_description || "N/A",
+        },
+        {
+          title: "Pickup Address(es)",
+          content: metadata?.deliveryOrderData?.pickupAddress || "N/A",
+        },
+        {
+          title: "Delivery Address(es)",
+          content: metadata?.deliveryOrderData?.deliveryAddress || "N/A",
+        },
+        {
+          title: "Tracking Number",
+          content: metadata?.delivery_order?.trackingNumber || "N/A",
+          can_copy: true,
+        },
+        {
+          title: "Delivery Fee",
+          content: `${metadata.delivery_currency_symbol || ""}${
+            metadata.delivery_cost_formated || "N/A"
+          }`,
+        },
+        {
+          title: "Created At",
+          content: Logic.Common.fomartDate(
+            metadata?.delivery_order?.createdAt || "",
+            "DD MMM YYYY, h:mm A"
+          ),
+        },
+        {
+          title: "Status",
+          content: capitalize(
+            metadata?.delivery_order?.status?.replaceAll("_", " ") || "N/A"
+          ),
+        },
+      ];
+
+      return listItems;
+    };
+
     // Try to derive an image URL from the message content if media is not explicitly provided
     const derivedImageUrl = computed(() => {
       // Prefer explicit media
@@ -538,6 +637,7 @@ export default defineComponent({
       getActionClass,
       capitalize,
       getPaymentMethodMetadata,
+      getOrderSummaryMetadata,
       Logic,
     };
   },

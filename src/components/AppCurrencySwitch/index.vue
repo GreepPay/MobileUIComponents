@@ -1,7 +1,9 @@
 <template>
   <div
     :class="`w-fit p-2 bg-white ${
-      isSwitchable ? 'rounded-[999px] px-3 !py-1' : 'rounded-[59px] px-3'
+      isSwitchable
+        ? 'rounded-[999px] px-[10px] !py-[1px]'
+        : 'rounded-[59px] px-2'
     } flex flex-row space-x-[6px] items-center`"
     @click="isSwitchable ? openSelector() : null"
   >
@@ -12,7 +14,7 @@
             ? selectedCurrency.country_code?.toLocaleLowerCase()
             : selectedCurrency.code?.toLocaleLowerCase()
         }.${selectedCurrency?.icon_extension || 'svg'}`"
-        class="h-[25px] w-[25px] rounded-full"
+        class="h-4 w-4 rounded-full"
       />
       <app-normal-text class="!font-[500]">
         {{ selectedCurrency.code?.replace("_1", "").replace("_2", "") }}
@@ -282,7 +284,10 @@ export default defineComponent({
     const selectCurrency = (currency: Currency) => {
       currency.loading = true;
 
-      if ((currency.code + currency.country_code) == selectedCurrencyUniqueCode.value) {
+      if (
+        currency.code + currency.country_code ==
+        selectedCurrencyUniqueCode.value
+      ) {
         return;
       }
 

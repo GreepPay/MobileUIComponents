@@ -187,64 +187,47 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
   const buildStructuredResponse = (
     content: string,
     lastAIMessage?: WorkflowMessage,
-    metadata?: any
+    metadata: { [key: string]: any } = {}
   ) => {
     const aiExtras = lastAIMessage?.metadata?.extras || {};
+
     const inputType = aiExtras.input_type;
     const inputName = aiExtras.input_name;
 
     // Check if content is a number (withdrawal amount) - but not for option selections
     const amount = parseFloat(content.replace(/,/g, ""));
-    const isNumericAmount =
-      !isNaN(amount) &&
-      amount > 0 &&
-      !content.toLowerCase().includes("kg") &&
-      !metadata?.selected_option;
 
-    if (isNumericAmount) {
-      const conversationData = Logic.Messaging.SingleConversation;
-      const exchangeAd = conversationData?.exchangeAd;
-      const exchangeRate = exchangeAd?.rate || 10;
-      const sellAmount = amount * exchangeRate;
-      const buyAmount = amount;
-      const buyAmountUSD = amount / exchangeRate;
+    const conversationData = Logic.Messaging.SingleConversation;
+    const exchangeAd = conversationData?.exchangeAd;
+    const exchangeRate = exchangeAd?.rate || 10;
+    const sellAmount = amount * exchangeRate;
+    const buyAmount = amount;
+    const buyAmountUSD = amount / exchangeRate;
 
-      const structuredResponse = {
-        currency: "USDC",
-        amount: amount,
-        currency_symbol: getCurrencyInfo()?.symbol || "₺",
-        business_name: exchangeAd?.business?.business_name || "GreepPay",
-        sell_amount: Logic.Common.convertToMoney(
-          sellAmount.toFixed(2),
-          true,
-          ""
-        ),
-        usd_amount: buyAmountUSD.toFixed(2),
-        usd_amount_formatted: Logic.Common.convertToMoney(
-          buyAmountUSD.toFixed(2),
-          true,
-          ""
-        ),
-        buy_amount: Logic.Common.convertToMoney(buyAmount.toFixed(2), true, ""),
-        sell_rate: Logic.Common.convertToMoney(
-          exchangeRate.toFixed(2),
-          true,
-          ""
-        ),
-        buy_rate: Logic.Common.convertToMoney(
-          exchangeRate.toFixed(2),
-          true,
-          ""
-        ),
-      };
+    let structuredResponse: any = {
+      currency: "USDC",
+      amount: amount,
+      currency_symbol: getCurrencyInfo()?.symbol || "₺",
+      business_name: exchangeAd?.business?.business_name || "GreepPay",
+      sell_amount: Logic.Common.convertToMoney(sellAmount.toFixed(2), true, ""),
+      usd_amount: buyAmountUSD.toFixed(2),
+      usd_amount_formatted: Logic.Common.convertToMoney(
+        buyAmountUSD.toFixed(2),
+        true,
+        ""
+      ),
+      buy_amount: Logic.Common.convertToMoney(buyAmount.toFixed(2), true, ""),
+      sell_rate: Logic.Common.convertToMoney(exchangeRate.toFixed(2), true, ""),
+      buy_rate: Logic.Common.convertToMoney(exchangeRate.toFixed(2), true, ""),
+      ...metadata,
+      [inputName || "message"]: content,
+    };
 
-      return structuredResponse;
-    }
+    let otherData: any = {};
 
-    // Handle based on what the AI message expects
     switch (inputType) {
       case "numeric":
-        return {
+        otherData = {
           [inputName || "amount"]: parseFloat(content),
           selected_option: "string", // MessageBroadcaster expects this key
         };
@@ -252,68 +235,65 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       case "text":
         // Special handling for delivery_note input
         if (inputName === "delivery_note") {
-          return {
+          otherData = {
             [inputName]: content,
             delivery_note_data_type: "string", // Required for delivery note workflow
           };
         }
-        return {
+        otherData = {
           [inputName || "item_description"]: content,
           selected_option: "string", // MessageBroadcaster expects this key
         };
 
       case "address":
-        return {
+        otherData = {
           [inputName || "address"]: content,
           selected_option: "string", // MessageBroadcaster expects this key
         };
 
       case "bank_account":
-        return {
+        otherData = {
           [inputName || "bank_account"]: content,
           selected_option: "string", // MessageBroadcaster expects this key
         };
 
       case "pickup_location":
-        return {
+        otherData = {
           [inputName || "pickup_location"]: content,
           selected_option: "string", // MessageBroadcaster expects this key
         };
 
       case "datetime":
-        return {
+        otherData = {
           [inputName || "delivery_datetime"]: content,
           selected_option: "string", // MessageBroadcaster expects this key
         };
 
       default:
         if (lastAIMessage?.metadata?.type === "options") {
-          return {
+          otherData = {
             selected_option: metadata?.selected_option || content,
           };
         }
 
         // If metadata has selected_option, use it (for action button clicks)
         if (metadata?.selected_option) {
-          const result = {
+          otherData = {
             selected_option: metadata.selected_option,
           };
-          console.log(
-            "🔧 DEBUG buildStructuredResponse returning (metadata path):",
-            result
-          );
-          return result;
         }
 
-        const defaultResult = {
+        otherData = {
           message: content,
         };
-        console.log(
-          "🔧 DEBUG buildStructuredResponse returning (default path):",
-          defaultResult
-        );
-        return defaultResult;
     }
+
+    structuredResponse = {
+      ...structuredResponse,
+      ...otherData,
+    };
+
+    return structuredResponse;
   };
 
   // Get the last AI message to determine expected input
@@ -1324,7 +1304,6 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         // ✅ CRITICAL: Spread structured response directly into metadata (like backup)
         ...structuredResponse,
         // ✅ CRITICAL: Also include as nested field for backward compatibility
-        structured_response: structuredResponse,
         workflow_data: metadata,
         // ✅ NEW: Include accumulated delivery order data
         deliveryOrderData: deliveryOrderData,
@@ -1340,6 +1319,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           uuid: Logic.Auth.AuthUser?.uuid,
         },
         ...(metadata || {}),
+        structured_response: {
+          ...structuredResponse,
+        },
       };
 
       // Send to backend - same API as current system
@@ -2136,17 +2118,17 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       let workflowOption = action.value;
 
       // ✅ NEW: Special handling for delivery workflow "accept" button
-      if (
-        action.value === "accept" &&
-        currentStage.value.includes("instant_bill_acceptance")
-      ) {
-        console.log(
-          "💳 Delivery bill acceptance - showing payment confirmation"
-        );
-        // Trigger payment confirmation modal instead of immediately proceeding
-        showPaymentConfirmation.value = true;
-        return true; // Don't send workflow message yet, wait for payment confirmation
-      }
+      // if (
+      //   action.value === "accept" &&
+      //   currentStage.value.includes("instant_bill_acceptance")
+      // ) {
+      //   console.log(
+      //     "💳 Delivery bill acceptance - showing payment confirmation"
+      //   );
+      //   // Trigger payment confirmation modal instead of immediately proceeding
+      //   showPaymentConfirmation.value = true;
+      //   return true; // Don't send workflow message yet, wait for payment confirmation
+      // }
 
       // ✅ DEBUGGING: Check if this is a delivery accept without proper stage detection
       if (action.value === "accept" && options.workflowType === "deliveries") {
@@ -2161,20 +2143,20 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         });
 
         // Check if the last AI message contains bill/cost content
-        const lastAIMessage = messages
-          .slice()
-          .reverse()
-          .find((m: any) => !(m.sender?.uuid != "user"));
+        const lastAIMessage = getLastAIMessage();
+
+        console.log("🔍 Last AI message for bill detection:", lastAIMessage);
         const isBillMessage =
           lastAIMessage?.content?.toLowerCase().includes("bill") ||
-          lastAIMessage?.content?.toLowerCase().includes("₦") ||
           lastAIMessage?.content?.toLowerCase().includes("accept");
 
         if (isBillMessage) {
           console.log(
             "💳 FORCING delivery bill acceptance - showing payment confirmation"
           );
-          showPaymentConfirmation.value = true;
+
+          await createDeliveryOrder();
+
           return true;
         }
       }
@@ -2334,7 +2316,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
       // ✅ Extract pickup location data from conversation metadata
       const isCashPickupOrder = chatMetadata.pickup_location ? true : false;
-      const pickupLocation = `${chatMetadata.pickup_location.name} - ${chatMetadata.pickup_location.description}. <a class="!underline" href="${chatMetadata.pickup_location.google_map_link}" target="_blank" rel="noopener noreferrer">See on map</a>`;
+      const pickupLocation = chatMetadata?.pickup_location
+        ? `${chatMetadata.pickup_location?.name} - ${chatMetadata.pickup_location?.description}. <a class="!underline" href="${chatMetadata.pickup_location?.google_map_link}" target="_blank" rel="noopener noreferrer">See on map</a>`
+        : "";
       const pickupLocationName = "";
       const pickupLocationAddress = "";
       const pickupLocationCity = "";
@@ -2754,48 +2738,6 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             "⚠️ Could not parse conversation data for delivery order"
           );
         }
-
-        // If still no data, extract from messages as last resort
-        if (!deliveryData || Object.keys(deliveryData).length === 0) {
-          const userMessages = messages.filter((m) => m.sender?.uuid != "user");
-          const aiMessages = messages.filter(
-            (m) => !(m.sender?.uuid != "user")
-          );
-
-          // Extract item description (first meaningful user input)
-          const meaningfulMessage = userMessages.find(
-            (m) =>
-              m.content &&
-              m.content.length > 2 &&
-              !["now", "yes", "no", "1", "2", "skip"].includes(
-                m.content.toLowerCase()
-              )
-          );
-          deliveryData.itemDescription =
-            meaningfulMessage?.content || "Package";
-
-          // Extract weight from weight-related messages
-          const weightMessage = userMessages.find((m) =>
-            /^\d+\s*(kg|KG|lb|LB|gram|g)$/i.test(m.content?.trim() || "")
-          );
-          deliveryData.weight = weightMessage?.content?.toUpperCase() || "1KG";
-
-          // Extract price from AI bill message
-          const billMessage = aiMessages.find(
-            (m) =>
-              m.content?.includes("₦") &&
-              (m.content?.toLowerCase().includes("bill") ||
-                m.content?.toLowerCase().includes("accept"))
-          );
-          if (billMessage) {
-            const priceMatch = billMessage.content.match(/₦(\d+)/);
-            if (priceMatch) {
-              deliveryData.deliveryPrice = parseInt(priceMatch[1]);
-            }
-          } else {
-            deliveryData.deliveryPrice = 10; // Default price
-          }
-        }
       }
 
       // Extract delivery details with fallbacks
@@ -2885,9 +2827,20 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         urgency,
       });
 
+      const chatMetadata: any = getChatMetadata();
+
+      deliveryPrice = chatMetadata.delivery_cost;
+
       if (deliveryPrice <= 0) {
         throw new Error("Invalid delivery price for order creation");
       }
+
+      const currencyExchangeRate = await Logic.Wallet.GetGlobalExchangeRate(
+        "USD",
+        chatMetadata?.delivery_currency
+      );
+
+      deliveryPrice = deliveryPrice / currencyExchangeRate.mid;
 
       // ✅ Prepare delivery order data (following CreateDeliveryOrder API structure)
       const deliveryOrderData = {
@@ -2905,7 +2858,6 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours from now
         paymentMethod: "greep_wallet",
         conversationId: conversationUuid || "",
-        // Note: metadata removed as it's not accepted by the API schema
       };
 
       try {
@@ -2928,16 +2880,19 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             );
           }
 
+          let currentMetadata: any = {};
+
           // ✅ Save order data to conversation metadata
           try {
             const conversationData = Logic.Messaging.SingleConversation;
             if (conversationData) {
-              const currentMetadata = conversationData.metadata
+              currentMetadata = conversationData.metadata
                 ? JSON.parse(conversationData.metadata)
                 : {};
               currentMetadata.delivery_order_id = createdOrder.id;
               currentMetadata.delivery_order_uuid = createdOrder.uuid;
               currentMetadata.delivery_order_data = deliveryOrderData;
+              currentMetadata.delivery_order = createdOrder;
               // Store tracking information if available
               if ((createdOrder as any).trackingNumber) {
                 currentMetadata.tracking_number = (
@@ -2963,7 +2918,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           orderCreated.value = true;
 
           // ✅ Enable direct messaging for everyone
-          directMessagingEnabled.value = true;
+          directMessagingEnabled.value = false;
 
           console.log(
             "🔍 DELIVERY ORDER CREATION - Message clearing decision:"
@@ -2971,113 +2926,21 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           console.log("  📊 Current messages count:", messages.length);
           console.log("  👤 Business joined status:", businessJoined.value);
 
-          // ✅ Clear workflow messages if business hasn't joined yet (same as P2P)
-          if (!businessJoined.value) {
-            console.log("🧹 Clearing workflow messages for delivery order");
-
-            // Filter messages to keep business messages and regular chat
-            const messagesToKeep = messages.filter((m: any) => {
-              // Keep regular chat messages
-              if (m.metadata?.is_regular_chat) return true;
-              // Keep business messages
-              if (m.metadata?.extras?.from_business) return true;
-              // Keep system info messages
-              if (
-                m.type === "info" &&
-                (m.content?.includes("joined") ||
-                  m.content?.includes("business"))
-              )
-                return true;
-              return false;
-            });
-
-            // Clear and replace with filtered messages
-            messages.length = 0;
-            messagesToKeep.forEach((msg: any) => messages.push(msg));
-            console.log("✅ Messages cleared, new count:", messages.length);
-          } else {
-            console.log("🔧 Keeping messages - business already joined");
-          }
-
-          // ✅ Create delivery order summary message
-          const deliveryOrderSummary = {
-            youSell: "Nothing",
-            youGet: "Delivery Service",
-            fee: "₦0",
-            deliveryFee: `₦${deliveryPrice}`,
-            youPay: `₦${deliveryPrice}`,
-            paymentType: "Greep Wallet",
-            payoutOption: "Delivery",
-            deliveryAddress: `From: ${pickupAddress}\nTo: ${deliveryAddress}`,
-            // Additional delivery-specific fields
-            itemDescription: itemDescription,
-            trackingNumber:
-              (createdOrder as any).trackingNumber ||
-              (createdOrder as any).tracking ||
-              "N/A",
-            orderId: createdOrder.id || "N/A",
-            status: "Pending",
-          };
-
-          const orderSummaryMessage: WorkflowMessage = {
-            id: `delivery_order_summary_${Date.now()}`,
-            content: "Delivery Order Summary",
-            text_content: "Delivery Order Summary",
-            user_uuid: "greep_ai",
-            user_name: "GreepPay AI",
-            type: "text" as const,
-            isUser: false,
-            timestamp: new Date(),
-            sender: { uuid: "greep_ai", name: "GreepPay AI" },
-            isOrderSummary: true,
-            orderSummary: deliveryOrderSummary,
-          };
-
-          addMessage(orderSummaryMessage);
-
-          // ✅ Start countdown timer (like P2P)
-          setTimeout(() => {
-            startCountdown("waiting_business", 600); // 10 minutes
-
-            // Add business waiting messages (like instant_payment_success in deliveries.json)
-            const businessWaitMessages = [
-              {
-                id: `business_wait_1_${Date.now()}`,
-                content:
-                  "💬 A business partner will join this conversation shortly to coordinate pickup and delivery details.",
-                text_content:
-                  "💬 A business partner will join this conversation shortly to coordinate pickup and delivery details.",
-                user_uuid: "greep_ai",
-                user_name: "GreepPay AI",
-                type: "text" as const,
-                isUser: false,
-                timestamp: new Date(),
-                sender: { uuid: "greep_ai", name: "GreepPay AI" },
-              },
-              {
-                id: `business_wait_2_${Date.now() + 1}`,
-                content:
-                  "📱 Use the message box below to communicate about any special instructions or updates.",
-                text_content:
-                  "📱 Use the message box below to communicate about any special instructions or updates.",
-                user_uuid: "greep_ai",
-                user_name: "GreepPay AI",
-                type: "text" as const,
-                isUser: false,
-                timestamp: new Date(),
-                sender: { uuid: "greep_ai", name: "GreepPay AI" },
-              },
-            ];
-
-            businessWaitMessages.forEach((msg) => addMessage(msg));
-          }, 1000);
-
           // ✅ IMPORTANT: Send workflow message to trigger step transition (like P2P)
           console.log(
             "🎯 Sending delivery workflow transition message to backend"
           );
-          await sendWorkflowMessage("Delivery order confirmed", {
-            selected_option: "success",
+          const chatMetaData: any = getChatMetadata();
+
+          isProcessing.value = false;
+
+          currentMetadata.selected_option = "accept";
+          chatMetaData.selected_option = "accept";
+
+          await sendWorkflowMessage("{delivery_order_summary}", {
+            ...currentMetadata,
+            ...chatMetaData,
+            selected_option: "accept",
           });
 
           return createdOrder;
@@ -3094,7 +2957,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     } catch (error) {
       console.error("❌ Error creating delivery order:", error);
       // Enable direct messaging on error
-      directMessagingEnabled.value = true;
+      directMessagingEnabled.value = false;
       return null;
     } finally {
       isProcessing.value = false;
