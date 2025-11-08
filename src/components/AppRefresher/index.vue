@@ -174,7 +174,7 @@ export default defineComponent({
       touchAction: "pan-y",
     }));
 
-    onMounted(() => {
+    const registerListeners = () => {
       const el = root.value ?? document.body;
       el.addEventListener("touchstart", onTouchStartRaw, { passive: true });
       el.addEventListener("touchmove", onTouchMoveRaw, { passive: false });
@@ -183,9 +183,9 @@ export default defineComponent({
       window.addEventListener("touchstart", onTouchStartRaw, { passive: true });
       window.addEventListener("touchmove", onTouchMoveRaw, { passive: false });
       window.addEventListener("touchend", onTouchEndRaw, { passive: true });
-    });
+    };
 
-    onBeforeUnmount(() => {
+    const removeListeners = () => {
       const el = root.value ?? document.body;
       el.removeEventListener("touchstart", onTouchStartRaw);
       el.removeEventListener("touchmove", onTouchMoveRaw);
@@ -194,6 +194,14 @@ export default defineComponent({
       window.removeEventListener("touchstart", onTouchStartRaw);
       window.removeEventListener("touchmove", onTouchMoveRaw);
       window.removeEventListener("touchend", onTouchEndRaw);
+    };
+
+    onMounted(() => {
+      registerListeners();
+    });
+
+    onBeforeUnmount(() => {
+      removeListeners();
     });
 
     return {
@@ -203,6 +211,8 @@ export default defineComponent({
       rootStyle,
       indicatorHeight: props.indicatorHeight,
       showLoading,
+      registerListeners,
+      removeListeners,
     };
   },
 });
