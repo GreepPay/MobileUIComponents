@@ -1,89 +1,53 @@
 <template>
   <div>
     <template v-if="type === 'product'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-product-skeleton-loader />
       </div>
     </template>
 
     <template v-else-if="type === 'notification'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-notification-skeleton-loader />
       </div>
     </template>
 
     <template v-else-if="type === 'shop'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-shop-skeleton-loader />
       </div>
     </template>
 
     <template v-else-if="type === 'ticket'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-ticket-skeleton-loader />
       </div>
     </template>
 
     <template v-else-if="type === 'delivery-address'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-delivery-address-skeleton-loader />
       </div>
     </template>
 
     <template v-else-if="type === 'order'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-order-skeleton-loader />
       </div>
     </template>
 
+    <template v-else-if="type === 'order-details'">
+      <app-order-details-skeleton-loader />
+    </template>
+
     <template v-else-if="type === 'transaction'">
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-transaction-skeleton-loader />
       </div>
     </template>
 
     <template v-else>
-      <div
-        v-for="n in numberOfLoaders"
-        :key="n"
-        class="mb-2"
-        :class="customClass"
-      >
+      <div v-for="n in numberOfLoaders" :key="n" class="mb-2" :class="customClass">
         <app-skeleton-default-loader />
       </div>
     </template>
@@ -98,6 +62,7 @@ type SkeletonType =
   | "shop"
   | "ticket"
   | "order"
+  | "order-details"
   | "notification"
   | "message"
   | "transaction"
@@ -108,6 +73,7 @@ type SkeletonType =
 
 import {
   AppOrderSkeletonLoader,
+  AppOrderDetailsSkeletonLoader,
   AppTicketSkeletonLoader,
   AppProductSkeletonLoader,
   AppSkeletonDefaultLoader,
@@ -120,6 +86,7 @@ export default defineComponent({
   name: "AppSkeletonLoaderIndex",
   components: {
     AppOrderSkeletonLoader,
+    AppOrderDetailsSkeletonLoader,
     AppTicketSkeletonLoader,
     AppProductSkeletonLoader,
     AppSkeletonDefaultLoader,

@@ -386,6 +386,14 @@ export default defineComponent({
       showSelectModal.value = true;
     };
 
+    watch(props, () => {
+      selectedCurrency.value = {
+        code: props.modelValue,
+        symbol: props.modelSymbol,
+        name: defaultCurrency.value?.name,
+      };
+    });
+
     onMounted(() => {
       setDefaultItems();
     });

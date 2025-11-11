@@ -29,8 +29,12 @@
         >
           {{ hideElements ? fallBackTitle : currentPage?.title }}
         </app-header-text>
-        <div class="flex flex-col" v-else @click="Logic.Common.goBack()">
-          <app-icon name="close-circle" custom-class="h-[24px]" />
+
+        <div v-else class="flex flex-row space-x-1">
+          <slot name="top-right-section" />
+          <div class="flex flex-col" @click="Logic.Common.goBack()">
+            <app-icon name="close-circle" custom-class="h-[24px]" />
+          </div>
         </div>
       </div>
 

@@ -74,6 +74,7 @@
             >
               <app-image-loader
                 :photoUrl="image.url"
+                canShowFullImage
                 class="rounded-[12px] h-[200px] w-full border-[1px] border-gray-200 dark:!border-gray-700 cursor-pointer"
               />
             </swiper-slide>
@@ -176,122 +177,122 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, watch } from "vue"
-  import AppImageLoader from "../AppImageLoader"
-  import AppIcon from "../AppIcon"
-  import AppButton from "../AppButton"
-  import AppModal from "../AppModal"
-  import AppAvatar from "../AppAvatar"
-  import { AppNormalText } from "../AppTypography"
-  import AppSwiper from "../AppSwiper"
-  import { SwiperSlide } from "swiper/vue"
-  import { Logic } from "../../composable"
-  import { getBottomPadding } from "../../composable"
+import { defineComponent, PropType, ref, watch } from "vue";
+import AppImageLoader from "../AppImageLoader";
+import AppIcon from "../AppIcon";
+import AppButton from "../AppButton";
+import AppModal from "../AppModal";
+import AppAvatar from "../AppAvatar";
+import { AppNormalText } from "../AppTypography";
+import AppSwiper from "../AppSwiper";
+import { SwiperSlide } from "swiper/vue";
+import { Logic } from "../../composable";
+import { getBottomPadding } from "../../composable";
 
-  /**
-   * Merchant Product Card
-   */
-  type ProductSource = "market" | "event" | "ticket" | "other"
-  type ProductCategory = "physical" | "ticket" | "event" | "other"
+/**
+ * Merchant Product Card
+ */
+type ProductSource = "market" | "event" | "ticket" | "other";
+type ProductCategory = "physical" | "ticket" | "event" | "other";
 
-  interface MerchantProduct {
-    id: string | number
-    uuid?: string
-    name: string
-    description: string
-    price: number
-    formattedPrice: string
-    currency?: string
-    currencySymbol?: string
-    imageUrl: string
-    quantity: number
-    category: ProductCategory
-    productType?: ProductSource
-    selected?: boolean
-    sku: string
-    variant?: any
-    images: { url: string }[]
-    meta?: Record<string, any>
-  }
+interface MerchantProduct {
+  id: string | number;
+  uuid?: string;
+  name: string;
+  description: string;
+  price: number;
+  formattedPrice: string;
+  currency?: string;
+  currencySymbol?: string;
+  imageUrl: string;
+  quantity: number;
+  category: ProductCategory;
+  productType?: ProductSource;
+  selected?: boolean;
+  sku: string;
+  variant?: any;
+  images: { url: string }[];
+  meta?: Record<string, any>;
+}
 
-  export default defineComponent({
-    name: "AppMerchantProduct",
-    components: {
-      AppNormalText,
-      AppImageLoader,
-      AppIcon,
-      AppButton,
-      AppModal,
-      SwiperSlide,
-      AppSwiper,
-      AppAvatar,
+export default defineComponent({
+  name: "AppMerchantProduct",
+  components: {
+    AppNormalText,
+    AppImageLoader,
+    AppIcon,
+    AppButton,
+    AppModal,
+    SwiperSlide,
+    AppSwiper,
+    AppAvatar,
+  },
+  props: {
+    product: {
+      type: Object as PropType<MerchantProduct>,
+      required: true,
     },
-    props: {
-      product: {
-        type: Object as PropType<MerchantProduct>,
-        required: true,
-      },
-      imageSize: {
-        type: Number,
-        default: 44,
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
-      isInCart: {
-        type: Boolean,
-        default: false,
-      },
-      allowViewMerchantDetails: {
-        type: Boolean,
-        default: true,
-      },
+    imageSize: {
+      type: Number,
+      default: 44,
     },
-    emits: ["view-product", "add-to-cart"],
-    setup(props, { emit }) {
-      const defaultBanner = "/images/greep-transparent-logo.svg"
-      const showProductDetailsModal = ref(false)
-      const seeMoreDescription = ref(false)
-      const currentSlidePosition = ref(0)
-      const slidePosition = ref(0)
-
-      const viewProductDetails = () => {
-        showProductDetailsModal.value = true
-      }
-
-      const viewProduct = () => {
-        showProductDetailsModal.value = false
-        emit("view-product", props.product)
-      }
-      const viewMerchantDetails = () => {
-        if (!props.allowViewMerchantDetails) return
-
-        showProductDetailsModal.value = false
-        Logic.Common.GoToRoute(`/shops/${props.product.businessUuid}`)
-      }
-      const toggleCart = () => {
-        if (props.isInCart) emit("remove-from-cart", props.product)
-        else emit("add-to-cart", props.product)
-      }
-
-      watch(slidePosition, () => {
-        currentSlidePosition.value = slidePosition.value
-      })
-
-      return {
-        Logic,
-        viewProduct,
-        defaultBanner,
-        toggleCart,
-        viewProductDetails,
-        showProductDetailsModal,
-        currentSlidePosition,
-        slidePosition,
-        seeMoreDescription,
-        viewMerchantDetails,
-        getBottomPadding,
-      }
+    customClass: {
+      type: String,
+      default: "",
     },
-  })
+    isInCart: {
+      type: Boolean,
+      default: false,
+    },
+    allowViewMerchantDetails: {
+      type: Boolean,
+      default: true,
+    },
+  },
+  emits: ["view-product", "add-to-cart"],
+  setup(props, { emit }) {
+    const defaultBanner = "/images/greep-transparent-logo.svg";
+    const showProductDetailsModal = ref(false);
+    const seeMoreDescription = ref(false);
+    const currentSlidePosition = ref(0);
+    const slidePosition = ref(0);
+
+    const viewProductDetails = () => {
+      showProductDetailsModal.value = true;
+    };
+
+    const viewProduct = () => {
+      showProductDetailsModal.value = false;
+      emit("view-product", props.product);
+    };
+    const viewMerchantDetails = () => {
+      if (!props.allowViewMerchantDetails) return;
+
+      showProductDetailsModal.value = false;
+      Logic.Common.GoToRoute(`/shops/${props.product.businessUuid}`);
+    };
+    const toggleCart = () => {
+      if (props.isInCart) emit("remove-from-cart", props.product);
+      else emit("add-to-cart", props.product);
+    };
+
+    watch(slidePosition, () => {
+      currentSlidePosition.value = slidePosition.value;
+    });
+
+    return {
+      Logic,
+      viewProduct,
+      defaultBanner,
+      toggleCart,
+      viewProductDetails,
+      showProductDetailsModal,
+      currentSlidePosition,
+      slidePosition,
+      seeMoreDescription,
+      viewMerchantDetails,
+      getBottomPadding,
+    };
+  },
+});
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`overflow-hidden border-[1.5px] !border-[#E0E2E4] ${
+    :class="`flex items-center justify-center border-[1.5px] !border-[#E0E2E4] ${
       shape === 'circle' ? 'rounded-full' : 'rounded-lg'
     }`"
     :style="{
@@ -8,21 +8,13 @@
       height: size + 'px',
     }"
   >
-    <!-- Skeleton Loader -->
-    <div
-      v-if="isLoading"
-      class="skeleton animate-pulse bg-gray-200 w-full h-full"
-    ></div>
-
-    <img
-      v-show="!isLoading"
+    <app-image-loader
+      custom-class="!w-full !h-full rounded-full"
       v-if="imageUrl"
-      :src="imageUrl"
-      :alt="alt"
-      class="w-full h-full object-cover"
-      @error="handleImageError"
-      @load="handleImageLoad"
+      :photo-url="imageUrl"
+      :can-show-full-image="canShowFullImage"
     />
+
     <div
       v-else
       :class="`flex items-center justify-center w-full h-full ${bgColor}`"
@@ -98,6 +90,11 @@ export default defineComponent({
     textColor: {
       type: String,
       default: "text-gray-700",
+    },
+
+    canShowFullImage: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props) {
