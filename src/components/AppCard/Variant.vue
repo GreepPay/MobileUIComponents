@@ -119,6 +119,7 @@
           v-else
           :photoUrl="variant.image_url || '/images/profile-image.svg'"
           class="h-[45px] w-[45px] rounded-full"
+          canShowFullImage
         >
         </app-image-loader>
       </div>

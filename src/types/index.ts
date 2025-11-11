@@ -72,6 +72,7 @@ export interface Currency {
   fallback_code?: string;
   is_crypto?: boolean;
   can_accept_deposit?: boolean;
+  has_flutterwave_support?: boolean;
   card_payment?: {
     min: number;
     max: number;
