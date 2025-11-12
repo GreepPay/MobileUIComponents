@@ -1,8 +1,8 @@
 <template>
   <div class="bg-white flex items-center rounded-xl border min-w-[80vw] p-3">
-    <app-icon name="icon-circle" custom-class="!h-12" />
+    <app-icon :name="order.icon || 'icon-circle'" custom-class="!h-12" />
 
-    <div class="ml-3 gap-4 bg-white">
+    <div class="ml-3 gap-4 bg-white flex-1">
       <app-header-text customClass="leading-6 !text-sm !text-black">
         {{ order.title }}
       </app-header-text>
@@ -14,7 +14,7 @@
 
         <span class="!text-orange px-2">●</span>
 
-        <app-normal-text customClass="leading-6 !text-xxs !text-orange">
+        <app-normal-text customClass="leading-6 !text-xxs" :style="`color: ${order.statusColor || '#FF9500'}`">
           {{ order.status }}
         </app-normal-text>
       </div>
@@ -23,28 +23,30 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from "vue"
-  import AppIcon from "../AppIcon"
-  import { AppHeaderText, AppNormalText } from "../AppTypography"
+import { defineComponent, PropType } from "vue"
+import AppIcon from "../AppIcon"
+import { AppHeaderText, AppNormalText } from "../AppTypography"
 
-  interface Order {
-    title: string
-    label: string
-    status: string
-  }
+interface Order {
+  title: string
+  label: string
+  status: string
+  icon?: string
+  statusColor?: string
+}
 
-  export default defineComponent({
-    name: "AppOrderCard",
-    components: {
-      AppIcon,
-      AppHeaderText,
-      AppNormalText,
+export default defineComponent({
+  name: "AppOrderCard",
+  components: {
+    AppIcon,
+    AppHeaderText,
+    AppNormalText,
+  },
+  props: {
+    order: {
+      type: Object as PropType<Order>,
+      required: true,
     },
-    props: {
-      order: {
-        type: Object as PropType<Order>,
-        required: true,
-      },
-    },
-  })
+  },
+})
 </script>
