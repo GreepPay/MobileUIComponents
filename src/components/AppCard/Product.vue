@@ -1,11 +1,11 @@
 <template>
   <div>
     <div
-      :class="['h-fit min-w-[140px] w-full', customClass]"
+      :class="['h-fit min-w-36 w-full', customClass]"
       @click="viewProductDetails"
     >
       <div
-        class="min-w-[140px] w-full h-32 relative rounded-[16px] border-[2px] !border-gray-100"
+        class="min-w-36 w-full h-36 relative rounded-[16px] border-[1px] !border-gray-100"
       >
         <app-image-loader
           :photo-url="product.imageUrl || defaultBanner"
@@ -13,10 +13,21 @@
           :size="imageSize"
           custom-class="size-full  rounded-[16px]"
         >
-          <div class="relative w-full h-full rounded-[16px]">
+          <div class="relative w-full h-full rounded-[18px]">
             <!-- <span class="absolute top-2 right-2">
             <app-icon name="favourite-red" class="h-5" />
           </span> -->
+
+            <!-- Country flag for national product e.g Cuisine -->
+            <div
+              v-if="showNationality && product.hasNationality"
+              class="absolute -top-1 -left-1 rounded-full p-2 bg-white"
+            >
+              <app-image-loader
+                :photo-url="product.nationalityFlag"
+                class="h-7 w-7 rounded-full"
+              />
+            </div>
 
             <span
               class="absolute bottom-2 right-2 size-7 bg-white shadow rounded-full flex items-center justify-center"
@@ -37,9 +48,19 @@
         <app-normal-text class="!text-xs !text-black !truncate pb-0.5">
           {{ product?.name }}
         </app-normal-text>
-        <app-normal-text class="!text-sm !font-bold !text-black !truncate">
-          {{ product?.formattedPrice }}
-        </app-normal-text>
+        <div class="flex items-center">
+          <app-normal-text class="!text-sm !font-bold !text-black !truncate">
+            {{ product?.formattedPrice }}
+          </app-normal-text>
+
+          <span v-if="product.isPreOrder" class="text-xxs px-2"> • </span>
+          <app-normal-text
+            v-if="product.isPreOrder"
+            class="!text-xxs !font-medium !block !text-red"
+          >
+            Pre-Order
+          </app-normal-text>
+        </div>
       </div>
     </div>
 
@@ -243,6 +264,10 @@
       isInCart: {
         type: Boolean,
         default: false,
+      },
+      showNationality: {
+        type: Boolean,
+        default: true,
       },
       allowViewMerchantDetails: {
         type: Boolean,
