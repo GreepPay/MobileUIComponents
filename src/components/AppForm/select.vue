@@ -440,6 +440,14 @@ export default defineComponent({
     watch(searchResult, () => {
       prepareSelectOptions();
     });
+    
+    watch(() => props.options, (newOptions) => {
+      if (newOptions) {
+        OptionRef.value = newOptions;
+        searchResult.value = newOptions;
+        prepareSelectOptions();
+      }
+    }, { immediate: true, deep: true });
 
     return {
       showOption,
