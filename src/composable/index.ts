@@ -53,6 +53,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "bank_transfer",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "KES",
@@ -90,6 +91,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "UGX",
@@ -127,6 +129,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "GHS",
@@ -144,6 +147,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "ZAR",
@@ -169,6 +173,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "bank_transfer",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "RWF",
@@ -194,6 +199,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "bank_transfer",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -219,6 +225,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -236,6 +243,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -253,6 +261,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -270,6 +279,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "CDF",
@@ -287,6 +297,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "SLE",
@@ -304,6 +315,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -321,6 +333,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XAF",
@@ -338,6 +351,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -355,6 +369,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -372,6 +387,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -389,6 +405,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -406,6 +423,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -423,6 +441,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -440,6 +459,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -457,6 +477,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -474,6 +495,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XOF",
@@ -491,6 +513,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "TZS",
@@ -516,6 +539,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "bank_transfer",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "MWK",
@@ -553,6 +577,7 @@ export const availableCurrencies = reactive<Currency[]>([
         method: "momo",
       },
     ],
+    allow_p2p: true,
   },
   {
     code: "XLM",
@@ -578,7 +603,7 @@ export const availableCurrencies = reactive<Currency[]>([
     loading: false,
     icon_extension: "svg",
     country_code: "US",
-    allow_p2p: false,
+    allow_p2p: true,
     is_foreign_currency: true,
   },
   {

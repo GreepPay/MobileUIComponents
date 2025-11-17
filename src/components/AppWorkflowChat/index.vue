@@ -438,7 +438,7 @@
       />
 
       <!-- Bank Transfer Modal -->
-      <bank-transfer-modal
+      <!-- <bank-transfer-modal
         v-if="activeModal === 'bank_transfer'"
         :show="true"
         :savedBankAccounts="savedBankAccounts"
@@ -446,7 +446,7 @@
         @bank-details-submitted="handleBankDetailsSubmitted"
         @saved-account-selected="handleSavedAccountSelected"
         @cancel="handleBankTransferCancel"
-      />
+      /> -->
 
       <!-- Pickup Location Modal -->
       <pickup-location-modal
@@ -2000,7 +2000,9 @@ export default defineComponent({
       showSelectMerchantMethods.value = false;
       const humanMessages = messages?.filter(
         (item) =>
-          item.sender?.uuid !== "user" && item.sender?.uuid != "greep-ai"
+          item.sender?.uuid !== "user" &&
+          item.sender?.uuid != "greep-ai" &&
+          item.sender?.uuid !== "greep_ai"
       );
       if (!humanMessages?.length) return;
       const lastHumanMessage = humanMessages[humanMessages.length - 1];
@@ -2018,6 +2020,17 @@ export default defineComponent({
       }
 
       if (userOwnExchangeAd && entityType == "p2p_deposit") {
+        const lastMessageMetadata: any = lastHumanMessage.metadata || {};
+        if (
+          lastMessageMetadata?.workflow_data?.selected_option ==
+            "online_payment" ||
+          lastMessageMetadata?.extras?.input_type == "online_payment"
+        ) {
+          showSelectMerchantMethods.value = true;
+        }
+      }
+
+      if (!userOwnExchangeAd && entityType == "p2p_withdrawal") {
         const lastMessageMetadata: any = lastHumanMessage.metadata || {};
         if (
           lastMessageMetadata?.workflow_data?.selected_option ==

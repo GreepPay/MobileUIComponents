@@ -387,6 +387,7 @@ export const useWorkflowInput = (
       displayText,
       {
         merchant_payment_method: account,
+        bank_account: account,
         selected_option: "confirm",
       },
       false,

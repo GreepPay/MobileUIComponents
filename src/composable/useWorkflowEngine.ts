@@ -1040,7 +1040,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             ? "Pickup"
             : summary.method === "cash_delivery"
             ? "Delivery"
-            : "Bank Transfer",
+            : "Online Payment",
         deliveryAddress:
           summary.method === "cash_pickup"
             ? summary.pickup_location
@@ -1116,6 +1116,12 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     const workflowType = Logic.Messaging.SingleConversation?.entity_type || "";
 
     // ✅ NEW: If business has joined, use regular chat messaging
+    console.log(
+      "Debug uur:",
+      businessJoined.value,
+      directMessagingEnabled.value,
+      forceDirect
+    );
     if (
       (businessJoined.value || directMessagingEnabled.value || forceDirect) &&
       !forceWorkflow
@@ -2413,7 +2419,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       const orderData = {
         exchange_ad_uuid: exchangeAd?.uuid || "", // Ensure it's never undefined
         amount: amount,
-        delivery_address: deliveryAddress,
+        delivery_address: deliveryAddress || "Online payment details",
         city: city,
         country: country,
         payment_type: paymentType,

@@ -218,15 +218,8 @@
                 <template v-if="message.orderSummary.payoutOption">
                   <li
                     class="list-disc"
-                    v-if="message.orderSummary.payoutOption == 'Bank Transfer'"
+                    v-if="message.orderSummary.payoutOption != 'Bank Transfer'"
                   >
-                    Your bank account info is
-                    <span class="font-semibold">{{
-                      message.orderSummary.deliveryAddress
-                    }}</span>
-                  </li>
-
-                  <li class="list-disc" v-else>
                     {{
                       message.orderSummary.payoutOption === "Pickup"
                         ? "Pickup location - "
@@ -347,16 +340,11 @@
           </template>
           <!-- Media: show image clickable; opens original file in a new tab -->
           <template v-if="clickableImageUrl">
-            <a
-              :href="clickableImageUrl"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <app-image-loader
-                :photo-url="clickableImageUrl"
-                class="h-[250px] w-[250px] rounded-[12px] mt-2 cursor-pointer"
-              />
-            </a>
+            <app-image-loader
+              :photo-url="clickableImageUrl"
+              class="h-[250px] w-[250px] rounded-[12px] mt-2 cursor-pointer"
+              can-show-full-image
+            />
           </template>
 
           <!-- PDF: render a neat clickable chip with filename -->

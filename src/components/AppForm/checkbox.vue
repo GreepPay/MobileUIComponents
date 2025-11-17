@@ -2,7 +2,7 @@
   <div class="flex w-full flex-col space-y-2">
     <div
       @click="selected ? (selected = false) : (selected = true)"
-      class="flex w-full flex-row space-x-2 items-center cursor-pointer"
+      :class="`flex w-full flex-row space-x-2 items-center cursor-pointer ${customClass}`"
     >
       <app-icon
         v-if="variant == 'normal'"
@@ -47,6 +47,10 @@ export default {
     variant: {
       type: String as () => "normal" | "switch",
       default: "normal",
+    },
+    customClass: {
+      type: String,
+      default: "",
     },
   },
   setup(props: any, context: any) {
