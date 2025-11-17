@@ -298,7 +298,14 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
   // Get the last AI message to determine expected input
   const getLastAIMessage = () => {
-    return messages.filter((msg) => !msg.isUser).pop();
+    const aiMessages = messages.filter(
+      (msg) =>
+        msg.user_uuid == "greep_ai" ||
+        msg.user_uuid == "greep-ai" ||
+        msg.user_uuid == "user"
+    );
+
+    return aiMessages[aiMessages.length - 1];
   };
 
   const getChatMetadata = () => {
@@ -868,6 +875,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     // Get exchange ad data for order details
     const conversationData = Logic.Messaging.SingleConversation;
     const exchangeAd = conversationData?.exchangeAd;
+    const entityType = conversationData?.entity_type;
 
     const summary: any = {
       amount: null,
@@ -1005,7 +1013,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     if (summary.amount && summary.method) {
       // ✅ FIX: Calculate delivery fee based on method
       const deliveryFee = summary.method === "cash_delivery" ? 3 : 0;
-      const totalAmount = summary.amount + deliveryFee;
+      let totalAmount = summary.amount + deliveryFee;
 
       const entityType = Logic.Messaging.SingleConversation?.entity_type || "";
 
@@ -1026,6 +1034,14 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           payoutOption: "",
           deliveryAddress: "",
         };
+      }
+
+      const chatMetaData: any = getChatMetadata();
+      if (entityType === "p2p_withdrawal" && chatMetaData.amount) {
+        summary.amount = chatMetaData.amount;
+        summary.sell_amount = chatMetaData.sell_amount;
+        summary.currency_symbol = chatMetaData.currency_symbol;
+        totalAmount = chatMetaData.amount;
       }
 
       return {
@@ -1116,12 +1132,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     const workflowType = Logic.Messaging.SingleConversation?.entity_type || "";
 
     // ✅ NEW: If business has joined, use regular chat messaging
-    console.log(
-      "Debug uur:",
-      businessJoined.value,
-      directMessagingEnabled.value,
-      forceDirect
-    );
+
     if (
       (businessJoined.value || directMessagingEnabled.value || forceDirect) &&
       !forceWorkflow
@@ -2254,7 +2265,9 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       // Call the wallet release function with type casting
       const result = await Logic.Wallet.ReleaseP2pFunds(
         orderUuid,
-        amount,
+        parseFloat(
+          Logic.Messaging.SingleConversation?.p2p_order?.amount || amount
+        ),
         JSON.stringify({
           stage: "finalize_payment",
           action: "release_usdc",
