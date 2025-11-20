@@ -4,7 +4,7 @@
   >
     <!-- Top section -->
     <app-image-loader
-      :class="`w-full flex flex-col sticky top-0 left-0 !pb-2 px-4 space-y-2 z-50 ${topPadding} ${
+      :class="`w-full flex flex-col sticky top-0 left-0 !pb-2 px-4 space-y-2 z-50  ${
         variant == 'default' ? '' : '!bg-white'
       }`"
       :photo-url="`${variant == 'default' ? '/images/green-bg.png' : ''}`"

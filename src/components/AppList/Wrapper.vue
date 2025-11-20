@@ -4,11 +4,21 @@
       class="w-full flex justify-between items-center px-4 mb-0.5"
       :class="headerClass"
     >
-      <app-normal-text class="font-semibold !text-black !text-sm !flex-1">
+      <app-normal-text
+        :class="` ${
+          lighterHeader
+            ? 'font-medium !text-gray-600'
+            : 'font-semibold !text-black !text-sm'
+        }  !flex-1`"
+      >
         {{ title }}
       </app-normal-text>
 
-      <app-normal-text class="text-primary" @click="emit('view-more')">
+      <app-normal-text
+        v-if="hasViewMore"
+        class="text-primary"
+        @click="emit('view-more')"
+      >
         {{ actionText }}
       </app-normal-text>
     </div>
@@ -43,73 +53,81 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, computed } from "vue"
-  import { AppNormalText } from "../AppTypography"
-  import AppEmptyState from "../AppEmptyState"
+import { defineComponent, computed } from "vue";
+import { AppNormalText } from "../AppTypography";
+import AppEmptyState from "../AppEmptyState";
 
-  export default defineComponent({
-    name: "AppListWrapper",
-    components: {
-      AppNormalText,
-      AppEmptyState,
+export default defineComponent({
+  name: "AppListWrapper",
+  components: {
+    AppNormalText,
+    AppEmptyState,
+  },
+  props: {
+    title: {
+      type: String,
+      default: "Title",
     },
-    props: {
-      title: {
-        type: String,
-        default: "Title",
-      },
-      actionText: {
-        type: String,
-        default: "See all",
-      },
-      items: {
-        type: Array as () => any[],
-        default: () => [],
-      },
-      emptyTitle: {
-        type: String,
-        default: "No data available",
-      },
-      emptyDescription: {
-        type: String,
-        default: "",
-      },
-      useEmptyStateIcon: {
-        type: Boolean,
-        default: false,
-      },
-      customClass: {
-        type: String,
-        default: "",
-      },
-      headerClass: {
-        type: String,
-        default: "",
-      },
-      contentClass: {
-        type: String,
-        default: "",
-      },
-      isLoading: {
-        type: Boolean,
-        default: false,
-      },
+    actionText: {
+      type: String,
+      default: "See all",
     },
-    emits: ["view-more"],
-    setup(props, { emit }) {
-      const hasItems = computed(() => props.items.length > 0)
+    items: {
+      type: Array as () => any[],
+      default: () => [],
+    },
+    emptyTitle: {
+      type: String,
+      default: "No data available",
+    },
+    emptyDescription: {
+      type: String,
+      default: "",
+    },
+    useEmptyStateIcon: {
+      type: Boolean,
+      default: false,
+    },
+    customClass: {
+      type: String,
+      default: "",
+    },
+    headerClass: {
+      type: String,
+      default: "",
+    },
+    contentClass: {
+      type: String,
+      default: "",
+    },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
+    hasViewMore: {
+      type: Boolean,
+      default: true,
+    },
+    lighterHeader: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  emits: ["view-more"],
+  setup(props, { emit }) {
+    const hasItems = computed(() => props.items.length > 0);
 
-      return { hasItems, emit }
-    },
-  })
+    return { hasItems, emit };
+  },
+});
 </script>
 
 <style scoped>
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 </style>

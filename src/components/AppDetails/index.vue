@@ -12,7 +12,7 @@
       >
         <app-normal-text
           :class="` !whitespace-nowrap ${
-            invertBoldness ? '!font-[500] !text-[#0A141E]' : '!text-[#616161]'
+            invertBoldness ? '!font-[500] !text-[#0A141E]' : '!text-gray-500'
           }`"
         >
           {{ capitalize(item.title) }}
@@ -20,8 +20,8 @@
         <div class="w-full flex flex-row items-center justify-end">
           <app-normal-text
             :class="` !text-right ${
-              invertBoldness ? '!text-[#616161]' : '!font-[500] !text-[#0A141E]'
-            } !text-sm break-words`"
+              invertBoldness ? '!text-gray-500' : '!font-[500] !text-[#0A141E]'
+            } !text-[12.5px] break-words`"
             is-html
             :htmlContent="capitalize(item.content.replaceAll('_', ' '))"
           >

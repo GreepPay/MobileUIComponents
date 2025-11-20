@@ -144,6 +144,7 @@
                     ? '!border-primary !border-[2px]'
                     : '!border-gray-200 !border'
                 } rounded-lg p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors`"
+                @click="toggleLocationSelection(location)"
               >
                 <div class="flex items-center justify-between">
                   <div class="w-full flex flex-col">
@@ -164,16 +165,6 @@
                         </a>
                       </app-normal-text>
                     </div>
-                  </div>
-
-                  <div>
-                    <app-button
-                      variant="secondary"
-                      class="!py-1 px-4 !w-fit"
-                      @click="toggleLocationSelection(location)"
-                    >
-                      Select
-                    </app-button>
                   </div>
                 </div>
               </div>

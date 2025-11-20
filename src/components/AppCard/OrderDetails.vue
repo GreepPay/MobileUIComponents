@@ -5,10 +5,12 @@
   >
     <app-icon v-if="!iconIsUrl" :name="order.icon_name" custom-class="!h-12" />
     <template v-else>
-      <app-image-loader
-        :photo-url="order.icon_name"
-        class="h-[48px] w-[48px] rounded-full border-[1px] border-veryLightGray"
-      />
+      <div class="w-[48px]">
+        <app-image-loader
+          :photo-url="order.icon_name"
+          class="h-[48px] w-[48px] rounded-full border-[1px] border-veryLightGray"
+        />
+      </div>
     </template>
 
     <div class="ml-3 gap-4 bg-white">

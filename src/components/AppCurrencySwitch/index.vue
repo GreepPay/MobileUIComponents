@@ -251,6 +251,8 @@ export default defineComponent({
       )!; // Non-null assertion since prop is required
     });
 
+    const tempHide = ref(false);
+
     const activeTab = ref("");
 
     const appTabs = reactive([
@@ -386,13 +388,15 @@ export default defineComponent({
       showSelectModal.value = true;
     };
 
-    watch(props, () => {
-      selectedCurrency.value = {
-        code: props.modelValue,
-        symbol: props.modelSymbol,
-        name: defaultCurrency.value?.name,
-      };
-    });
+    watch(
+      () => props.modelValue,
+      () => {
+        const currencyInfo = props.availableCurrencies.find(
+          (item) => item.code == props.modelValue
+        );
+        selectedCurrency.value = currencyInfo;
+      }
+    );
 
     onMounted(() => {
       setDefaultItems();
@@ -402,16 +406,17 @@ export default defineComponent({
       selectedCurrency,
       showSelectModal,
       defaultCurrency,
-      currencyIsSelected,
       showCurrencyImage,
-      selectCurrency,
       fetchingRate,
       currentCurrencyBeingFetched,
       appTabs,
       activeTab,
       isCryptoTab,
       selectedCurrencyUniqueCode,
+      tempHide,
       openSelector,
+      currencyIsSelected,
+      selectCurrency,
     };
   },
 });

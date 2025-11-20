@@ -3,7 +3,9 @@
     <app-icon :name="order.icon || 'icon-circle'" custom-class="!h-12" />
 
     <div class="ml-3 gap-4 bg-white flex-1">
-      <app-header-text customClass="leading-6 !text-sm !text-black">
+      <app-header-text
+        customClass="leading-6 !text-[13px] !text-black !font-semibold !line-clamp-1"
+      >
         {{ order.title }}
       </app-header-text>
 
@@ -14,7 +16,10 @@
 
         <span class="!text-orange px-2">●</span>
 
-        <app-normal-text customClass="leading-6 !text-xxs" :style="`color: ${order.statusColor || '#FF9500'}`">
+        <app-normal-text
+          customClass="leading-6 !text-xxs"
+          :style="`color: ${order.statusColor || '#FF9500'}`"
+        >
           {{ order.status }}
         </app-normal-text>
       </div>
@@ -23,16 +28,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "vue"
-import AppIcon from "../AppIcon"
-import { AppHeaderText, AppNormalText } from "../AppTypography"
+import { defineComponent, PropType } from "vue";
+import AppIcon from "../AppIcon";
+import { AppHeaderText, AppNormalText } from "../AppTypography";
 
 interface Order {
-  title: string
-  label: string
-  status: string
-  icon?: string
-  statusColor?: string
+  title: string;
+  label: string;
+  status: string;
+  icon?: string;
+  statusColor?: string;
 }
 
 export default defineComponent({
@@ -48,5 +53,5 @@ export default defineComponent({
       required: true,
     },
   },
-})
+});
 </script>
