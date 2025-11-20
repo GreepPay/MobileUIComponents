@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="setup"
-    :class="`w-full flex flex-col fixed top-0 left-0  items-center justify-center ${
+    :class="`w-full flex flex-col fixed inset-0 top-0 left-0  items-center justify-center ${
       setup?.isInteractive
         ? 'bg-black !bg-opacity-60'
         : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
