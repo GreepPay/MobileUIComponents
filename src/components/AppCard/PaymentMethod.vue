@@ -6,7 +6,7 @@
     <app-icon :name="method.icon" custom-class="h-10" />
 
     <div class="ml-2 gap-3 flex-1 bg-white flex-1">
-      <app-header-text customClass="leading-6 !text-sm !text-black">
+      <app-header-text customClass="leading-6 !text-xs !text-black">
         {{ method.title }}
       </app-header-text>
       <app-normal-text
@@ -24,40 +24,40 @@
 </template>
 
 <script lang="ts">
-  /**
-   * AppCouponCard
-   */
-  import { defineComponent, PropType } from "vue"
-  import AppIcon from "../AppIcon"
-  import { AppHeaderText, AppNormalText } from "../AppTypography"
+/**
+ * AppCouponCard
+ */
+import { defineComponent, PropType } from "vue";
+import AppIcon from "../AppIcon";
+import { AppHeaderText, AppNormalText } from "../AppTypography";
 
-  interface PaymentMethod {
-    icon: string
-    title: string
-    price: string
-    value: string
-  }
+interface PaymentMethod {
+  icon: string;
+  title: string;
+  price: string;
+  value: string;
+}
 
-  export default defineComponent({
-    name: "AppPaymentMethodCard",
-    components: { AppHeaderText, AppNormalText, AppIcon },
-    props: {
-      method: {
-        type: Object as PropType<PaymentMethod>,
-        required: true,
-      },
-      isActive: {
-        type: Boolean,
-        default: false,
-      },
-      iconSize: {
-        type: String,
-        default: "",
-      },
+export default defineComponent({
+  name: "AppPaymentMethodCard",
+  components: { AppHeaderText, AppNormalText, AppIcon },
+  props: {
+    method: {
+      type: Object as PropType<PaymentMethod>,
+      required: true,
     },
-
-    setup() {
-      return {}
+    isActive: {
+      type: Boolean,
+      default: false,
     },
-  })
+    iconSize: {
+      type: String,
+      default: "",
+    },
+  },
+
+  setup() {
+    return {};
+  },
+});
 </script>

@@ -487,6 +487,7 @@ import {
   onUnmounted,
 } from "vue";
 import {
+  getChatMetadata,
   useWorkflowEngine,
   WorkflowMessage,
 } from "../../composable/useWorkflowEngine";
@@ -579,6 +580,7 @@ export default defineComponent({
       currentOrderUuid,
       updateDeliveryStatus,
       handleProofUploadComplete,
+      initializeWorkflow,
     } = workflowEngine;
 
     // New reactive variables for proof upload modal
@@ -1958,6 +1960,7 @@ export default defineComponent({
       }
 
       await initializeFromConversation(props.conversation);
+      initializeMarketOrderFlow();
       await scrollToBottom();
     };
 
@@ -2008,6 +2011,8 @@ export default defineComponent({
       const lastHumanMessage = humanMessages[humanMessages.length - 1];
 
       if (!lastHumanMessage) return;
+
+      const chatMetadata = getChatMetadata();
 
       let userOwnExchangeAd = false;
       let entityType = Logic.Messaging.SingleConversation?.entity_type || "";
@@ -2071,6 +2076,22 @@ export default defineComponent({
           manualModalOverride.value = null;
         }
       }
+    };
+
+    const initializeMarketOrderFlow = () => {
+      Logic.Common.debounce(() => {
+        const chatIsMarketOrder =
+          // @ts-expect-error
+          Logic.Messaging.SingleConversation?.market_order != undefined;
+
+        const conversationMetadata = JSON.parse(
+          Logic.Messaging.SingleConversation?.metadata || "{}"
+        );
+
+        if (chatIsMarketOrder) {
+          initializeWorkflow(conversationMetadata, true);
+        }
+      });
     };
 
     const reactToMessage = () => {

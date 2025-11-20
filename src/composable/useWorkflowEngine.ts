@@ -7,7 +7,11 @@ import {
 } from "../utils/cyprusRoutePricing";
 import { availableCurrencies } from ".";
 import { last } from "lodash";
-import { ExchangeAd, Participant } from "@greep/logic/src/gql/graphql";
+import {
+  DeliveryAddress,
+  ExchangeAd,
+  Participant,
+} from "@greep/logic/src/gql/graphql";
 
 export interface WorkflowMessage {
   id: string;
@@ -1967,11 +1971,21 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
   };
 
   // Initialize workflow conversation if needed
-  const initializeWorkflow = async (conversationMetadata?: any) => {
+  const initializeWorkflow = async (
+    conversationMetadata?: any,
+    forceInitialize = false
+  ) => {
     // Only initialize if we're in workflow mode and have no messages
-    if (directMessagingEnabled.value || messages.length > 0) {
+    if (
+      (directMessagingEnabled.value || messages.length > 0) &&
+      !forceInitialize
+    ) {
       return;
     }
+
+    const chatIsMarketOrder =
+      // @ts-expect-error
+      Logic.Messaging.SingleConversation?.market_order != undefined;
 
     try {
       const welcomeMessage = {
@@ -1990,77 +2004,129 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         updatedAt: new Date().toISOString(),
       };
 
-      addMessage(welcomeMessage);
+      if (!chatIsMarketOrder) {
+        addMessage(welcomeMessage);
 
-      setTimeout(async () => {
-        try {
-          // Get wallet balance like the backup did
-          const balance = Logic.Auth.AuthUser?.wallet?.total_balance || "0";
+        setTimeout(async () => {
+          try {
+            // Get wallet balance like the backup did
+            const balance = Logic.Auth.AuthUser?.wallet?.total_balance || "0";
 
-          let startingStage = "withdrawal_amount";
+            let startingStage = "withdrawal_amount";
 
-          if (
-            Logic.Messaging.SingleConversation?.entity_type === "p2p_deposit"
-          ) {
-            startingStage = "deposit_amount";
+            if (
+              Logic.Messaging.SingleConversation?.entity_type === "p2p_deposit"
+            ) {
+              startingStage = "deposit_amount";
+            }
+
+            const exchangeAd = Logic.Messaging.SingleConversation?.exchangeAd;
+
+            const exchangeCurreny = exchangeAd?.from_currency;
+
+            const currencyInfo = availableCurrencies.find(
+              (currency) => currency.code === exchangeCurreny
+            );
+
+            // Set up message form
+            Logic.Messaging.CreateMessageForm = {
+              input: {
+                conversation_id: conversationId.value,
+                content: "Hi", // Use "Hi" like the backup, not "Starting conversation flow..."
+                type: "text",
+                sender_id: parseInt(Logic.Auth.AuthUser?.id?.toString() || "0"),
+                metadata: JSON.stringify({
+                  is_bot: false,
+                  type: "text",
+                  wallet_balance: Logic.Common.convertToMoney(
+                    balance,
+                    true,
+                    "",
+                    false
+                  ),
+                  sell_currency_name: currencyInfo?.name || "",
+                  sell_currency_code: currencyInfo?.code || "",
+                  currency_symbol: currencyInfo?.symbol || "",
+                  buy_rate: Logic.Common.convertToMoney(
+                    exchangeAd?.rate || "0",
+                    true,
+                    "",
+                    false
+                  ),
+                  stage: startingStage,
+                  trigger_conversation: true,
+                  structured_response: {},
+                  conversation_metadata: conversationMetadata || {},
+                  exchangeAd:
+                    Logic.Messaging.SingleConversation?.exchangeAd || null,
+                  customer_name:
+                    `${Logic.Auth.AuthUser?.first_name} ${Logic.Auth.AuthUser?.last_name}`.trim(),
+                  user_name: `${Logic.Auth.AuthUser?.first_name}}`.trim(),
+                  sender: {
+                    first_name: Logic.Auth.AuthUser?.first_name,
+                    last_name: Logic.Auth.AuthUser?.last_name,
+                    uuid: Logic.Auth.AuthUser?.uuid,
+                  },
+                }),
+              },
+            };
+
+            const response = await Logic.Messaging.CreateMessage();
+          } catch (error) {
+            console.error("❌ Failed to trigger backend conversation:", error);
           }
+        }, 500); // Match the original delay from backup
+      } else if (chatIsMarketOrder) {
+        const currentConversation = Logic.Messaging.SingleConversation;
+        const currencyStage = currentConversation?.stage || "exchange_rate";
 
-          const exchangeAd = Logic.Messaging.SingleConversation?.exchangeAd;
+        if (currencyStage == "instant_delivery_note_1") {
+          // Let get the delivery pricing
+          isProcessing.value = true;
 
-          const exchangeCurreny = exchangeAd?.from_currency;
+          const pickupAddress: DeliveryAddress =
+            conversationMetadata?.delivery_address_data[0];
+          const deliveryAddressId =
+            // @ts-expect-error
+            currentConversation?.market_order?.deliveryAddress
+              ?.delivery_location_id;
 
-          const currencyInfo = availableCurrencies.find(
-            (currency) => currency.code === exchangeCurreny
+          let deliveryCost = 0;
+          let deliveryCurrency = "USD";
+
+          // @ts-expect-error
+          const deliveryPricing = await Logic.Delivery.GetDeliveryPricing(
+            parseInt(pickupAddress.delivery_location_id),
+            parseInt(deliveryAddressId)
           );
 
-          // Set up message form
-          Logic.Messaging.CreateMessageForm = {
-            input: {
-              conversation_id: conversationId.value,
-              content: "Hi", // Use "Hi" like the backup, not "Starting conversation flow..."
-              type: "text",
-              sender_id: parseInt(Logic.Auth.AuthUser?.id?.toString() || "0"),
-              metadata: JSON.stringify({
-                is_bot: false,
-                type: "text",
-                wallet_balance: Logic.Common.convertToMoney(
-                  balance,
-                  true,
-                  "",
-                  false
-                ),
-                sell_currency_name: currencyInfo?.name || "",
-                sell_currency_code: currencyInfo?.code || "",
-                currency_symbol: currencyInfo?.symbol || "",
-                buy_rate: Logic.Common.convertToMoney(
-                  exchangeAd?.rate || "0",
-                  true,
-                  "",
-                  false
-                ),
-                stage: startingStage,
-                trigger_conversation: true,
-                structured_response: {},
-                conversation_metadata: conversationMetadata || {},
-                exchangeAd:
-                  Logic.Messaging.SingleConversation?.exchangeAd || null,
-                customer_name:
-                  `${Logic.Auth.AuthUser?.first_name} ${Logic.Auth.AuthUser?.last_name}`.trim(),
-                user_name: `${Logic.Auth.AuthUser?.first_name}}`.trim(),
-                sender: {
-                  first_name: Logic.Auth.AuthUser?.first_name,
-                  last_name: Logic.Auth.AuthUser?.last_name,
-                  uuid: Logic.Auth.AuthUser?.uuid,
-                },
-              }),
-            },
-          };
+          if (deliveryPricing && deliveryPricing.price) {
+            deliveryCost = parseFloat(deliveryPricing.price);
+            deliveryCurrency = deliveryPricing.currency || "USD";
+          }
 
-          const response = await Logic.Messaging.CreateMessage();
-        } catch (error) {
-          console.error("❌ Failed to trigger backend conversation:", error);
+          const currencyInfo = availableCurrencies.filter(
+            (item) => item.code == deliveryCurrency
+          )[0];
+
+          isProcessing.value = false;
+
+          if (deliveryPricing) {
+            await sendWorkflowMessage("Skip", {
+              selected_option: "skip",
+              ...conversationMetadata,
+              delivery_cost: deliveryCost,
+              delivery_currency: deliveryCurrency,
+              delivery_cost_formated: Logic.Common.convertToMoney(
+                deliveryCost,
+                false,
+                ""
+              ),
+              delivery_currency_symbol: currencyInfo?.symbol || "",
+            });
+          }
         }
-      }, 1500); // Match the original delay from backup
+      }
     } catch (error) {
       console.error("❌ Failed to initialize workflow:", error);
     }
@@ -3144,5 +3210,12 @@ export const getChatMetadata = () => {
     messagesMetadata = { ...messagesMetadata, ...metadata };
   });
 
-  return messagesMetadata;
+  const conversationMetadata = JSON.parse(
+    Logic.Messaging.SingleConversation?.metadata || "{}"
+  );
+
+  return {
+    ...conversationMetadata,
+    ...messagesMetadata,
+  };
 };

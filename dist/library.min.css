@@ -3005,8 +3005,16 @@ video {
   font-size: 11px !important;
 }
 
+.\!text-\[12\.5px\] {
+  font-size: 12.5px !important;
+}
+
 .\!text-\[12px\] {
   font-size: 12px !important;
+}
+
+.\!text-\[13px\] {
+  font-size: 13px !important;
 }
 
 .\!text-\[16px\] {
@@ -3070,10 +3078,6 @@ video {
 .text-xs {
   font-size: 0.75rem;
   line-height: 1rem;
-}
-
-.\!text-\[13px\] {
-  font-size: 13px !important;
 }
 
 .\!font-\[500\] {

@@ -16,7 +16,7 @@
         </div>
         <div class="flex flex-col">
           <app-normal-text
-            class="!text-sm px-2"
+            class="!text-sm px-2 !line-clamp-1"
             is-html
             :html-content="topBarInfo.title"
           >

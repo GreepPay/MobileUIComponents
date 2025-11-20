@@ -136,9 +136,12 @@ export default defineComponent({
       // else do nothing — allow normal propagation
     };
 
-    watch(props, () => {
-      setImage();
-    });
+    watch(
+      () => props.photoUrl,
+      () => {
+        setImage();
+      }
+    );
 
     onMounted(() => {
       setImage();
