@@ -24,18 +24,19 @@
     </div>
 
     <div class="py-2">
-      <div
-        v-if="!hasItems || isLoading"
-        class="px-4 pt-4 !pt-2 flex flex-col gap-4"
-      >
-        <app-empty-state
-          :title="emptyTitle"
-          :description="emptyDescription"
-          :useIcon="useEmptyStateIcon"
-          :isLoading="isLoading"
-        />
-
-        <slot name="empty-state-extra" v-if="!isLoading" />
+      <div v-if="!hasItems || isLoading" class="w-full">
+        <slot name="empty-state">
+          <div class="px-4 pt-4 !pt-2 flex flex-col gap-4">
+            <app-empty-state
+              :title="emptyTitle"
+              :description="emptyDescription"
+              :useIcon="useEmptyStateIcon"
+              :isLoading="isLoading"
+              :is-vertical-list="isVerticalList"
+            />
+            <slot name="empty-state-extra" v-if="!isLoading" />
+          </div>
+        </slot>
       </div>
 
       <template v-else>
@@ -53,81 +54,85 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from "vue";
-import { AppNormalText } from "../AppTypography";
-import AppEmptyState from "../AppEmptyState";
+  import { defineComponent, computed } from "vue"
+  import { AppNormalText } from "../AppTypography"
+  import AppEmptyState from "../AppEmptyState"
 
-export default defineComponent({
-  name: "AppListWrapper",
-  components: {
-    AppNormalText,
-    AppEmptyState,
-  },
-  props: {
-    title: {
-      type: String,
-      default: "Title",
+  export default defineComponent({
+    name: "AppListWrapper",
+    components: {
+      AppNormalText,
+      AppEmptyState,
     },
-    actionText: {
-      type: String,
-      default: "See all",
+    props: {
+      title: {
+        type: String,
+        default: "Title",
+      },
+      actionText: {
+        type: String,
+        default: "See all",
+      },
+      items: {
+        type: Array as () => any[],
+        default: () => [],
+      },
+      emptyTitle: {
+        type: String,
+        default: "No data available",
+      },
+      emptyDescription: {
+        type: String,
+        default: "",
+      },
+      useEmptyStateIcon: {
+        type: Boolean,
+        default: false,
+      },
+      customClass: {
+        type: String,
+        default: "",
+      },
+      headerClass: {
+        type: String,
+        default: "",
+      },
+      contentClass: {
+        type: String,
+        default: "",
+      },
+      isLoading: {
+        type: Boolean,
+        default: false,
+      },
+      hasViewMore: {
+        type: Boolean,
+        default: true,
+      },
+      lighterHeader: {
+        type: Boolean,
+        default: false,
+      },
+      isVerticalList: {
+        type: Boolean,
+        default: false,
+      },
     },
-    items: {
-      type: Array as () => any[],
-      default: () => [],
-    },
-    emptyTitle: {
-      type: String,
-      default: "No data available",
-    },
-    emptyDescription: {
-      type: String,
-      default: "",
-    },
-    useEmptyStateIcon: {
-      type: Boolean,
-      default: false,
-    },
-    customClass: {
-      type: String,
-      default: "",
-    },
-    headerClass: {
-      type: String,
-      default: "",
-    },
-    contentClass: {
-      type: String,
-      default: "",
-    },
-    isLoading: {
-      type: Boolean,
-      default: false,
-    },
-    hasViewMore: {
-      type: Boolean,
-      default: true,
-    },
-    lighterHeader: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ["view-more"],
-  setup(props, { emit }) {
-    const hasItems = computed(() => props.items.length > 0);
+    emits: ["view-more"],
+    setup(props, { emit }) {
+      const hasItems = computed(() => props.items.length > 0)
 
-    return { hasItems, emit };
-  },
-});
+      return { hasItems, emit }
+    },
+  })
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 </style>
