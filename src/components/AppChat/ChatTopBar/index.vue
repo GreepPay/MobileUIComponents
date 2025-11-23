@@ -8,7 +8,7 @@
       class="w-full flex flex-row items-center justify-between border-b-[1.5px] border-[#F0F3F6] px-4 pb-4"
     >
       <div class="flex flex-row items-center">
-        <div class="w-[24px] mr-2" @click="handleBackClick">
+        <div class="w-[24px] mr-2" @click="Logic.Common.goBack()">
           <app-icon name="arrow-left" custom-class="!h-[24px]" />
         </div>
         <div class="w-[50px] mr-2">
@@ -177,6 +177,7 @@ export default defineComponent({
 
     return {
       topBarInfo,
+      Logic,
       handleBackClick,
       handleInfoClick,
       dismissAlert,

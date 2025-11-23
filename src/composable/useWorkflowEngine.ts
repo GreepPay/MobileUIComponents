@@ -2086,51 +2086,13 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         const currentConversation = Logic.Messaging.SingleConversation;
         const currencyStage = currentConversation?.stage || "exchange_rate";
 
-        if (currencyStage == "instant_delivery_note_1") {
-          // Let get the delivery pricing
-          isProcessing.value = true;
-
-          const pickupAddress: DeliveryAddress =
-            conversationMetadata?.delivery_address_data[0];
-          const deliveryAddressId =
+        if (currencyStage == "instant_bill_acceptance_1") {
+          await sendWorkflowMessage("{delivery_order_summary}", {
+            selected_option: "accept",
+            ...conversationMetadata,
             // @ts-expect-error
-            currentConversation?.market_order?.deliveryAddress
-              ?.delivery_location_id;
-
-          let deliveryCost = 0;
-          let deliveryCurrency = "USD";
-
-          // @ts-expect-error
-          const deliveryPricing = await Logic.Delivery.GetDeliveryPricing(
-            parseInt(pickupAddress.delivery_location_id),
-            parseInt(deliveryAddressId)
-          );
-
-          if (deliveryPricing && deliveryPricing.price) {
-            deliveryCost = parseFloat(deliveryPricing.price);
-            deliveryCurrency = deliveryPricing.currency || "USD";
-          }
-
-          const currencyInfo = availableCurrencies.filter(
-            (item) => item.code == deliveryCurrency
-          )[0];
-
-          isProcessing.value = false;
-
-          if (deliveryPricing) {
-            await sendWorkflowMessage("Skip", {
-              selected_option: "skip",
-              ...conversationMetadata,
-              delivery_cost: deliveryCost,
-              delivery_currency: deliveryCurrency,
-              delivery_cost_formated: Logic.Common.convertToMoney(
-                deliveryCost,
-                false,
-                ""
-              ),
-              delivery_currency_symbol: currencyInfo?.symbol || "",
-            });
-          }
+            delivery_order_data: currentConversation?.delivery_order,
+          });
         }
       }
     } catch (error) {
