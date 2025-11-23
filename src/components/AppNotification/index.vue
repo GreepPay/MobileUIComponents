@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-row items-start py-3 !pt-2 border-b-[1.5px] border-[#E0E2E4] mb-3"
+    class="flex flex-row items-center py-3 !pt-2 border-b-[1.5px] border-[#E0E2E4] mb-3"
     @click="emit('click', notification)"
   >
-    <div class="w-[50px]">
-      <app-icon :name="notification.icon" customClass="!h-[48px]" />
+    <div class="w-[36px]">
+      <app-icon :name="notification.icon" customClass="!h-[32px]" />
     </div>
 
     <div class="w-full flex-1 flex flex-col space-y-[3px] ml-2 justify-start">

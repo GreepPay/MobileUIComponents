@@ -37,13 +37,15 @@
         class="absolute w-full h-full top-0 left-0 flex flex-col justify-between px-4 pt-3 pb-4 !pl-3"
       >
         <div class="w-full flex flex-col">
-          <div class="h-4 w-20 bg-gray-100 animate-pulse rounded-md mb-2"></div>
+          <div class="h-3 w-20 bg-gray-100 animate-pulse rounded-md mb-2"></div>
 
-          <div class="h-3 w-36 bg-gray-100 animate-pulse rounded-md mb-1"></div>
-          <div class="h-3 w-32 bg-gray-100 animate-pulse rounded-md"></div>
+          <div
+            class="h-[10px] w-36 bg-gray-100 animate-pulse rounded-md mb-1"
+          ></div>
+          <div class="h-[10px] w-32 bg-gray-100 animate-pulse rounded-md"></div>
         </div>
 
-        <div class="h-4 w-20 bg-gray-100 animate-pulse rounded-md"></div>
+        <div class="h-3 w-20 bg-gray-100 animate-pulse rounded-md"></div>
       </div>
     </div>
     <div class="w-[25%] h-[135px] relative animate-pulse">

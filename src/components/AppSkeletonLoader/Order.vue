@@ -1,15 +1,15 @@
 <template>
   <div class="w-full flex-1 flex flex-col space-y-[3px] justify-start">
     <div class="flex items-center justify-between">
-      <div class="h-3 w-32 bg-gray-200 animate-pulse rounded-md"></div>
-      <div class="h-3 w-10 bg-gray-200 animate-pulse rounded-md"></div>
+      <div class="h-[10px] w-32 bg-gray-200 animate-pulse rounded-md"></div>
+      <div class="h-[10px] w-10 bg-gray-200 animate-pulse rounded-md"></div>
     </div>
 
     <div class="flex flex-col gap-[3px] mt-2">
       <div
         v-for="line in descriptionNoOfLines"
         :key="line"
-        class="h-3 bg-gray-200 animate-pulse rounded-md"
+        class="h-[10px] bg-gray-200 animate-pulse rounded-md"
         :class="line === descriptionNoOfLines ? 'w-3/4' : 'w-full'"
       ></div>
     </div>

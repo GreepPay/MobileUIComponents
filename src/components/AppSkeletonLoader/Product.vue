@@ -6,8 +6,8 @@
       ></div>
 
       <div class="flex flex-col pt-2">
-        <p class="!truncate w-full h-5 animate-pulse"></p>
-        <p class="!truncate w-3/4 h-5 animate-pulse"></p>
+        <p class="!truncate w-full h-4 animate-pulse"></p>
+        <p class="!truncate w-3/4 h-4 animate-pulse"></p>
       </div>
     </div>
   </div>

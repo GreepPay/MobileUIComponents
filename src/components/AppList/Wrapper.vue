@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full flex flex-col py-3 mb-2 bg-white" :class="customClass">
+  <div class="w-full flex flex-col pt-3 mb-2 bg-white" :class="customClass">
     <div
-      class="w-full flex justify-between items-center px-4"
+      class="w-full flex justify-between items-center px-4 mb-0.5"
       :class="headerClass"
     >
       <app-normal-text
