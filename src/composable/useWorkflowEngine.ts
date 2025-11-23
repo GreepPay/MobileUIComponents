@@ -1964,9 +1964,15 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           : conversation.metadata
         : {};
 
-      setTimeout(() => {
-        initializeWorkflow(conversationMetadata);
-      }, 100); // Small delay to ensure everything is ready
+      const chatIsMarketOrder =
+        // @ts-expect-error
+        Logic.Messaging.SingleConversation?.market_order != undefined;
+
+      if (!chatIsMarketOrder) {
+        setTimeout(() => {
+          initializeWorkflow(conversationMetadata);
+        }, 100); // Small delay to ensure everything is ready
+      }
     }
   };
 

@@ -421,7 +421,7 @@ export default defineComponent({
     const ShowCalendarModal = ref(false);
 
     watch(content, () => {
-      context.emit("update:modelValue", content.value);
+      context.emit("update:modelValue", content.value?.replace(/,/g, ""));
       setTimeout(() => {
         checkValidation();
       }, 500);
@@ -439,11 +439,8 @@ export default defineComponent({
         fieldType.value = props.type;
       }
       if (props.isFormatted) {
-        content.value = Logic.Common.convertToMoney(
-          content.value ? content.value.toString().replace(/,/g, "") : 0,
-          false,
-          "",
-          false
+        content.value = formatNumber(
+          content.value ? content.value.toString() : ""
         );
       }
     });
@@ -731,15 +728,42 @@ export default defineComponent({
       }
     });
 
+    const formatNumber = (number: string) => {
+      if (!number) return "";
+
+      const num = number.replace(/[^0-9]/g, ""); // Remove non-numeric characters
+      if (!num) return "";
+
+      return num.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    };
+
+    const applyFormatting = (value: string) => {
+      if (props.isFormatted && value.length > 1) {
+        return Logic.Common.convertToMoney(
+          value ? value.toString().replace(/,/g, "") || 0 : 0,
+          false,
+          "",
+          false
+        );
+      }
+      return value;
+    };
+
     const isNumber = (evt: any) => {
-      if (props.type != "tel" && props.type != "number") return true;
+      if (
+        props.type != "tel" &&
+        props.type != "number" &&
+        props.type != "numeric"
+      )
+        return true;
 
       evt = evt ? evt : window.event;
       var charCode = evt.which ? evt.which : evt.keyCode;
       if (
         charCode > 31 &&
         (charCode < 48 || charCode > 57) &&
-        charCode !== 46
+        charCode !== 46 &&
+        charCode !== 190
       ) {
         evt.preventDefault();
       } else {
