@@ -27,6 +27,16 @@
           >●</span
         >
 
+        <app-normal-text class="!text-gray-400">
+          {{
+            Logic.Common.fomartDate(order.date_updated, "ddd MMM DD, h:mm A")
+          }}
+        </app-normal-text>
+
+        <span :class="`${getOrderColor(order.icon_name, order.status)}  px-2`"
+          >●</span
+        >
+
         <app-normal-text
           :customClass="`leading-6 !text-xxs ${getOrderColor(
             order.status
@@ -52,6 +62,7 @@ interface Order {
   type: string;
   status: string;
   icon_name: string;
+  date_updated: string;
 }
 
 export default defineComponent({
@@ -114,9 +125,10 @@ export default defineComponent({
     });
 
     return {
+      iconIsUrl,
+      Logic,
       getOrderColor,
       handleClick,
-      iconIsUrl,
     };
   },
 });

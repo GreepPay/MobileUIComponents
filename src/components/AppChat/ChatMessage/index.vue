@@ -513,6 +513,9 @@ export default defineComponent({
 
       const metadata = message.metadata || {};
 
+      const deliveryOrder =
+        metadata.delivery_order || metadata.delivery_order_data;
+
       const listItems = [
         {
           title: "Items to deliver",
@@ -528,26 +531,28 @@ export default defineComponent({
         },
         {
           title: "Tracking Number",
-          content: metadata?.delivery_order?.trackingNumber || "N/A",
+          content: deliveryOrder?.trackingNumber || "N/A",
           can_copy: true,
         },
         {
           title: "Delivery Fee",
           content: `${metadata.delivery_currency_symbol || ""}${
-            metadata.delivery_cost_formated || "N/A"
+            metadata.delivery_cost_formated ||
+            metadata.delivery_cost_formatted ||
+            "N/A"
           }`,
         },
         {
           title: "Created At",
           content: Logic.Common.fomartDate(
-            metadata?.delivery_order?.createdAt || "",
+            deliveryOrder?.createdAt || "",
             "DD MMM YYYY, h:mm A"
           ),
         },
         {
           title: "Status",
           content: capitalize(
-            metadata?.delivery_order?.status?.replaceAll("_", " ") || "N/A"
+            deliveryOrder?.status?.replaceAll("_", " ") || "N/A"
           ),
         },
       ];
