@@ -4,6 +4,10 @@
       <app-skeleton-loader
         :type="typeOfLoader"
         :number-of-loaders="numberOfLoaders"
+        :custom-class="
+          !isVerticalList &&
+          '!flex !overflow-x-auto whitespace-nowrap gap-4 scrollbar-hide w-full'
+        "
       />
     </div>
 
@@ -165,6 +169,18 @@
       numberOfLoaders: {
         type: Number,
         default: 10,
+      },
+
+      /**
+       * Whether to display the skeleton loader in a vertical list format.
+       * This is passed to the <app-skeleton-loader> component.
+       * @type {boolean}
+       * @default false
+       */
+
+      isVerticalList: {
+        type: Boolean,
+        default: false,
       },
     },
     setup() {

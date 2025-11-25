@@ -782,6 +782,10 @@ video {
   grid-column: 1 / -1;
 }
 
+.\!m-0 {
+  margin: 0px !important;
+}
+
 .\!mx-\[6px\] {
   margin-left: 6px !important;
   margin-right: 6px !important;
@@ -963,6 +967,10 @@ video {
 
 .inline {
   display: inline;
+}
+
+.\!flex {
+  display: flex !important;
 }
 
 .flex {
@@ -1944,6 +1952,10 @@ video {
 
 .overflow-hidden {
   overflow: hidden;
+}
+
+.\!overflow-x-auto {
+  overflow-x: auto !important;
 }
 
 .overflow-x-auto {

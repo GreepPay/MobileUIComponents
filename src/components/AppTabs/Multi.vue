@@ -9,6 +9,7 @@
         @click="toggleTab(tab)"
         :class="getTabClass(tab.key)"
         :custom-class="isTabActive(tab.key) && '!text-black'"
+        custom-class="!m-0"
       >
         {{ tab.label }}
       </app-normal-text>
@@ -17,7 +18,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from "vue"
+  import { defineComponent, PropType, watch, computed } from "vue"
 
   export default defineComponent({
     props: {
@@ -28,16 +29,24 @@
         required: true,
       },
 
-      /** v-model: selectedKeys */
-      selectedKeys: {
+      selectedKeysByCategory: {
         type: Array as PropType<string[]>,
         default: () => [],
       },
 
-      /** v-model: selectedObjects */
       selectedObjects: {
         type: Array as PropType<Array<{ key: string; label: string }>>,
         default: () => [],
+      },
+
+      categoryId: {
+        type: String,
+        required: true,
+      },
+
+      selectedCategory: {
+        type: Object as PropType<{ id: string; categories: string[] }>,
+        default: () => ({ id: "", categories: [] }),
       },
 
       type: {
@@ -54,32 +63,36 @@
       },
     },
 
-    emits: ["update:selectedKeys", "update:selectedObjects"],
+    emits: [
+      "update:selectedKeys",
+      "update:selectedKeysByCategory",
+      "update:selectedObjects",
+      "update:selectedCategory",
+      "update:selectedCategoryGroups", // <-- new emit
+    ],
 
     setup(props, { emit }) {
       const toggleTab = (tab: any) => {
-        const keys = [...props.selectedKeys]
+        const keys = [...props.selectedKeysByCategory]
         const objects = [...props.selectedObjects]
 
         const keyIndex = keys.indexOf(tab.key)
         const objIndex = objects.findIndex((o) => o.key === tab.key)
 
         if (keyIndex !== -1) {
-          // remove
           keys.splice(keyIndex, 1)
           objects.splice(objIndex, 1)
         } else {
-          // add
           keys.push(tab.key)
           objects.push(tab)
         }
 
-        emit("update:selectedKeys", keys)
+        emit("update:selectedKeysByCategory", keys)
         emit("update:selectedObjects", objects)
       }
 
       const isTabActive = (tabKey: string) => {
-        return props.selectedKeys.includes(tabKey)
+        return props.selectedKeysByCategory.includes(tabKey)
       }
 
       const getTabClass = (tabKey: string) => {
@@ -102,10 +115,34 @@
       `
       }
 
+      // Watch selectedKeysByCategory to emit single category payload
+      watch(
+        () => props.selectedKeysByCategory,
+        (value) => {
+          const categoryPayload = { id: props.categoryId, categories: value }
+          emit("update:selectedCategory", categoryPayload)
+
+          // also emit selectedCategoryGroups array
+          emit("update:selectedCategoryGroups", [categoryPayload])
+        },
+        { deep: true }
+      )
+
+      // Computed property if needed internally
+      const selectedCategoryGroups = computed(() => {
+        return [
+          {
+            id: props.categoryId,
+            categories: [...props.selectedKeysByCategory],
+          },
+        ]
+      })
+
       return {
         toggleTab,
         getTabClass,
         isTabActive,
+        selectedCategoryGroups,
       }
     },
   })
