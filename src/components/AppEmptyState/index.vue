@@ -1,14 +1,21 @@
 <template>
-  <div>
-    <div v-if="isLoading" class="w-full" :class="custonClass">
-      <app-skeleton-loader
-        :type="typeOfLoader"
-        :number-of-loaders="numberOfLoaders"
-        :custom-class="
-          !isVerticalList &&
-          '!flex !overflow-x-auto whitespace-nowrap gap-4 scrollbar-hide w-full'
-        "
-      />
+  <div
+    :class="[
+      'w-full flex flex-col min-h-24 border-[2px] h-fit border-[#F0F3F6] rounded-xl py-8 px-4 justify-center items-center',
+      custonClass,
+    ]"
+  >
+    <app-icon :name="icon" custom-class="!h-[60px]" v-if="useIcon" />
+
+    <div class="flex flex-col items-center justify-center px-5 pt-3">
+      <app-normal-text class="!text-[#0A141E] !font-[500] !text-sm">
+        {{ title }}
+      </app-normal-text>
+      <app-normal-text
+        class="!text-[#616161] !text-center pt-[4px] px-4 leading-5"
+      >
+        {{ description }}
+      </app-normal-text>
     </div>
 
     <div
