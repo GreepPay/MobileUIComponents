@@ -1,8 +1,18 @@
 <template>
   <div :class="['w-full overflow-x-auto scrollbar-hide', containerClass]">
     <div
-      :class="['inline-flex items-center h-fit flex-wrap gap-2', radiosClass]"
+      :class="['inline-flex items-center h-fit flex-wrap gap-y-2', radiosClass]"
     >
+      <!-- ALL TAB -->
+      <app-normal-text
+        v-if="useAll"
+        @click="toggleAll"
+        :class="getTabClass('ALL')"
+        :custom-class="isAllActive && '!text-black'"
+        custom-class="!m-0"
+      >
+        All
+      </app-normal-text>
       <app-normal-text
         v-for="(tab, index) in tabs"
         :key="index"
@@ -53,13 +63,20 @@
         type: String as PropType<"default" | "outlined">,
         default: "default",
       },
+
       containerClass: {
         type: String,
         default: "",
       },
+
       radiosClass: {
         type: String,
         default: "",
+      },
+
+      useAll: {
+        type: Boolean,
+        default: false,
       },
     },
 
@@ -72,6 +89,28 @@
     ],
 
     setup(props, { emit }) {
+      const isAllActive = computed(() => {
+        return (
+          props.useAll &&
+          props.selectedKeysByCategory.length === props.tabs.length
+        )
+      })
+
+      const toggleAll = () => {
+        if (isAllActive.value) {
+          // unselect all
+          emit("update:selectedKeysByCategory", [])
+          emit("update:selectedObjects", [])
+        } else {
+          // select all
+          const allKeys = props.tabs.map((t) => t.key)
+          const allObjects = [...props.tabs]
+
+          emit("update:selectedKeysByCategory", allKeys)
+          emit("update:selectedObjects", allObjects)
+        }
+      }
+
       const toggleTab = (tab: any) => {
         const keys = [...props.selectedKeysByCategory]
         const objects = [...props.selectedObjects]
@@ -96,7 +135,9 @@
       }
 
       const getTabClass = (tabKey: string) => {
-        const isActive = isTabActive(tabKey)
+        const isActive =
+          tabKey === "ALL" ? isAllActive.value : isTabActive(tabKey)
+
         const baseClass =
           "px-4 py-2 !text-xs cursor-pointer hover:text-black whitespace-nowrap mr-2"
 
@@ -143,6 +184,8 @@
         getTabClass,
         isTabActive,
         selectedCategoryGroups,
+        isAllActive,
+        toggleAll,
       }
     },
   })
