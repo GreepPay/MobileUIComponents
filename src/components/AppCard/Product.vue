@@ -44,15 +44,27 @@
         </app-image-loader>
       </div>
 
-      <div class="flex flex-col pt-2">
-        <app-normal-text class="!text-xs !text-black !truncate pb-0.5">
+      <div class="flex flex-col pt-2 pb-[3px]">
+        <div v-if="false" class="flex items-center gap-1">
+          <app-icon
+            name="location-pin"
+            custom-class="w-3 !text-light-black -mt-0.5"
+          />
+          <app-normal-text class="!text-xs !text-light-black !truncate">
+            <!-- {{ product?.location }} -->
+            Test Location
+          </app-normal-text>
+        </div>
+
+        <app-normal-text
+          class="!text-xs !text-black !truncate capitalize pb-0.5"
+        >
           {{ product?.name }}
         </app-normal-text>
         <div class="flex items-center">
           <app-normal-text class="!text-sm !font-bold !text-black !truncate">
             {{ product?.formattedPrice }}
           </app-normal-text>
-
           <span v-if="product.isPreOrder" class="text-xxs px-2"> • </span>
           <app-normal-text
             v-if="product.isPreOrder"
@@ -198,7 +210,7 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType, ref, watch } from "vue"
+  import { defineComponent, PropType, ref, watch, computed } from "vue"
   import AppImageLoader from "../AppImageLoader"
   import AppIcon from "../AppIcon"
   import AppButton from "../AppButton"
@@ -209,6 +221,7 @@
   import { SwiperSlide } from "swiper/vue"
   import { Logic } from "../../composable"
   import { getBottomPadding } from "../../composable"
+  import { Location } from "../../../../logic/src/gql/graphql"
 
   /**
    * Merchant Product Card
@@ -282,6 +295,8 @@
       const currentSlidePosition = ref(0)
       const slidePosition = ref(0)
 
+      const isItemInCart = computed(() => props.isInCart)
+
       const viewProductDetails = () => {
         showProductDetailsModal.value = true
       }
@@ -317,6 +332,7 @@
         seeMoreDescription,
         viewMerchantDetails,
         getBottomPadding,
+        isItemInCart,
       }
     },
   })

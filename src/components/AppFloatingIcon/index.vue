@@ -1,7 +1,7 @@
 <template>
   <div
     :class="[
-      'fixed z-10 flex items-center justify-center  bottom-10 right-4',
+      'fixed z-20 flex items-center justify-center  bottom-10 right-4',
       customClass,
     ]"
     :style="`

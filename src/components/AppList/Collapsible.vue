@@ -6,9 +6,11 @@
       :class="headerClass"
       @click="toggle"
     >
-      <app-normal-text class="font-semibold !text-black !text-[14px] !flex-1">
-        {{ title }}
-      </app-normal-text>
+      <slot name="header-title">
+        <app-normal-text class="font-semibold !text-black !text-[12px] !flex-1">
+          {{ title }}
+        </app-normal-text>
+      </slot>
 
       <div class="transition-transform duration-300">
         <app-icon

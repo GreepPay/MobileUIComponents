@@ -9,7 +9,7 @@
         :id="'' + uniqueKey + (index - 1)"
         v-model="otps[index - 1]"
         :type="type"
-        :class="`md:w-[64px] [box-shadow:0_0_0_1.5px_#E0E2E4] rounded-[12px] md:h-[64px] w-[64px] h-[64px] text-lg text-center focus:outline-hidden bg-lightGrayVaraint! custom-border ${sizeStyle}`"
+        :class="`md:w-[64px] [box-shadow:0_0_0_1.5px_#E0E2E4] rounded-[12px] md:h-[64px] w-[64px] h-[64px] text-lg text-center focus:outline-hidden bg-lightGrayVaraint!  custom-border !text-black ${sizeStyle}`"
         :disabled="isDisabled"
         @keypress="onKeyPress"
         @keyup.right="focusInputByRef('' + uniqueKey + (index + 1))"
@@ -29,13 +29,13 @@
 </template>
 
 <script lang="ts">
-import { ref, computed, watch, defineComponent, onMounted } from "vue";
+import { ref, computed, watch, defineComponent, onMounted } from 'vue';
 
 /**
  * OTP Input component for entering numeric OTP codes.
  */
 export default defineComponent({
-  name: "AppOTPInput",
+  name: 'AppOTPInput',
 
   props: {
     /**
@@ -78,7 +78,7 @@ export default defineComponent({
       required: false,
       default: function () {
         return {
-          "border-color": "red",
+          'border-color': 'red',
         };
       },
     },
@@ -94,18 +94,18 @@ export default defineComponent({
      */
     type: {
       type: String,
-      default: "text",
+      default: 'text',
     },
     sizeStyle: {
       type: String,
-      default: "",
+      default: '',
     },
     otpValue: {
       type: String,
-      default: "",
+      default: '',
     },
   },
-  emits: ["update:modelValue", "update:filled"],
+  emits: ['update:modelValue', 'update:filled'],
   setup(props, context) {
     const uniqueKey =
       Math.random().toString(36).substring(2, 15) +
@@ -114,7 +114,7 @@ export default defineComponent({
     const otps = ref<String[]>([]);
 
     const otp = computed(() => {
-      return otps.value.join("");
+      return otps.value.join('');
     });
 
     const isOtpFilled = computed(() => {
@@ -123,7 +123,7 @@ export default defineComponent({
 
     watch(isOtpFilled, (newValue) => {
       if (newValue) {
-        context.emit("update:filled", true);
+        context.emit('update:filled', true);
       }
     });
 
@@ -164,7 +164,7 @@ export default defineComponent({
 
     const onInput = (event: any, id: string) => {
       props.onChangeOTP(otp.value);
-      if (event.inputType === "deleteContentBackward") return false;
+      if (event.inputType === 'deleteContentBackward') return false;
 
       focusInputByRef(id);
 
@@ -172,12 +172,12 @@ export default defineComponent({
     };
 
     const setValue = () => {
-      context.emit("update:modelValue", otp.value);
+      context.emit('update:modelValue', otp.value);
     };
 
     const setInputValue = (id: string, value: string) => {
       if (document.getElementById(id)) {
-        otps.value[parseInt(id.replace(uniqueKey, ""))] = value;
+        otps.value[parseInt(id.replace(uniqueKey, ''))] = value;
         (document.getElementById(id) as HTMLInputElement).value = value;
       }
     };
@@ -188,8 +188,8 @@ export default defineComponent({
 
     const fillOtpInput = () => {
       for (let index = 0; index < props.numberOfInput; index++) {
-        const inputId = "" + uniqueKey + index;
-        setInputValue(inputId, "");
+        const inputId = '' + uniqueKey + index;
+        setInputValue(inputId, '');
       }
 
       // set string value
@@ -198,15 +198,15 @@ export default defineComponent({
           ? props.otpValue.substring(0, props.numberOfInput)
           : props.otpValue;
 
-      const otpArray = finalOtp.split("");
+      const otpArray = finalOtp.split('');
 
       if (otpArray.length <= props.numberOfInput) {
         for (let index = 0; index < otpArray.length; index++) {
-          const inputId = "" + uniqueKey + index;
+          const inputId = '' + uniqueKey + index;
           const otpValue = otpArray[index];
           setInputValue(inputId, otpValue);
           if (otpArray.length == props.numberOfInput) {
-            context.emit("update:filled", props.otpValue);
+            context.emit('update:filled', props.otpValue);
           }
         }
       }
@@ -216,8 +216,8 @@ export default defineComponent({
       // Getting copy text
       const clipboardData =
         event.clipboardData || event.originalEvent.clipboardData;
-      const pastedData = clipboardData.getData("Text");
-      const arrayOfNumbers = pastedData.split("");
+      const pastedData = clipboardData.getData('Text');
+      const arrayOfNumbers = pastedData.split('');
 
       // set the length to numberOfInput
       if (arrayOfNumbers.length > props.numberOfInput)

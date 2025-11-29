@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full flex-1 flex flex-col space-y-[3px] justify-start border mb-3 p-4 rounded-xl"
+    class="!w-full flex-1 flex flex-col space-y-[3px] justify-start border mb-3 p-4 rounded-xl"
   >
     <div class="flex items-center justify-between">
       <div class="h-3 w-32 bg-gray-200 animate-pulse rounded-md"></div>
