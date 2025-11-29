@@ -20,15 +20,14 @@
             @click="Logic.Common.GoToRoute('/profile')"
           />
 
-          <div class="flex flex-row items-center space-x-1" @click="titleClickAction()">
+          <div
+            class="flex flex-row items-center space-x-1 px-3"
+            @click="titleClickAction()"
+          >
             <app-header-text class="!text-left line-clamp-1">
-            {{ title }}
-          </app-header-text>
-            <app-icon
-              v-if="icon"
-              :name="icon"
-              custom-class="!h-[8px]"
-            />
+              {{ title }}
+            </app-header-text>
+            <app-icon v-if="icon" :name="icon" custom-class="!h-[8px]" />
           </div>
 
           <div

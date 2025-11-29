@@ -16,7 +16,7 @@
         {{ product.title }}
       </app-normal-text>
       <div class="w-full flex flex-row mb-1 items-center">
-        <app-normal-text class="!text-left !text-[#999999]">
+        <app-normal-text class="!text-left !text-[#999999] !line-clamp-1">
           {{ product.category }}
         </app-normal-text>
         <span
@@ -25,7 +25,7 @@
         ></span>
 
         <app-normal-text
-          class="!text-left"
+          class="!text-left !whitespace-nowrap"
           :style="`color: ${stockColor(product.stock)};`"
         >
           {{ product.stock }} piece{{ product.stock != 1 ? "s" : "" }} left

@@ -1,36 +1,37 @@
 <template>
   <div
-    class="bg-white flex items-center rounded-xl border-b w-full py-4"
+    class="bg-white flex items-center rounded-xl border-b w-full py-4 overflow-x-hidden"
     @click="handleClick"
   >
     <app-icon v-if="!iconIsUrl" :name="order.icon_name" custom-class="!h-12" />
     <template v-else>
-      <div class="w-[48px]">
+      <div class="w-[42px]">
         <app-image-loader
           :photo-url="order.icon_name"
-          class="h-[48px] w-[48px] rounded-full border-[1px] border-veryLightGray"
+          class="h-[42px] w-[42px] rounded-full border-[1px] border-veryLightGray"
         />
       </div>
     </template>
 
-    <div class="ml-3 gap-4 bg-white">
-      <app-header-text customClass="leading-6 !text-sm !text-black">
-        {{ order.title }}
-      </app-header-text>
+    <div class="ml-3 gap-4 bg-white w-full">
+      <div class="w-full flex flex-row items-center justify-between space-x-2">
+        <app-header-text
+          customClass="leading-6 !text-[12.5px] !text-black !line-clamp-1 !text-left"
+        >
+          {{ order.title }}
+        </app-header-text>
+        <template v-if="!isMini">
+          <app-normal-text
+            class="!text-gray-400 !text-right !whitespace-nowrap"
+          >
+            {{ Logic.Common.fomartDate(order.date_updated, "MMM DD, h:mmA") }}
+          </app-normal-text>
+        </template>
+      </div>
 
       <div class="bg-white flex items-center">
-        <app-normal-text customClass="leading-6 !text-xxs !text-gray-two">
+        <app-normal-text customClass="leading-6 !text-xxs !text-gray-400">
           {{ order.type }}
-        </app-normal-text>
-
-        <span :class="`${getOrderColor(order.icon_name, order.status)}  px-2`"
-          >●</span
-        >
-
-        <app-normal-text class="!text-gray-400">
-          {{
-            Logic.Common.fomartDate(order.date_updated, "ddd MMM DD, h:mm A")
-          }}
         </app-normal-text>
 
         <span :class="`${getOrderColor(order.icon_name, order.status)}  px-2`"
@@ -77,6 +78,10 @@ export default defineComponent({
     order: {
       type: Object as PropType<Order>,
       required: true,
+    },
+    isMini: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, ctx) {
