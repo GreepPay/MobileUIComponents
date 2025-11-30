@@ -5,7 +5,7 @@
       setup?.isInteractive
         ? 'bg-black !bg-opacity-60'
         : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
-    }   !z-[99999999999999999px]`"
+    }   !z-[99999999999999999]`"
     :style="`padding-top: calc(env(safe-area-inset-top) + ${
       currentPlatform == 'android' ? '20' : '0'
     }px) !important;`"

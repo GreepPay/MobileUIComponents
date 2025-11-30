@@ -762,6 +762,14 @@ video {
   z-index: 9999999999;
 }
 
+.\!z-\[999999999999px\] {
+  z-index: 999999999999px !important;
+}
+
+.\!z-\[99999999999999999\] {
+  z-index: 99999999999999999 !important;
+}
+
 .col-span-1 {
   grid-column: span 1 / span 1;
 }
