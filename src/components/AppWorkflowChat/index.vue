@@ -12,7 +12,7 @@
       />
 
       <!-- WebSocket Connection Status -->
-      <div
+      <!-- <div
         v-if="!isConnected"
         class="w-full bg-yellow-50 border-b border-yellow-200 px-4 py-2"
       >
@@ -22,7 +22,7 @@
             📡 Connecting to real-time messaging...
           </span>
         </div>
-      </div>
+      </div> -->
 
       <!-- Chat content -->
       <div class="w-full flex flex-col px-4 pt-4 pb-4">
@@ -1993,6 +1993,20 @@ export default defineComponent({
       { immediate: true }
     );
 
+    const showLoader = () => {
+      if (isConnected.value) {
+        Logic.Common.hideLoader();
+      } else {
+        Logic.Common.showLoader({
+          show: true,
+          loading: true,
+        });
+      }
+    };
+    watch(isConnected, () => {
+      showLoader();
+    });
+
     // Cleanup
     onUnmounted(() => {
       console.log("👋 WorkflowChat unmounting - cleaning up WebSocket...");
@@ -2099,6 +2113,7 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      showLoader();
       checkIfToShowMethods();
     });
 

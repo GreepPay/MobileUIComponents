@@ -359,6 +359,10 @@ export default defineComponent({
     };
 
     const selectValue = (option: any) => {
+      if (!option) {
+        return;
+      }
+
       if (props.autoComplete) {
         context.emit("OnOptionSelected", option);
 
@@ -368,8 +372,10 @@ export default defineComponent({
         if (props.withKey) {
           valueData.value = option.key;
         } else {
-          valueData.value = option.value;
-          textValue.value = option.value;
+          if (option) {
+            valueData.value = option.value;
+            textValue.value = option.value;
+          }
         }
 
         context.emit("update:modelValue", option.key);
@@ -440,14 +446,18 @@ export default defineComponent({
     watch(searchResult, () => {
       prepareSelectOptions();
     });
-    
-    watch(() => props.options, (newOptions) => {
-      if (newOptions) {
-        OptionRef.value = newOptions;
-        searchResult.value = newOptions;
-        prepareSelectOptions();
-      }
-    }, { immediate: true, deep: true });
+
+    watch(
+      () => props.options,
+      (newOptions) => {
+        if (newOptions) {
+          OptionRef.value = newOptions;
+          searchResult.value = newOptions;
+          prepareSelectOptions();
+        }
+      },
+      { immediate: true, deep: true }
+    );
 
     return {
       showOption,

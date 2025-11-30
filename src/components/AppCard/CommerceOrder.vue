@@ -17,7 +17,7 @@
 
       <!-- Status and Date -->
       <div class="flex items-center gap-2 mt-1">
-        <template v-if="!isMini">
+        <!-- <template v-if="!isMini">
           <app-normal-text
             customClass="leading-6 !text-xs font-medium"
             :style="`color: ${order.statusColor || '#FF9500'}`"
@@ -26,7 +26,7 @@
           </app-normal-text>
 
           <span class="text-gray-400 text-xs">●</span>
-        </template>
+        </template> -->
         <app-normal-text customClass="leading-6 !text-xs !text-gray-400">
           {{ order.label }}
         </app-normal-text>

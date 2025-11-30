@@ -26,10 +26,11 @@ export default defineComponent({
 
           // Calculate parent container inner width
           const parentWidth = canvas?.parentElement?.clientWidth;
+          const parentHeight = canvas?.parentElement?.clientHeight;
           if (canvas) {
             const qrCode = new QRCodeStyling({
               width: parentWidth,
-              height: 230,
+              height: parentHeight,
               type: "svg",
               data: props.data.toString(),
             });

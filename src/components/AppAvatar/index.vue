@@ -8,6 +8,7 @@
       height: size + 'px',
     }"
   >
+    <slot />
     <app-image-loader
       custom-class="!w-full !h-full rounded-full"
       v-if="imageUrl"

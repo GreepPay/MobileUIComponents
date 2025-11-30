@@ -3,7 +3,9 @@
     <app-icon name="icon-circle-ticket" custom-class="!h-12" />
 
     <div class="ml-3 gap-4 bg-white truncate">
-      <app-header-text customClass="leading-6 !text-sm !text-black truncate">
+      <app-header-text
+        customClass="leading-6 !text-[12.5px] !text-black truncate"
+      >
         {{ ticket.name }}
 
         {{ ticket.location }}
@@ -33,37 +35,37 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent, PropType } from "vue"
-  import AppIcon from "../AppIcon"
-  import { AppHeaderText, AppNormalText } from "../AppTypography"
+import { defineComponent, PropType } from "vue";
+import AppIcon from "../AppIcon";
+import { AppHeaderText, AppNormalText } from "../AppTypography";
 
-  interface Ticket {
-    uuid: string
-    mappedPrice: string
-    id: string
-    sku: string
-    ticket_name: string
-    name: string
-    price: string
-    color: string
-    time: string
-    date: string
-    raw_date: string
-    purchase_date: string
-  }
+interface Ticket {
+  uuid: string;
+  mappedPrice: string;
+  id: string;
+  sku: string;
+  ticket_name: string;
+  name: string;
+  price: string;
+  color: string;
+  time: string;
+  date: string;
+  raw_date: string;
+  purchase_date: string;
+}
 
-  export default defineComponent({
-    name: "AppTicketCard",
-    components: {
-      AppIcon,
-      AppHeaderText,
-      AppNormalText,
+export default defineComponent({
+  name: "AppTicketCard",
+  components: {
+    AppIcon,
+    AppHeaderText,
+    AppNormalText,
+  },
+  props: {
+    ticket: {
+      type: Object as PropType<Ticket>,
+      required: true,
     },
-    props: {
-      ticket: {
-        type: Object as PropType<Ticket>,
-        required: true,
-      },
-    },
-  })
+  },
+});
 </script>
