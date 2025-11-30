@@ -25,21 +25,12 @@
   </div>
 </template>
 <script lang="ts">
-<<<<<<< HEAD
 import { Logic } from '../../composable';
 import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
 import AppIcon from '../AppIcon';
 import { getPlatforms } from '@ionic/vue';
 import { computed } from 'vue';
 import { Vue3Lottie } from 'vue3-lottie';
-=======
-import { Logic } from "../../composable";
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
-import AppIcon from "../AppIcon";
-import { getPlatforms } from "@ionic/vue";
-import { computed } from "vue";
-import { Vue3Lottie } from "vue3-lottie";
->>>>>>> 48a82b969d1267165baa9b4e35fb7deb19a64867
 
 export default defineComponent({
   components: {
@@ -60,11 +51,7 @@ export default defineComponent({
       },
     },
   },
-<<<<<<< HEAD
   name: 'AppLoader',
-=======
-  name: "AppLoader",
->>>>>>> 48a82b969d1267165baa9b4e35fb7deb19a64867
   setup(props) {
     const currentMessageIndex = ref(0);
 
@@ -73,11 +60,7 @@ export default defineComponent({
     const lottieContainer = ref();
 
     const messageInteval = ref();
-<<<<<<< HEAD
     const messages = [''];
-=======
-    const messages = [""];
->>>>>>> 48a82b969d1267165baa9b4e35fb7deb19a64867
 
     const startTimeoutCounter = () => {
       timeOutInstance.value = setInterval(() => {
@@ -85,13 +68,8 @@ export default defineComponent({
           Logic.Common.hideLoader();
           Logic.Common.showAlert({
             show: true,
-<<<<<<< HEAD
             message: 'Network Timeout. Please try again',
             type: 'error',
-=======
-            message: "Network Timeout. Please try again",
-            type: "error",
->>>>>>> 48a82b969d1267165baa9b4e35fb7deb19a64867
           });
           return;
         }
