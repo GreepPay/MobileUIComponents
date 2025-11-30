@@ -25,12 +25,12 @@
   </div>
 </template>
 <script lang="ts">
-import { Logic } from "../../composable";
-import { defineComponent, onMounted, onUnmounted, ref } from "vue";
-import AppIcon from "../AppIcon";
-import { getPlatforms } from "@ionic/vue";
-import { computed } from "vue";
-import { Vue3Lottie } from "vue3-lottie";
+import { Logic } from '../../composable';
+import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
+import AppIcon from '../AppIcon';
+import { getPlatforms } from '@ionic/vue';
+import { computed } from 'vue';
+import { Vue3Lottie } from 'vue3-lottie';
 
 export default defineComponent({
   components: {
@@ -51,7 +51,7 @@ export default defineComponent({
       },
     },
   },
-  name: "AppLoader",
+  name: 'AppLoader',
   setup(props) {
     const currentMessageIndex = ref(0);
 
@@ -60,7 +60,7 @@ export default defineComponent({
     const lottieContainer = ref();
 
     const messageInteval = ref();
-    const messages = [""];
+    const messages = [''];
 
     const startTimeoutCounter = () => {
       timeOutInstance.value = setInterval(() => {
@@ -68,8 +68,8 @@ export default defineComponent({
           Logic.Common.hideLoader();
           Logic.Common.showAlert({
             show: true,
-            message: "Network Timeout. Please try again",
-            type: "error",
+            message: 'Network Timeout. Please try again',
+            type: 'error',
           });
           return;
         }

@@ -30,7 +30,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, computed, onMounted } from "vue";
+import { defineComponent, PropType, computed, onMounted } from 'vue';
 
 /**
  *  Button Component
@@ -46,11 +46,11 @@ export default defineComponent({
      */
     variant: {
       type: String as PropType<
-        "primary" | "secondary" | "danger" | "primary-white" | "text"
+        'primary' | 'secondary' | 'danger' | 'primary-white' | 'text'
       >,
-      default: "primary",
+      default: 'primary',
       validator: (value: string) =>
-        ["primary", "secondary", "primary-white", "text"].includes(value),
+        ['primary', 'secondary', 'primary-white', 'text'].includes(value),
     },
     /**
      * Whether to show the button in outlined style
@@ -78,7 +78,7 @@ export default defineComponent({
      */
     customClass: {
       type: String,
-      default: "",
+      default: '',
     },
     /**
      * Whether the button should be rounded
@@ -100,7 +100,7 @@ export default defineComponent({
      */
     loadingClass: {
       type: String,
-      default: "text-white",
+      default: 'text-white',
     },
 
     ignoreButtonClass: {
@@ -112,116 +112,116 @@ export default defineComponent({
   setup(props) {
     const buttonClass = computed(() => {
       if (props.ignoreButtonClass) {
-        return "";
+        return '';
       }
       const classList: string[] = [];
 
       // Base classes
       classList.push(
-        "relative",
-        "flex",
-        "items-center",
-        "justify-center",
-        "gap-2",
-        "px-4",
-        "py-2",
-        "transition-all",
-        "duration-300",
-        "ease-in-out"
+        'relative',
+        'flex',
+        'items-center',
+        'justify-center',
+        'gap-2',
+        'px-4',
+        'py-2',
+        'transition-all',
+        'duration-300',
+        'ease-in-out'
       );
 
       // Shape
       if (props.iconOnly) {
-        classList.push("rounded-full", "p-2", "w-10", "h-10");
+        classList.push('rounded-full', 'p-2', 'w-10', 'h-10');
       } else {
-        classList.push("rounded-[40px]");
+        classList.push('rounded-[40px]');
       }
 
       // Outlined + Variant logic
       if (props.outlined) {
-        classList.push("bg-transparent", "border");
+        classList.push('bg-transparent', 'border');
 
-        if (props.variant === "primary") {
+        if (props.variant === 'primary') {
           classList.push(
-            "border-primary",
-            "text-primary",
-            "hover:bg-primary/10"
+            'border-primary',
+            'text-primary',
+            'hover:bg-primary/10'
           );
         }
-        if (props.variant === "secondary") {
+        if (props.variant === 'secondary') {
           classList.push(
-            "border-secondary",
-            "text-secondary",
-            "hover:bg-secondary/10"
+            'border-secondary',
+            'text-secondary',
+            'hover:bg-secondary/10'
           );
         }
-        if (props.variant === "danger") {
-          classList.push("border-red", "text-red", "hover:bg-red/10");
+        if (props.variant === 'danger') {
+          classList.push('border-red', 'text-red', 'hover:bg-red/10');
         }
-        if (props.variant === "primary-white") {
-          classList.push("border-white", "text-white", "hover:bg-white/10");
+        if (props.variant === 'primary-white') {
+          classList.push('border-white', 'text-white', 'hover:bg-white/10');
         }
-        if (props.variant === "text") {
+        if (props.variant === 'text') {
           classList.push(
-            "border-primary",
-            "text-primary",
-            "hover:bg-primary/10"
+            'border-primary',
+            'text-primary',
+            'hover:bg-primary/10'
           );
         }
       } else {
-        if (props.variant === "primary") {
+        if (props.variant === 'primary') {
           classList.push(
-            "bg-primary",
-            "text-white",
-            "border",
-            "border-primary",
-            "hover:bg-primary/90"
+            'bg-primary',
+            'text-white',
+            'border',
+            'border-primary',
+            'hover:bg-primary/90'
           );
         }
-        if (props.variant === "secondary") {
+        if (props.variant === 'secondary') {
           classList.push(
-            "bg-secondary",
-            "text-white",
-            "border",
-            "border-secondary",
-            "hover:bg-secondary/90"
+            'bg-secondary',
+            'text-white',
+            'border',
+            'border-secondary',
+            'hover:bg-secondary/90'
           );
         }
-        if (props.variant === "danger") {
+        if (props.variant === 'danger') {
           classList.push(
-            "bg-red",
-            "text-white",
-            "border",
-            "border-red-900",
-            "hover:bg-red/90"
+            'bg-red',
+            'text-white',
+            'border',
+            'border-red-900',
+            'hover:bg-red/90'
           );
         }
-        if (props.variant === "primary-white") {
+        if (props.variant === 'primary-white') {
           classList.push(
-            "bg-white",
-            "text-primary",
-            "border",
-            "border-white",
-            "hover:bg-white/90"
+            'bg-white',
+            'text-primary',
+            'border',
+            'border-white',
+            'hover:bg-white/90'
           );
         }
-        if (props.variant === "text") {
+        if (props.variant === 'text') {
           classList.push(
-            "bg-transparent",
-            "text-primary",
-            "hover:bg-primary/10"
+            'bg-transparent',
+            'text-primary',
+            'hover:bg-primary/10'
           );
         }
       }
 
       // Disabled
       if (props.disabled) {
-        classList.push("opacity-40", "cursor-not-allowed");
+        classList.push('opacity-40', 'cursor-not-allowed');
       } else {
-        classList.push("cursor-pointer");
+        classList.push('cursor-pointer');
       }
 
-      return classList.join(" ");
+      return classList.join(' ');
     });
 
     return {
