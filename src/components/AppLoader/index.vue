@@ -1,36 +1,42 @@
 <template>
-  <div
-    v-if="setup"
-    :class="`w-full flex flex-col fixed inset-0 top-0 left-0  items-center justify-center ${
-      setup?.isInteractive
-        ? 'bg-black !bg-opacity-60'
-        : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
-    }   !z-[99999999999999999]`"
-    :style="`padding-top: calc(env(safe-area-inset-top) + ${
-      currentPlatform == 'android' ? '20' : '0'
-    }px) !important;`"
-    id="innerModal"
-  >
-    <template v-if="setup?.loading">
-      <!-- <div :class="`loader-container w-full absolute top-0 left-0`">
+  <teleport to="body">
+    <div
+      v-if="setup"
+      :class="`w-full flex flex-col fixed inset-0 top-0 left-0  items-center justify-center ${
+        setup?.isInteractive
+          ? 'bg-black !bg-opacity-60'
+          : 'bg-black !bg-opacity-30 dark:!bg-opacity-50'
+      }   !z-[99999999999999999]`"
+      :style="`padding-top: calc(env(safe-area-inset-top) + ${
+        currentPlatform == 'android' ? '20' : '0'
+      }px) !important;`"
+      id="innerModal"
+    >
+      <template v-if="setup?.loading">
+        <!-- <div :class="`loader-container w-full absolute top-0 left-0`">
         <div class="loader"></div>
       </div> -->
 
-      <div
-        class="w-full flex flex-col space-y-5 xs:space-y-4 h-full absolute top-0 left-0 flex-grow pt-4 items-center justify-center z-50 css-gradient"
-      >
-        <Vue3Lottie :animation-link="'/loader.json'" :height="90" :width="90" />
-      </div>
-    </template>
-  </div>
+        <div
+          class="w-full flex flex-col space-y-5 xs:space-y-4 h-full absolute top-0 left-0 flex-grow pt-4 items-center justify-center z-50 css-gradient"
+        >
+          <Vue3Lottie
+            :animation-link="'/loader.json'"
+            :height="90"
+            :width="90"
+          />
+        </div>
+      </template>
+    </div>
+  </teleport>
 </template>
 <script lang="ts">
-import { Logic } from '../../composable';
-import { defineComponent, onMounted, onUnmounted, ref } from 'vue';
-import AppIcon from '../AppIcon';
-import { getPlatforms } from '@ionic/vue';
-import { computed } from 'vue';
-import { Vue3Lottie } from 'vue3-lottie';
+import { Logic } from "../../composable";
+import { defineComponent, onMounted, onUnmounted, ref } from "vue";
+import AppIcon from "../AppIcon";
+import { getPlatforms } from "@ionic/vue";
+import { computed } from "vue";
+import { Vue3Lottie } from "vue3-lottie";
 
 export default defineComponent({
   components: {
@@ -51,7 +57,7 @@ export default defineComponent({
       },
     },
   },
-  name: 'AppLoader',
+  name: "AppLoader",
   setup(props) {
     const currentMessageIndex = ref(0);
 
@@ -60,7 +66,7 @@ export default defineComponent({
     const lottieContainer = ref();
 
     const messageInteval = ref();
-    const messages = [''];
+    const messages = [""];
 
     const startTimeoutCounter = () => {
       timeOutInstance.value = setInterval(() => {
@@ -68,8 +74,8 @@ export default defineComponent({
           Logic.Common.hideLoader();
           Logic.Common.showAlert({
             show: true,
-            message: 'Network Timeout. Please try again',
-            type: 'error',
+            message: "Network Timeout. Please try again",
+            type: "error",
           });
           return;
         }

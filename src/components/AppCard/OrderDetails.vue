@@ -88,6 +88,11 @@ export default defineComponent({
     const getOrderColor = (icon_name: string, status = "") => {
       let textColor = "";
 
+      if (status == "completed") {
+        textColor = "!text-green";
+        return textColor;
+      }
+
       if (icon_name.includes("pending")) {
         textColor = "!text-orange";
       } else if (icon_name.includes("completed")) {
