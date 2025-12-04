@@ -54,6 +54,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "KES",
@@ -92,6 +93,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "UGX",
@@ -130,6 +132,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "GHS",
@@ -148,6 +151,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "ZAR",
@@ -174,6 +178,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "RWF",
@@ -200,6 +205,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -226,6 +232,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -244,6 +251,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -262,6 +270,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -280,6 +289,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "CDF",
@@ -298,6 +308,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "SLE",
@@ -316,6 +327,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -334,6 +346,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XAF",
@@ -352,6 +365,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -370,6 +384,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -388,6 +403,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -406,6 +422,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -424,6 +441,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -442,6 +460,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -460,6 +479,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -478,6 +498,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -496,6 +517,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "XOF",
@@ -514,6 +536,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "TZS",
@@ -540,6 +563,7 @@ export const availableCurrencies = reactive<Currency[]>([
       },
     ],
     allow_p2p: true,
+    has_flutterwave_support: true,
   },
   {
     code: "MWK",
@@ -548,6 +572,123 @@ export const availableCurrencies = reactive<Currency[]>([
     use_country_code: true,
     symbol: "MK",
     country_code: "MW",
+    loading: false,
+    payin_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 1,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 750,
+        value: 2,
+        method: "momo",
+      },
+    ],
+    payout_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 0.5,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 1,
+        value: 1,
+        method: "momo",
+      },
+    ],
+    allow_p2p: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "EGP",
+    name: "Egyptian Pound",
+    country_name: "Egypt",
+    use_country_code: true,
+    symbol: "E£",
+    country_code: "EG",
+    loading: false,
+    payin_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 1,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 750,
+        value: 2,
+        method: "momo",
+      },
+    ],
+    payout_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 0.5,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 1,
+        value: 1,
+        method: "momo",
+      },
+    ],
+    allow_p2p: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "SLL",
+    name: "Sierra Leonean Leone",
+    country_name: "Sierra Leone",
+    use_country_code: true,
+    symbol: "Le",
+    country_code: "SL",
+    loading: false,
+    payin_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 1,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 750,
+        value: 2,
+        method: "momo",
+      },
+    ],
+    payout_fees: [
+      {
+        type: "percentage",
+        min: 750,
+        value: 0.5,
+        method: "bank_transfer",
+      },
+      {
+        type: "percentage",
+        min: 1,
+        value: 1,
+        method: "momo",
+      },
+    ],
+    allow_p2p: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "ETB",
+    name: "Ethiopian Birr",
+    country_name: "Ethiopia",
+    use_country_code: true,
+    symbol: "Br",
+    country_code: "ET",
     loading: false,
     payin_fees: [
       {
@@ -590,6 +731,8 @@ export const availableCurrencies = reactive<Currency[]>([
   {
     code: "TRY",
     name: "Turkish Lira (₺)",
+    use_country_code: true,
+    country_name: "Turkey",
     symbol: "₺",
     loading: false,
     icon_extension: "svg",
@@ -599,22 +742,67 @@ export const availableCurrencies = reactive<Currency[]>([
   {
     code: "USD",
     name: "United States Dollar ($)",
+    use_country_code: true,
+    country_name: "United States",
     symbol: "$",
     loading: false,
     icon_extension: "svg",
     country_code: "US",
     allow_p2p: true,
     is_foreign_currency: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "CAD",
+    name: "Canadian Dollar ($)",
+    use_country_code: true,
+    country_name: "Canada",
+    symbol: "$",
+    loading: false,
+    icon_extension: "svg",
+    country_code: "CA",
+    allow_p2p: true,
+    is_foreign_currency: true,
+    has_flutterwave_support: true,
   },
   {
     code: "EUR",
     name: "Euro (€)",
     symbol: "€",
+    use_country_code: true,
+    country_name: "European Union",
     loading: false,
     icon_extension: "svg",
     country_code: "EU",
-    allow_p2p: false,
+    allow_p2p: true,
     is_foreign_currency: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "COP",
+    name: "Colombian Peso ($)",
+    symbol: "$",
+    use_country_code: true,
+    country_name: "Colombia",
+    loading: false,
+    icon_extension: "svg",
+    country_code: "CO",
+    allow_p2p: true,
+    is_foreign_currency: true,
+    has_flutterwave_support: true,
+  },
+  {
+    code: "IRN",
+    name: "Indian Rupee (₹)",
+    symbol: "₹",
+    use_country_code: true,
+    country_name: "India",
+    loading: false,
+    icon_extension: "svg",
+    country_code: "IN",
+    allow_p2p: true,
+    is_foreign_currency: true,
+    has_flutterwave_support: true,
   },
   {
     code: "USDC",

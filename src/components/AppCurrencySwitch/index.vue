@@ -45,7 +45,7 @@
     contentClass="!px-0 !overflow-y-auto !pt-0"
   >
     <template #top-section>
-      <div class="w-full pb-3 px-4">
+      <div class="w-full pb-3 px-4 z-50">
         <app-tabs
           :tabs="appTabs"
           v-model:activeTab="activeTab"
