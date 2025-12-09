@@ -41,8 +41,8 @@
         class="text-right !text-sm font-semibold pb-[3px] !whitespace-nowrap"
       >
         {{ data.transactionType == "credit" ? "+" : "-" }}
-        {{ getIcon(data.type) == 'grp' ? 'GRP' : data.currencySymbol }}
-        {{ Logic.Common.convertToMoney(data.amount, true, "") }}
+        {{ getIcon(data.type) == "grp" ? "GRP" : data.currencySymbol
+        }}{{ Logic.Common.convertToMoney(data.amount, true, "") }}
       </app-normal-text>
 
       <app-normal-text
@@ -55,73 +55,73 @@
 </template>
 
 <script lang="ts">
-  import { defineComponent } from "vue"
-  import AppIcon from "../AppIcon"
-  import { AppNormalText } from "../AppTypography"
-  import { Logic } from "../../composable"
+import { defineComponent } from "vue";
+import AppIcon from "../AppIcon";
+import { AppNormalText } from "../AppTypography";
+import { Logic } from "../../composable";
 
-  enum TransactionType {
-    Sent = "sent",
-    Received = "received",
-    Added = "added",
-    Redeemed = "redeemed",
-  }
+enum TransactionType {
+  Sent = "sent",
+  Received = "received",
+  Added = "added",
+  Redeemed = "redeemed",
+}
 
-  /**
-   *  Displays a transaction item with its icon, description, date, time, and amount.
-   */
-  export default defineComponent({
-    components: {
-      AppIcon,
-      AppNormalText,
-    },
-    name: "AppTransaction",
-    props: {
-      /**
-       * The transaction data.
-       */
-      data: {
-        type: Object as () => {
-          id: string | number
-          title: string
-          amount: number
-          type: TransactionType
-          transactionType: "credit" | "debit"
-          date: string
-          currencySymbol?: string
-          subAmount?: string
-        },
-        required: true,
+/**
+ *  Displays a transaction item with its icon, description, date, time, and amount.
+ */
+export default defineComponent({
+  components: {
+    AppIcon,
+    AppNormalText,
+  },
+  name: "AppTransaction",
+  props: {
+    /**
+     * The transaction data.
+     */
+    data: {
+      type: Object as () => {
+        id: string | number;
+        title: string;
+        amount: number;
+        type: TransactionType;
+        transactionType: "credit" | "debit";
+        date: string;
+        currencySymbol?: string;
+        subAmount?: string;
       },
-
-      customClass: {
-        type: String,
-        default: "",
-      },
+      required: true,
     },
 
-    setup() {
-      const getIcon = (type: TransactionType) => {
-        if (type === "sent") return "white-arrow-up"
-        if (type === "received") return "white-arrow-down"
-        if (type === "added") return "white-plus"
-        if (type === "redeemed") return "grp"
-        return "text-gray-500"
-      }
-
-      const getBgColor = (type: string) => {
-        if (type === "sent") return "!bg-[#00A0B4]"
-        if (type === "received") return "!bg-[#10BB76]"
-        if (type === "added") return "!bg-[#8E3BE0]"
-        if (type === "redeemed") return "!bg-[#0A141E]"
-        return "!bg-gray-100"
-      }
-
-      return {
-        getBgColor,
-        getIcon,
-        Logic,
-      }
+    customClass: {
+      type: String,
+      default: "",
     },
-  })
+  },
+
+  setup() {
+    const getIcon = (type: TransactionType) => {
+      if (type === "sent") return "white-arrow-up";
+      if (type === "received") return "white-arrow-down";
+      if (type === "added") return "white-plus";
+      if (type === "redeemed") return "grp";
+      return "text-gray-500";
+    };
+
+    const getBgColor = (type: string) => {
+      if (type === "sent") return "!bg-[#00A0B4]";
+      if (type === "received") return "!bg-[#10BB76]";
+      if (type === "added") return "!bg-[#8E3BE0]";
+      if (type === "redeemed") return "!bg-[#0A141E]";
+      return "!bg-gray-100";
+    };
+
+    return {
+      getBgColor,
+      getIcon,
+      Logic,
+    };
+  },
+});
 </script>

@@ -448,6 +448,7 @@ export default defineComponent({
 
         if (messageBox) {
           messageBox.innerHTML = "";
+          messageBox.innerText = "";
           messageBox.focus();
         }
       }

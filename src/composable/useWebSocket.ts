@@ -64,55 +64,71 @@ export function useWebSocket() {
         });
       }
 
-      // ✅ SINGLE UNIFIED CHANNEL - Conversation channel
-      echoChannel.value = Logic.Common.laravelEcho
-        ?.join(`conversation.${conversationUuid}`)
-        .here((users: WebSocketUser[]) => {
-          console.log("🔧 Users currently in conversation:", users);
-          isConnected.value = true;
-        })
-        .joining((user: WebSocketUser) => {
-          console.log("🔧 User joining conversation:", user);
-          if (callbacks.onUserJoining) {
-            callbacks.onUserJoining(user);
-          }
-        })
-        .leaving((user: WebSocketUser) => {
-          console.log("🔧 User leaving conversation:", user);
-          if (callbacks.onUserLeaving) {
-            callbacks.onUserLeaving(user);
-          }
-        })
-        // ✅ LISTEN FOR ALL MESSAGE TYPES ON SAME CHANNEL
-        .listen(".message.created", (data: WebSocketMessageData) => {
-          console.log("🔧 WebSocket message.created event received:", data);
-          if (callbacks.onMessageCreated) {
-            callbacks.onMessageCreated(data);
-          }
-        })
-        .listen(".business.joined", (data: WebSocketUser) => {
-          console.log("🔧 WebSocket business.joined event received:", data);
-          if (callbacks.onBusinessJoined) {
-            callbacks.onBusinessJoined(data);
-          }
-        });
+      // // ✅ SINGLE UNIFIED CHANNEL - Conversation channel
+      // echoChannel.value = Logic.Common.laravelEcho
+      //   ?.join(`conversation.${conversationUuid}`)
+      //   .here((users: WebSocketUser[]) => {
+      //     console.log("🔧 Users currently in conversation:", users);
+      //     isConnected.value = true;
+      //   })
+      //   .joining((user: WebSocketUser) => {
+      //     console.log("🔧 User joining conversation:", user);
+      //     if (callbacks.onUserJoining) {
+      //       callbacks.onUserJoining(user);
+      //     }
+      //   })
+      //   .leaving((user: WebSocketUser) => {
+      //     console.log("🔧 User leaving conversation:", user);
+      //     if (callbacks.onUserLeaving) {
+      //       callbacks.onUserLeaving(user);
+      //     }
+      //   })
+      //   // ✅ LISTEN FOR ALL MESSAGE TYPES ON SAME CHANNEL
+      //   .listen(".message.created", (data: WebSocketMessageData) => {
+      //     console.log("🔧 WebSocket message.created event received:", data);
+      //     if (callbacks.onMessageCreated) {
+      //       callbacks.onMessageCreated(data);
+      //     }
+      //   })
+      //   .listen(".business.joined", (data: WebSocketUser) => {
+      //     console.log("🔧 WebSocket business.joined event received:", data);
+      //     if (callbacks.onBusinessJoined) {
+      //       callbacks.onBusinessJoined(data);
+      //     }
+      //   });
 
       // ✅ ADDITIONAL: Message channel listener (this is the working one)
       const messageChannel = Logic.Common.laravelEcho
         ?.join(`message.${conversationUuid}`)
         .here((users: WebSocketUser[]) => {
+          isConnected.value = true;
+          Logic.Common.addToActiveChannels(
+            `message.${conversationUuid}`,
+            messageChannel
+          );
           console.log("🔧 Users currently in message channel:", users);
         })
         .joining((user: WebSocketUser) => {
           console.log("🔧 User joining message channel:", user);
           if (callbacks.onUserJoining) {
             callbacks.onUserJoining(user);
+            if (user.id === Logic.Auth.AuthUser?.id) {
+              Logic.Common.addToActiveChannels(
+                `message.${conversationUuid}`,
+                messageChannel
+              );
+            }
           }
         })
         .leaving((user: WebSocketUser) => {
           console.log("🔧 User leaving message channel:", user);
           if (callbacks.onUserLeaving) {
             callbacks.onUserLeaving(user);
+            if (user.id === Logic.Auth.AuthUser?.id) {
+              Logic.Common.removeFromActiveChannels(
+                `message.${conversationUuid}`
+              );
+            }
           }
         })
         .listen(".message.created", (data: WebSocketMessageData) => {
@@ -133,6 +149,10 @@ export function useWebSocket() {
             callbacks.onBusinessJoined(data);
           }
         });
+
+      if (Logic.Common.activeChannels[`message.${conversationUuid}`]) {
+        isConnected.value = true;
+      }
 
       console.log("✅ Unified WebSocket listeners set up successfully");
       console.log("🔧 Listening on channels:", {
