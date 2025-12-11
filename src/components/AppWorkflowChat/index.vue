@@ -459,7 +459,7 @@
 
       <!-- Proof Upload Modal -->
       <proof-upload-modal
-        :show="showProofModal"
+        v-if="showProofModal"
         @cancel="handleProofCancel"
         @upload-success="handleProofUploadSuccess"
         @upload-error="handleProofUploadError"
@@ -1941,6 +1941,7 @@ export default defineComponent({
     const scrollToBottom = async () => {
       await nextTick();
       const bottomAnchor = document.getElementById("bottom-anchor");
+
       if (bottomAnchor) {
         bottomAnchor.scrollIntoView({ behavior: "smooth" });
       }

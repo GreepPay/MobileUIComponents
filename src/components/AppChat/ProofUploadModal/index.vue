@@ -1,6 +1,5 @@
 <template>
   <div
-    v-if="show"
     class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end"
     @click="handleCancel"
   >
@@ -172,7 +171,8 @@ export default defineComponent({
     const getPaymentMethodMetadata = () => {
       const chatMetadata: any = getChatMetadata();
 
-      console.log("Fetching payment method metadata...", chatMetadata);
+      console.log("Chat Metadata getPaymentMethodMetadata:", chatMetadata);
+
       if (!chatMetadata.merchant_payment_method) {
         return [];
       }

@@ -203,29 +203,51 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
 
     const conversationData = Logic.Messaging.SingleConversation;
     const exchangeAd = conversationData?.exchangeAd;
-    const exchangeRate = exchangeAd?.rate || 10;
-    const sellAmount = amount * exchangeRate;
-    const buyAmount = amount;
-    const buyAmountUSD = amount / exchangeRate;
 
-    let structuredResponse: any = {
-      currency: "USDC",
-      amount: amount,
-      currency_symbol: getCurrencyInfo()?.symbol || "₺",
-      business_name: exchangeAd?.business?.business_name || "GreepPay",
-      sell_amount: Logic.Common.convertToMoney(sellAmount.toFixed(2), true, ""),
-      usd_amount: buyAmountUSD.toFixed(2),
-      usd_amount_formatted: Logic.Common.convertToMoney(
-        buyAmountUSD.toFixed(2),
-        true,
-        ""
-      ),
-      buy_amount: Logic.Common.convertToMoney(buyAmount.toFixed(2), true, ""),
-      sell_rate: Logic.Common.convertToMoney(exchangeRate.toFixed(2), true, ""),
-      buy_rate: Logic.Common.convertToMoney(exchangeRate.toFixed(2), true, ""),
-      ...metadata,
-      [inputName || "message"]: content,
-    };
+    let structuredResponse = {};
+
+    if (amount) {
+      const exchangeRate = exchangeAd?.rate || 10;
+      const sellAmount = amount * exchangeRate;
+      const buyAmount = amount;
+      const buyAmountUSD = amount / exchangeRate;
+
+      structuredResponse = {
+        currency: "USDC",
+        amount: amount,
+        currency_symbol: getCurrencyInfo()?.symbol || "₺",
+        business_name: exchangeAd?.business?.business_name || "GreepPay",
+        sell_amount: Logic.Common.convertToMoney(
+          sellAmount.toFixed(2),
+          true,
+          ""
+        ),
+        usd_amount: buyAmountUSD.toFixed(2),
+        usd_amount_formatted: Logic.Common.convertToMoney(
+          buyAmountUSD.toFixed(2),
+          true,
+          ""
+        ),
+        buy_amount: Logic.Common.convertToMoney(buyAmount.toFixed(2), true, ""),
+        sell_rate: Logic.Common.convertToMoney(
+          exchangeRate.toFixed(2),
+          true,
+          ""
+        ),
+        buy_rate: Logic.Common.convertToMoney(
+          exchangeRate.toFixed(2),
+          true,
+          ""
+        ),
+        ...metadata,
+        [inputName || "message"]: content,
+      };
+    } else {
+      structuredResponse = {
+        ...metadata,
+        [inputName || "message"]: content,
+      };
+    }
 
     let otherData: any = {};
 
@@ -316,9 +338,13 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
     let messagesMetadata = {};
 
     messages?.forEach((message) => {
-      const metadata = message.metadata;
+      const metadata: any = message.metadata;
 
-      messagesMetadata = { ...messagesMetadata, ...metadata };
+      messagesMetadata = {
+        ...messagesMetadata,
+        ...metadata,
+        ...(metadata?.structured_response || {}),
+      };
     });
 
     return messagesMetadata;
@@ -901,6 +927,12 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
           : conversationData.metadata
         : {};
 
+      const chatMetaData: any = getChatMetadata();
+
+      summary.currency_symbol =
+        chatMetaData.currency_symbol || summary.currency_symbol;
+      summary.amount = chatMetaData.amount || summary.sell_rate;
+
       // Check if there's order data in metadata
       if (conversationMetadata.order_data) {
         const orderData = conversationMetadata.order_data;
@@ -1025,15 +1057,15 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         const chatMetadata: any = getChatMetadata();
 
         return {
-          youSell: `${
-            chatMetadata.currency_symbol || ""
-          }${Logic.Common.convertToMoney(chatMetadata.buy_amount, false, "")}`,
+          youSell: `${chatMetadata.currency_symbol || ""}${
+            chatMetadata.buy_amount
+          }`,
           youGet: `${chatMetadata.usd_amount_formatted} USDC`,
           fee: "0 USDC",
           deliveryFee: `${deliveryFee} USDC`,
-          youPay: `${
-            chatMetadata.currency_symbol || ""
-          }${Logic.Common.convertToMoney(chatMetadata.buy_amount, false, "")}`,
+          youPay: `${chatMetadata.currency_symbol || ""}${
+            chatMetadata.buy_amount
+          }`,
           paymentType: "Online Payment",
           payoutOption: "",
           deliveryAddress: "",
@@ -3164,7 +3196,11 @@ export const getChatMetadata = () => {
           typeof message.metadata == "string"
             ? JSON.parse(message.metadata || "{}")
             : message.metadata;
-        messagesMetadata = { ...messagesMetadata, ...metadata };
+        messagesMetadata = {
+          ...messagesMetadata,
+          ...metadata,
+          ...(metadata?.structured_response || {}),
+        };
       });
       return messagesMetadata;
     } catch (error) {
