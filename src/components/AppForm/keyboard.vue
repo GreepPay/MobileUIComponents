@@ -18,7 +18,7 @@
           :class="{ 'bg-gray-200': activeKey === `key-${index}` }"
           :data-key-id="`key-${index}`"
         >
-          <app-normal-text class="!text-xl font-semibold">
+          <app-normal-text class="!text-2xl font-bold">
             {{ key + 1 }}
           </app-normal-text>
         </span>
@@ -38,21 +38,21 @@
           data-key-id="key-dot"
         >
           <app-normal-text
-            class="!text-xl !font-semibold xs:text-sm text-center"
+            class="!text-2xl !font-semibold xs:text-sm text-center"
           >
             .
           </app-normal-text>
         </span>
       </div>
       <div
-        class="col-span-4  flex flex-row items-center justify-center"
+        class="col-span-4 flex flex-row items-center justify-center"
         @click="
           handleClick($event, () => (content += '0'));
           Logic.Common.makeTouchSensation('MEDIUM');
         "
       >
         <span
-          class="w-full rounded-md h-[60px] xs:w-[38px] xs:h-[38px]  border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
+          class="w-full rounded-md h-[60px] xs:w-[38px] xs:h-[38px] border-[1px] border-transparent hover:!bg-gray-100 flex flex-row items-center justify-center transition-colors duration-200"
           :class="{ 'bg-gray-200': activeKey === 'key-zero' }"
           data-key-id="key-zero"
         >
@@ -78,10 +78,10 @@
   </div>
 </template>
 <script lang="ts">
-import AppNormalText from "../AppTypography/normalText.vue";
-import AppIcon from "../AppIcon";
-import { Logic } from "../../composable";
-import { computed, onMounted, ref, toRef, watch } from "vue";
+import AppNormalText from '../AppTypography/normalText.vue';
+import AppIcon from '../AppIcon';
+import { Logic } from '../../composable';
+import { computed, onMounted, ref, toRef, watch } from 'vue';
 
 /**
  *  A number keyboard component.
@@ -113,32 +113,32 @@ export default {
       required: false,
     },
   },
-  name: "AppKeyboard",
-  emits: ["update:modelValue"],
+  name: 'AppKeyboard',
+  emits: ['update:modelValue'],
   setup(props: any, context: any) {
-    const content = ref("");
-    const activeKey = ref("");
-    const updateValueRef = toRef(props, "updateValue");
+    const content = ref('');
+    const activeKey = ref('');
+    const updateValueRef = toRef(props, 'updateValue');
 
     const handleClick = (event: Event, callback: Function) => {
       const target = event.currentTarget as HTMLElement;
-      const keyId = target.getAttribute("data-key-id");
+      const keyId = target.getAttribute('data-key-id');
       if (keyId) {
         activeKey.value = keyId;
       }
       callback();
 
       setTimeout(() => {
-        activeKey.value = "";
+        activeKey.value = '';
       }, 150);
     };
 
     watch(content, () => {
       // Strip out first char if it's 0
-      if (content.value.startsWith("0")) {
+      if (content.value.startsWith('0')) {
         content.value = content.value.slice(1);
       }
-      context.emit("update:modelValue", content.value);
+      context.emit('update:modelValue', content.value);
     });
 
     watch(updateValueRef, () => {
@@ -148,8 +148,8 @@ export default {
     });
 
     watch(props, () => {
-      if (props.modelValue == "") {
-        content.value = "";
+      if (props.modelValue == '') {
+        content.value = '';
       }
     });
 
@@ -158,7 +158,7 @@ export default {
     const tabIndex = Math.random();
 
     const canAddNumber = computed(() => {
-      let contentArray = content.value.split(".");
+      let contentArray = content.value.split('.');
       if (contentArray.length > 1) {
         let charAfterDot = contentArray[1].length;
         if (charAfterDot >= 2) {
