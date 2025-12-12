@@ -2021,9 +2021,20 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
       return;
     }
 
-    const chatIsMarketOrder =
+    let chatIsMarketOrder =
       // @ts-expect-error
       Logic.Messaging.SingleConversation?.market_order != undefined;
+
+    const conversationStage = Logic.Messaging.SingleConversation?.stage;
+    const entityType = Logic.Messaging.SingleConversation?.entity_type;
+    const stageIsStartOfConversation =
+      conversationStage === "withdrawal_amount_0" ||
+      conversationStage === "deposit_amount_0" ||
+      conversationStage === "item_description_0";
+
+    if (conversationStage == "instant_bill_acceptance_1") {
+      chatIsMarketOrder = true;
+    }
 
     try {
       const welcomeMessage = {
@@ -2042,7 +2053,7 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
         updatedAt: new Date().toISOString(),
       };
 
-      if (!chatIsMarketOrder) {
+      if (!chatIsMarketOrder && stageIsStartOfConversation) {
         addMessage(welcomeMessage);
 
         setTimeout(async () => {
@@ -2125,6 +2136,25 @@ export const useWorkflowEngine = (options: WorkflowEngineOptions) => {
             // @ts-expect-error
             delivery_order_data: currentConversation?.delivery_order,
           });
+        }
+      } else if (!stageIsStartOfConversation) {
+        if (entityType === "p2p_withdrawal" || entityType === "p2p_deposit") {
+          if (conversationStage == "exchange_rate_1") {
+            let message = "";
+
+            const chatMetadata = conversationMetadata || {};
+
+            if (entityType === "p2p_withdrawal") {
+              message = `Hello, I want to make a withdrawal of ${chatMetadata.currency_symbol}${chatMetadata.sell_amount}`;
+            } else if (entityType === "p2p_deposit") {
+              message = `Hello, I want to make a deposit of ${chatMetadata.currency_symbol}${chatMetadata.buy_amount}`;
+            }
+
+            await sendWorkflowMessage(message, {
+              selected_option: "accept",
+              ...conversationMetadata,
+            });
+          }
         }
       }
     } catch (error) {

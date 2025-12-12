@@ -1,210 +1,241 @@
 <template>
   <!-- Address Input Modal -->
-  <div
-    class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-end"
-    @click="handleCancel"
-  >
+  <teleport to="body">
     <div
-      class="w-full bg-white rounded-t-3xl max-h-[60vh] overflow-y-auto shadow-2xl border-t border-gray-200 absolute"
-      @click.stop
+      class="fixed inset-0 bg-black bg-opacity-60 z-[999999999999] flex items-end lg:text-sm mdlg:text-[12px] text-xs"
+      @click="handleCancel"
     >
-      <!-- Header -->
       <div
-        class="flex items-center justify-between pb-4 sticky top-0 bg-white pt-4 px-4 z-10"
+        class="w-full bg-white rounded-t-3xl max-h-[60vh] overflow-y-auto shadow-2xl border-t border-gray-200 absolute"
+        @click.stop
       >
-        <div class="flex items-center space-x-2">
-          <app-header-text class="!text-base">
-            {{ addressType }} ({{ expectedLocationCounts }})
-          </app-header-text>
-        </div>
-
-        <div class="w-[28px] h-[28px]" @click="handleCancel">
-          <app-icon name="close" custom-class="h-[22px]" />
-        </div>
-      </div>
-      <div class="px-4 pb-4">
-        <template v-if="showAddLocationSection">
-          <div class="w-full flex flex-col">
-            <!-- Delivery Address Name -->
-
-            <div class="w-full flex flex-col mb-4">
-              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
-                Address Name
-              </app-normal-text>
-              <app-text-field
-                :has-title="true"
-                title="Address Name"
-                type="text"
-                placeholder="Enter address name (e.g., HQ, Branch Office)"
-                v-model="formData.name"
-                name="Address Name"
-                :rules="[FormValidations.RequiredRule]"
-              />
-            </div>
-
-            <!-- Delivery Location Area -->
-            <div class="w-full flex flex-col mb-4" v-if="showDeliverySelector">
-              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
-                Location Area
-              </app-normal-text>
-              <app-select
-                :placeholder="'Select Location Area'"
-                :hasTitle="false"
-                :paddings="'py-4 !px-4'"
-                :options="deliveryLocationOptions"
-                ref="deliveryArea"
-                usePermanentFloatingLabel
-                v-on:update:model-value="
-                  (data) => {
-                    formData.delivery_location_id = data;
-                  }
-                "
-                v-model="deliveryLocationId"
-                auto-complete
-              >
-              </app-select>
-            </div>
-
-            <!-- Google Maps Link  -->
-            <div class="w-full flex flex-col mb-4">
-              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
-                Google Maps Link
-              </app-normal-text>
-              <app-text-field
-                :has-title="true"
-                title="Google Maps Link"
-                type="url"
-                placeholder="Google Map Link"
-                v-model="formData.google_map_link"
-                :rules="[FormValidations.RequiredRule]"
-                name="Google Maps Link"
-              />
-            </div>
-
-            <!-- Description -->
-            <div class="w-full flex flex-col mb-4">
-              <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
-                Description
-              </app-normal-text>
-              <app-text-field
-                :has-title="true"
-                title="Description"
-                type="text"
-                placeholder="Description"
-                v-model="formData.description"
-                :is-textarea="true"
-                text-area-row="4"
-                :rules="[FormValidations.RequiredRule]"
-                name="Description"
-              />
-            </div>
-
-            <div class="w-full grid grid-cols-2 gap-3 mt-2">
-              <div class="col-span-1 flex flex-col">
-                <app-button
-                  @click="showAddLocationSection = false"
-                  class="!w-full px-4 py-3"
-                  variant="secondary"
-                  outlined
-                >
-                  Cancel
-                </app-button>
-              </div>
-
-              <div class="col-span-1 flex flex-col">
-                <app-button
-                  @click="addDeliveryAddress"
-                  :is-loading="isLoading"
-                  class="!w-full px-4 py-3"
-                  variant="secondary"
-                >
-                  Confirm Address
-                </app-button>
-              </div>
-            </div>
+        <!-- Header -->
+        <div
+          class="flex items-center justify-between pb-4 sticky top-0 bg-white pt-4 px-4 z-10"
+        >
+          <div class="flex items-center space-x-2">
+            <app-header-text class="!text-base">
+              {{ addressType }}
+              {{ expectedLocationCounts ? `(${expectedLocationCounts})` : `` }}
+            </app-header-text>
           </div>
-        </template>
-        <template v-else>
-          <template v-if="deliveryAddresses.length > 0">
-            <div class="space-y-3">
-              <div class="w-full flex flex-col">
-                <app-button
-                  custom-class="!w-full px-4 py-3 mb-2 !border-secondary !border-[1.5px]"
-                  variant="secondary"
-                  @click="showAddLocationSection = true"
-                >
-                  + Add new location
-                </app-button>
+
+          <div class="w-[28px] h-[28px]" @click="handleCancel">
+            <app-icon name="close" custom-class="h-[22px]" />
+          </div>
+        </div>
+        <div class="px-4 pb-4">
+          <template v-if="showAddLocationSection">
+            <div class="w-full flex flex-col">
+              <!-- Delivery Address Name -->
+
+              <div class="w-full flex flex-col mb-4">
+                <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                  Address Name
+                </app-normal-text>
+                <app-text-field
+                  :has-title="true"
+                  title="Address Name"
+                  type="text"
+                  placeholder="Enter address name (e.g., HQ, Branch Office)"
+                  v-model="formData.name"
+                  name="Address Name"
+                  :rules="[FormValidations.RequiredRule]"
+                />
               </div>
+
+              <!-- Delivery Location Area -->
               <div
-                v-for="location in deliveryAddresses"
-                :key="location.name || location.id"
-                :class="` ${
-                  selectedLocations.includes(location)
-                    ? '!border-primary !border-[2px]'
-                    : '!border-gray-200 !border'
-                } rounded-lg p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors`"
-                @click="toggleLocationSelection(location)"
+                class="w-full flex flex-col mb-4"
+                v-if="showDeliverySelector"
               >
-                <div class="flex items-center justify-between">
-                  <div class="w-full flex flex-col">
-                    <div class="pb-[2px]">
-                      <app-normal-text class="font-semibold text-gray-900 mb-1">
-                        {{ location.name }}
-                      </app-normal-text>
-                    </div>
-                    <div class="pb-2">
-                      <app-normal-text class="text-gray-600 mb-1">
-                        {{ location.description }}
-                      </app-normal-text>
-                    </div>
-                    <div>
-                      <app-normal-text class="!text-primary !underline">
-                        <a :href="location.google_map_link" target="_blank">
-                          See on map
-                        </a>
-                      </app-normal-text>
-                    </div>
-                  </div>
+                <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                  Location Area
+                </app-normal-text>
+                <app-select
+                  :placeholder="'Select Location Area'"
+                  :hasTitle="false"
+                  :paddings="'py-4 !px-4'"
+                  :options="deliveryLocationOptions"
+                  ref="deliveryArea"
+                  usePermanentFloatingLabel
+                  v-on:update:model-value="
+                    (data) => {
+                      formData.delivery_location_id = data;
+                    }
+                  "
+                  v-model="deliveryLocationId"
+                  auto-complete
+                >
+                </app-select>
+              </div>
+
+              <!-- Google Maps Link  -->
+              <div class="w-full flex flex-col mb-4">
+                <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                  Google Maps Link
+                </app-normal-text>
+                <app-text-field
+                  :has-title="true"
+                  title="Google Maps Link"
+                  type="url"
+                  placeholder="Google Map Link"
+                  v-model="formData.google_map_link"
+                  :rules="[FormValidations.RequiredRule]"
+                  name="Google Maps Link"
+                />
+              </div>
+
+              <!-- Description -->
+              <div class="w-full flex flex-col mb-4">
+                <app-normal-text class="!text-gray-600 !text-[12px] pb-2">
+                  Description
+                </app-normal-text>
+                <app-text-field
+                  :has-title="true"
+                  title="Description"
+                  type="text"
+                  placeholder="Description"
+                  v-model="formData.description"
+                  :is-textarea="true"
+                  text-area-row="4"
+                  :rules="[FormValidations.RequiredRule]"
+                  name="Description"
+                />
+              </div>
+
+              <div class="w-full grid grid-cols-2 gap-3 mt-2">
+                <div class="col-span-1 flex flex-col">
+                  <app-button
+                    @click="showAddLocationSection = false"
+                    class="!w-full px-4 py-3"
+                    variant="secondary"
+                    outlined
+                  >
+                    Cancel
+                  </app-button>
+                </div>
+
+                <div class="col-span-1 flex flex-col">
+                  <app-button
+                    @click="addDeliveryAddress"
+                    :is-loading="isLoading"
+                    class="!w-full px-4 py-3"
+                    variant="secondary"
+                  >
+                    Confirm Address
+                  </app-button>
                 </div>
               </div>
             </div>
           </template>
-          <!-- No Locations Available -->
-          <div
-            v-else
-            class="text-center flex flex-col justify-center items-center py-8 bg-gray-50 rounded-lg my-3 border border-gray-200"
-          >
-            <app-normal-text class="font-semibold text-gray-900 mb-2">
-              No pickup locations available
-            </app-normal-text>
-            <app-normal-text class="text-gray-600">
-              Please contact the business for pickup options
-            </app-normal-text>
-
-            <div class="w-full flex flex-col items-center mt-2 justify-center">
-              <app-button
-                class="!w-fit px-4 py-1 mt-2"
-                variant="secondary"
-                @click="showAddLocationSection = true"
+          <template v-else>
+            <template v-if="deliveryAddresses.length > 0">
+              <div class="space-y-3">
+                <div class="w-full flex flex-col">
+                  <app-button
+                    custom-class="!w-full px-4 py-3 mb-2 !border-secondary !border-[1.5px]"
+                    variant="secondary"
+                    @click="showAddLocationSection = true"
+                  >
+                    + Add new location
+                  </app-button>
+                </div>
+                <div
+                  v-for="location in deliveryAddresses"
+                  :key="location.name || location.id"
+                  :class="` ${
+                    selectedLocations.includes(location)
+                      ? '!border-primary !border-[2px]'
+                      : '!border-gray-200 !border'
+                  } rounded-lg p-4 cursor-pointer hover:border-blue-300 hover:bg-blue-50 transition-colors`"
+                  @click="toggleLocationSelection(location)"
+                >
+                  <div class="flex items-center justify-between">
+                    <div class="w-[50px] mr-3">
+                      <app-icon
+                        :name="`${
+                          addressType.toLocaleLowerCase()?.includes('dropoff')
+                            ? 'pick_up_icon'
+                            : 'drop_off_icon'
+                        }`"
+                        customClass="h-[48px]"
+                      />
+                    </div>
+                    <div class="w-full flex flex-col">
+                      <div class="pb-[2px]">
+                        <app-normal-text
+                          class="font-semibold text-gray-900 mb-1"
+                        >
+                          {{ location.name }}
+                        </app-normal-text>
+                      </div>
+                      <div class="pb-2">
+                        <app-normal-text class="text-gray-600 mb-1">
+                          {{ location.description }}
+                        </app-normal-text>
+                      </div>
+                      <div>
+                        <app-normal-text class="!text-primary !underline">
+                          <a :href="location.google_map_link" target="_blank">
+                            See on map
+                          </a>
+                        </app-normal-text>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </template>
+            <!-- No Locations Available -->
+            <template v-else>
+              <div
+                v-if="!isLoading"
+                class="text-center flex flex-col justify-center items-center py-8 bg-gray-50 rounded-lg my-3 border border-gray-200"
               >
-                + Add new location
-              </app-button>
-            </div>
-          </div>
-        </template>
+                <app-normal-text class="font-semibold text-gray-900 mb-2">
+                  No pickup locations available
+                </app-normal-text>
+                <app-normal-text class="text-gray-600">
+                  Please contact the business for pickup options
+                </app-normal-text>
 
-        <!-- Content -->
-        <div class="space-y-4"></div>
+                <div
+                  class="w-full flex flex-col items-center mt-2 justify-center"
+                >
+                  <app-button
+                    class="!w-fit px-4 py-1 mt-2"
+                    variant="secondary"
+                    @click="showAddLocationSection = true"
+                  >
+                    + Add new location
+                  </app-button>
+                </div>
+              </div>
 
-        <!-- Modal Footer -->
-        <div class="modal-footer"></div>
+              <div v-else class="w-full flex flex-col justify-center pb-4">
+                <div
+                  class="bg-gray-200 animate-pulse h-[80px] w-full rounded-md mb-4"
+                ></div>
+                <div
+                  class="bg-gray-200 animate-pulse h-[80px] w-full rounded-md mb-4"
+                ></div>
+              </div>
+            </template>
+          </template>
+
+          <!-- Content -->
+          <div class="space-y-4"></div>
+
+          <!-- Modal Footer -->
+          <div class="modal-footer"></div>
+        </div>
+
+        <!-- Spacer -->
+        <div class="h-[30px]"></div>
       </div>
-
-      <!-- Spacer -->
-      <div class="h-[30px]"></div>
     </div>
-  </div>
+  </teleport>
 </template>
 
 <script lang="ts">
@@ -348,6 +379,10 @@ export default defineComponent({
       ) {
         confirmAddress(selectedLocations);
       }
+
+      if (expectedLocationCounts.value === 0 && selectedLocations.length > 0) {
+        confirmAddress(selectedLocations);
+      }
     });
 
     const handleCancel = () => {
@@ -359,6 +394,7 @@ export default defineComponent({
         // GetDeliveryLocations endpoint is in Commerce service
         // Parameters: page, count, orderType, order, whereQuery
 
+        isLoading.value = true;
         await (Logic.Commerce
           ? Logic.Commerce
           : // @ts-expect-error
@@ -382,11 +418,14 @@ export default defineComponent({
         );
       } catch (error) {
         console.error("Error fetching delivery locations:", error);
+      } finally {
+        isLoading.value = false;
       }
     };
 
     const fetchDeliveryAddresses = async () => {
       try {
+        isLoading.value = true;
         const response = await Logic.User.GetP2PDeliveryAddresses(
           10,
           1,
@@ -404,6 +443,8 @@ export default defineComponent({
         }
       } catch (error) {
         console.error("Error fetching delivery addresses:", error);
+      } finally {
+        isLoading.value = false;
       }
     };
 
@@ -518,9 +559,7 @@ export default defineComponent({
       addressSearchIsLoading,
       addressOptions,
       isLocating,
-      confirmAddress,
-      cancelAddress,
-      handleCancel,
+      expectedLocationCounts,
       deliveryAddresses,
       showAddLocationSection,
       formData,
@@ -528,11 +567,13 @@ export default defineComponent({
       showDeliverySelector,
       deliveryLocationOptions,
       deliveryLocationId,
-      addDeliveryAddress,
       isLoading,
       selectedLocations,
       toggleLocationSelection,
-      expectedLocationCounts,
+      confirmAddress,
+      cancelAddress,
+      handleCancel,
+      addDeliveryAddress,
     };
   },
 });
