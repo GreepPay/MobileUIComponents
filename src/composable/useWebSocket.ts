@@ -98,57 +98,59 @@ export function useWebSocket() {
       //   });
 
       // ✅ ADDITIONAL: Message channel listener (this is the working one)
-      const messageChannel = Logic.Common.laravelEcho
-        ?.join(`message.${conversationUuid}`)
-        .here((users: WebSocketUser[]) => {
-          isConnected.value = true;
-          Logic.Common.addToActiveChannels(
-            `message.${conversationUuid}`,
-            messageChannel
-          );
-          console.log("🔧 Users currently in message channel:", users);
-        })
-        .joining((user: WebSocketUser) => {
-          console.log("🔧 User joining message channel:", user);
-          if (callbacks.onUserJoining) {
-            callbacks.onUserJoining(user);
-            if (user.id === Logic.Auth.AuthUser?.id) {
-              Logic.Common.addToActiveChannels(
-                `message.${conversationUuid}`,
-                messageChannel
-              );
+      if (!Logic.Common.activeChannels[`message.${conversationUuid}`]) {
+        const messageChannel = Logic.Common.laravelEcho
+          ?.join(`message.${conversationUuid}`)
+          .here((users: WebSocketUser[]) => {
+            isConnected.value = true;
+            Logic.Common.addToActiveChannels(
+              `message.${conversationUuid}`,
+              messageChannel
+            );
+            console.log("🔧 Users currently in message channel:", users);
+          })
+          .joining((user: WebSocketUser) => {
+            console.log("🔧 User joining message channel:", user);
+            if (callbacks.onUserJoining) {
+              callbacks.onUserJoining(user);
+              if (user.id === Logic.Auth.AuthUser?.id) {
+                Logic.Common.addToActiveChannels(
+                  `message.${conversationUuid}`,
+                  messageChannel
+                );
+              }
             }
-          }
-        })
-        .leaving((user: WebSocketUser) => {
-          console.log("🔧 User leaving message channel:", user);
-          if (callbacks.onUserLeaving) {
-            callbacks.onUserLeaving(user);
-            if (user.id === Logic.Auth.AuthUser?.id) {
-              Logic.Common.removeFromActiveChannels(
-                `message.${conversationUuid}`
-              );
+          })
+          .leaving((user: WebSocketUser) => {
+            console.log("🔧 User leaving message channel:", user);
+            if (callbacks.onUserLeaving) {
+              callbacks.onUserLeaving(user);
+              if (user.id === Logic.Auth.AuthUser?.id) {
+                Logic.Common.removeFromActiveChannels(
+                  `message.${conversationUuid}`
+                );
+              }
             }
-          }
-        })
-        .listen(".message.created", (data: WebSocketMessageData) => {
-          console.log(
-            "🔧 WebSocket message channel message.created event received:",
-            data
-          );
-          if (callbacks.onMessageCreated) {
-            callbacks.onMessageCreated(data);
-          }
-        })
-        .listen(".business.joined", (data: WebSocketUser) => {
-          console.log(
-            "🔧 WebSocket message channel business.joined event received:",
-            data
-          );
-          if (callbacks.onBusinessJoined) {
-            callbacks.onBusinessJoined(data);
-          }
-        });
+          })
+          .listen(".message.created", (data: WebSocketMessageData) => {
+            console.log(
+              "🔧 WebSocket message channel message.created event received:",
+              data
+            );
+            if (callbacks.onMessageCreated) {
+              callbacks.onMessageCreated(data);
+            }
+          })
+          .listen(".business.joined", (data: WebSocketUser) => {
+            console.log(
+              "🔧 WebSocket message channel business.joined event received:",
+              data
+            );
+            if (callbacks.onBusinessJoined) {
+              callbacks.onBusinessJoined(data);
+            }
+          });
+      }
 
       if (Logic.Common.activeChannels[`message.${conversationUuid}`]) {
         isConnected.value = true;

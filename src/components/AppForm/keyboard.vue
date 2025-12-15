@@ -78,10 +78,10 @@
   </div>
 </template>
 <script lang="ts">
-import AppNormalText from '../AppTypography/normalText.vue';
-import AppIcon from '../AppIcon';
-import { Logic } from '../../composable';
-import { computed, onMounted, ref, toRef, watch } from 'vue';
+import AppNormalText from "../AppTypography/normalText.vue";
+import AppIcon from "../AppIcon";
+import { Logic } from "../../composable";
+import { computed, onMounted, ref, toRef, watch } from "vue";
 
 /**
  *  A number keyboard component.
@@ -112,33 +112,42 @@ export default {
     updateValue: {
       required: false,
     },
+    /**
+     * Allow prefixing the input with a zero.
+     */
+    allowZeroPrefix: {
+      type: Boolean,
+      default: false,
+    },
   },
-  name: 'AppKeyboard',
-  emits: ['update:modelValue'],
+  name: "AppKeyboard",
+  emits: ["update:modelValue"],
   setup(props: any, context: any) {
-    const content = ref('');
-    const activeKey = ref('');
-    const updateValueRef = toRef(props, 'updateValue');
+    const content = ref("");
+    const activeKey = ref("");
+    const updateValueRef = toRef(props, "updateValue");
 
     const handleClick = (event: Event, callback: Function) => {
       const target = event.currentTarget as HTMLElement;
-      const keyId = target.getAttribute('data-key-id');
+      const keyId = target.getAttribute("data-key-id");
       if (keyId) {
         activeKey.value = keyId;
       }
       callback();
 
       setTimeout(() => {
-        activeKey.value = '';
+        activeKey.value = "";
       }, 150);
     };
 
     watch(content, () => {
       // Strip out first char if it's 0
-      if (content.value.startsWith('0')) {
-        content.value = content.value.slice(1);
+      if (!props.allowZeroPrefix) {
+        if (content.value.startsWith("0")) {
+          content.value = content.value.slice(1);
+        }
       }
-      context.emit('update:modelValue', content.value);
+      context.emit("update:modelValue", content.value);
     });
 
     watch(updateValueRef, () => {
@@ -148,8 +157,8 @@ export default {
     });
 
     watch(props, () => {
-      if (props.modelValue == '') {
-        content.value = '';
+      if (props.modelValue == "") {
+        content.value = "";
       }
     });
 
@@ -158,7 +167,7 @@ export default {
     const tabIndex = Math.random();
 
     const canAddNumber = computed(() => {
-      let contentArray = content.value.split('.');
+      let contentArray = content.value.split(".");
       if (contentArray.length > 1) {
         let charAfterDot = contentArray[1].length;
         if (charAfterDot >= 2) {
