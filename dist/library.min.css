@@ -2331,6 +2331,11 @@ video {
   border-color: rgb(153 153 153 / var(--tw-border-opacity, 1)) !important;
 }
 
+.border-\[\#00683F\] {
+  --tw-border-opacity: 1;
+  border-color: rgb(0 104 63 / var(--tw-border-opacity, 1));
+}
+
 .border-\[\#0A141E\] {
   --tw-border-opacity: 1;
   border-color: rgb(10 20 30 / var(--tw-border-opacity, 1));
@@ -3082,6 +3087,11 @@ video {
   text-align: right;
 }
 
+.\!text-2xl {
+  font-size: 1.5rem !important;
+  line-height: 2rem !important;
+}
+
 .\!text-\[10px\] {
   font-size: 10px !important;
 }
@@ -3165,13 +3175,12 @@ video {
   line-height: 1rem;
 }
 
-.\!text-2xl {
-  font-size: 1.5rem !important;
-  line-height: 2rem !important;
-}
-
 .\!font-\[500\] {
   font-weight: 500 !important;
+}
+
+.\!font-\[600\] {
+  font-weight: 600 !important;
 }
 
 .\!font-bold {

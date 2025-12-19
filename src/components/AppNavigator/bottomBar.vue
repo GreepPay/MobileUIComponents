@@ -13,7 +13,7 @@
         @click="goToPath(tab.path)"
         :class="`flex flex-col space-y-[2px] pt-3 items-center justify-center ${
           tabIsActive(tab.routeTag)
-            ? 'border-t-[3px] border-primary'
+            ? 'border-t-[3px] border-[#00683F]'
             : 'border-t-[3px] border-[#F0F3F6]'
         } `"
         :style="`width: ${100 / tabs.length}% ;`"
@@ -29,13 +29,13 @@
 
         <app-normal-text
           :color="` !text-[11px] ${
-            tabIsActive(tab.routeTag) ? '!text-primary' : '!text-[#999999]'
+            tabIsActive(tab.routeTag) ? '!text-[#00683F]' : '!text-[#999999]'
           } `"
-          :customClass="`${tabIsActive(tab.routeTag) ? '!font-[500]' : ''}`"
+          :customClass="`${tabIsActive(tab.routeTag) ? '!font-[600]' : ''}`"
         >
           {{ tab.name }}</app-normal-text
         >
-    </div>
+      </div>
     </div>
   </div>
 </template>
@@ -80,12 +80,10 @@ export default {
   setup() {
     const hoverTab = ref("");
 
-   
-
     const openSupport = () => {
       // @ts-expect-error window.$chatwoot is not defined
       if (window.$chatwoot) {
-         // @ts-expect-error window.$chatwoot is not defined
+        // @ts-expect-error window.$chatwoot is not defined
         window.$chatwoot.setUser(Logic.Auth.AuthUser?.uuid, {
           email: Logic.Auth.AuthUser?.email,
           name: Logic.Auth.AuthUser?.first_name,
@@ -99,8 +97,8 @@ export default {
       }
     };
 
-     const goToPath = (path: string) => {
-      if(path === "#support") {
+    const goToPath = (path: string) => {
+      if (path === "#support") {
         openSupport();
         return;
       }
@@ -115,7 +113,7 @@ export default {
       hoverTab,
       Logic,
       currentPlatform,
-      goToPath
+      goToPath,
     };
   },
 };

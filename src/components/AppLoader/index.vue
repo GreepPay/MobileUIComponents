@@ -11,6 +11,7 @@
         currentPlatform == 'android' ? '20' : '0'
       }px) !important;`"
       id="innerModal"
+      @click="!setup?.loading ? Logic.Common.hideLoader() : null"
     >
       <template v-if="setup?.loading">
         <!-- <div :class="`loader-container w-full absolute top-0 left-0`">
@@ -107,6 +108,7 @@ export default defineComponent({
     });
 
     return {
+      Logic,
       messages,
       currentMessageIndex,
       lottieContainer,
