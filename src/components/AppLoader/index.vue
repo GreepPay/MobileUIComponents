@@ -1,7 +1,7 @@
 <template>
   <teleport to="body">
     <div
-      v-if="setup"
+      v-if="setup && setup?.loading"
       :class="`w-full flex flex-col fixed inset-0 top-0 left-0  items-center justify-center ${
         setup?.isInteractive
           ? 'bg-black !bg-opacity-60'
