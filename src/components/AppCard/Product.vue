@@ -45,14 +45,13 @@
       </div>
 
       <div class="flex flex-col pt-2 pb-[3px]">
-        <div v-if="false" class="flex items-center gap-1">
+        <div class="flex items-center gap-1 pb-[2px]">
           <app-icon
             name="location-pin"
-            custom-class="w-3 !text-light-black -mt-0.5"
+            custom-class="h-[12px] !text-light-black"
           />
-          <app-normal-text class="!text-xs !text-light-black !truncate">
-            <!-- {{ product?.location }} -->
-            Test Location
+          <app-normal-text class="!text-[11px] !text-light-black !truncate">
+            {{ product.availableLocations?.join(" | ") || "All Locations" }}
           </app-normal-text>
         </div>
 
