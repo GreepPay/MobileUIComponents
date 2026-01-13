@@ -52,6 +52,7 @@ import {
   AppVariantCard,
   AppOrderDetailsCard,
   AppDeliveryCard,
+  AppDiscountCouponCard,
 } from "./AppCard";
 import { AppTabs, AppMultiTabsSelector } from "./AppTabs";
 import AppToken from "./AppToken";
@@ -191,4 +192,5 @@ export {
   AppTransactionSkeletonLoader,
   AppRefresher,
   AppDeliveryCard,
+  AppDiscountCouponCard,
 };

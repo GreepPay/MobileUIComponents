@@ -16,6 +16,7 @@ import AppTicketDetailCard from "./TicketDetail.vue";
 import AppVariantCard from "./Variant.vue";
 import AppOrderDetailsCard from "./OrderDetails.vue";
 import AppDeliveryCard from "./Delivery.vue";
+import AppDiscountCouponCard from "./DiscountCoupon.vue";
 
 export {
   AppCard,
@@ -36,4 +37,5 @@ export {
   AppVariantCard,
   AppOrderDetailsCard,
   AppDeliveryCard,
+  AppDiscountCouponCard,
 };

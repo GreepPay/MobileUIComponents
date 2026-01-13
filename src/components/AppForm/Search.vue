@@ -1,14 +1,14 @@
 <template>
   <div :class="['flex items-center w-full space-x-3 rounded', customClass]">
     <div
-      class="relative w-full flex items-center space-x-2 bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:ring-[1.5px] focus-within:ring-green-500"
+      :class="`relative w-full flex items-center space-x-2 bg-white border border-gray-300 rounded-3xl px-4 py-2 focus-within:ring-[1.5px] focus-within:ring-green-500 ${inputClass}`"
     >
       <app-icon name="search-normal" class="text-gray-500" />
 
       <input
         v-model="searchQuery"
         :placeholder="placeholder"
-        class="w-full text-gray-700 py-2 border-none outline-none"
+        class="w-full text-gray-700 py-2 border-none outline-none placeholder:!text-[#616161]"
       />
 
       <button
@@ -35,6 +35,10 @@ export default defineComponent({
       default: "Search...",
     },
     customClass: {
+      type: String,
+      default: "",
+    },
+    inputClass: {
       type: String,
       default: "",
     },

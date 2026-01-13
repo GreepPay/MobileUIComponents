@@ -421,7 +421,10 @@ export default defineComponent({
     const ShowCalendarModal = ref(false);
 
     watch(content, () => {
-      context.emit("update:modelValue", content.value?.replace(/,/g, ""));
+      context.emit(
+        "update:modelValue",
+        props.isFormatted ? content.value?.replace(/,/g, "") : content.value
+      );
       setTimeout(() => {
         checkValidation();
       }, 500);
@@ -610,6 +613,10 @@ export default defineComponent({
       }
 
       return true;
+    };
+
+    const clearContent = () => {
+      content.value = "";
     };
 
     const handlePasteAction = (event: any) => {
@@ -806,13 +813,14 @@ export default defineComponent({
       fieldType,
       ShowCalendarModal,
       Logic,
+      inputRef,
+      textAreaRef,
+      clearContent,
       applyContentRule,
       handlePasteAction,
       checkValidation,
       isNumber,
       showError,
-      inputRef,
-      textAreaRef,
     };
   },
 });
