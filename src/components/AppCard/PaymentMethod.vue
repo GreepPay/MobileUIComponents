@@ -9,9 +9,7 @@
       <app-header-text customClass="leading-6 !text-xs !text-black">
         {{ method.title }}
       </app-header-text>
-      <app-normal-text
-        customClass="leading-6  !text-sm !text-very-light-gray  "
-      >
+      <app-normal-text customClass="leading-6  !text-[#616161]  ">
         {{ method.price }}
       </app-normal-text>
     </div>

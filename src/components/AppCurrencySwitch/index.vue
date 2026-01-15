@@ -1,6 +1,6 @@
 <template>
   <div
-    :class="`w-fit p-2 bg-white ${
+    :class="`w-fit p-2 bg-white ${customClass} ${
       isSwitchable
         ? 'rounded-[999px] px-[10px] !py-[1px]'
         : 'rounded-[59px] px-2'
@@ -16,16 +16,16 @@
         }.${selectedCurrency?.icon_extension || 'svg'}`"
         class="h-4 w-4 rounded-full"
       />
-      <app-normal-text class="!font-[500]">
+      <app-normal-text :class="`!font-[500] ${currencyTextClass}`">
         {{ selectedCurrency.code?.replace("_1", "").replace("_2", "") }}
       </app-normal-text>
     </template>
     <div class="h-[32px] w-[32px] rounded-full" v-else></div>
     <div
-      class="h-[32px] flex justify-center items-center pl-1"
+      :class="`h-[32px] flex justify-center items-center pl-1 ${iconClass}`"
       v-if="isSwitchable"
     >
-      <app-icon :name="`chevron-down`" custom-class="h-[8px]" />
+      <app-icon :name="iconName" custom-class="h-[8px]" />
     </div>
   </div>
 
@@ -186,6 +186,26 @@ export default defineComponent({
       required: false,
       default:
         "See balance, transactions, prices, etc, in another currency of your choice.",
+    },
+    customClass: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    currencyTextClass: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    iconClass: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    iconName: {
+      type: String,
+      required: false,
+      default: "chevron-down",
     },
     availableCurrencies: {
       type: Array as () => Currency[],
