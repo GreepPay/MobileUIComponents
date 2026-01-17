@@ -1370,6 +1370,10 @@ video {
   height: 100vh;
 }
 
+.h-\[260px\] {
+  height: 260px;
+}
+
 .\!max-h-\[100px\] {
   max-height: 100px !important;
 }
@@ -3091,6 +3095,10 @@ video {
 
 .pt-\[4px\] {
   padding-top: 4px;
+}
+
+.pt-\[3px\] {
+  padding-top: 3px;
 }
 
 .\!text-left {
