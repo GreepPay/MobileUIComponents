@@ -1,7 +1,7 @@
 <template>
   <div class="bg-white flex flex-col items-center min-w-[80vw] truncate">
     <app-image-loader
-      class="w-full justify-between relative bg-white top-0 z-10 h-[260px] rounded-[12px] truncate"
+      class="w-full justify-between relative bg-white top-0 z-10 h-[260px] rounded-[12px] truncate border-[1px] border-[#E5E5E5]"
       :photo-url="event.image_url"
     >
     </app-image-loader>
