@@ -32,6 +32,8 @@ import AppEvent from "./AppEvent";
 import AppExchangeAd from "./AppExchangeAd";
 import AppWorkflowChat from "./AppWorkflowChat";
 import AppProduct from "./AppProduct";
+import AppLottieLoader from "./AppLottieLoader";
+import AppImageSequence from "./AppImageSequence";
 import { AppHeaderText, AppNormalText, AppLinkText } from "./AppTypography";
 import {
   AppCard,
@@ -53,6 +55,7 @@ import {
   AppOrderDetailsCard,
   AppDeliveryCard,
   AppDiscountCouponCard,
+  AppBeneficiary,
 } from "./AppCard";
 import { AppTabs, AppMultiTabsSelector } from "./AppTabs";
 import AppToken from "./AppToken";
@@ -76,6 +79,7 @@ import {
   AppFileAttachment,
   AppSearch,
   AppContentEditable,
+  AppRange,
 } from "./AppForm";
 import {
   AppHorizontalUserList,
@@ -193,4 +197,8 @@ export {
   AppRefresher,
   AppDeliveryCard,
   AppDiscountCouponCard,
+  AppBeneficiary,
+  AppLottieLoader,
+  AppImageSequence,
+  AppRange,
 };

@@ -30,6 +30,11 @@
         :tabindex="tabIndex"
         @click="ShowSelectModal = true"
       >
+        <!--
+          @slot inner-prefix
+          Use this slot to add content before the input field.
+        -->
+        <slot name="inner-prefix" />
         <!-- Floating label -->
         <template v-if="useFloatingLabel && valueData.length > 0">
           <app-normal-text
@@ -45,6 +50,7 @@
             {{ name }}
           </app-normal-text>
         </template>
+
         <input
           ref="select"
           :value="withKey ? valueData : textValue"
@@ -422,7 +428,7 @@ export default defineComponent({
       if (props.autoComplete) {
         searchResult.value = Logic.Common.searchArray(
           OptionRef.value,
-          capitalize(searchValue.value)
+          capitalize(searchValue.value),
         );
       }
     };
@@ -456,7 +462,7 @@ export default defineComponent({
           prepareSelectOptions();
         }
       },
-      { immediate: true, deep: true }
+      { immediate: true, deep: true },
     );
 
     return {

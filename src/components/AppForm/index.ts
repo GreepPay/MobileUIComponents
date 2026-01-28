@@ -9,6 +9,7 @@ import AppFormWrapper from "./wrapper.vue";
 import AppFileAttachment from "./fileAttachment.vue";
 import AppContentEditable from "./contentEditable.vue";
 import AppCalendar from "./calendar.vue";
+import AppRange from "./range.vue";
 
 export {
   AppSelect,
@@ -22,4 +23,5 @@ export {
   AppSearch,
   AppContentEditable,
   AppCalendar,
+  AppRange,
 };

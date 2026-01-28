@@ -9,7 +9,7 @@
         @click="canClose ? closeModal() : null"
       >
         <div
-          :class="`w-full bg-white rounded-t-[20px]    pb-0 min-h-[100px] relative max-h-[90%] ${innerClass}`"
+          :class="`w-full bg-white rounded-t-[20px] pb-0 min-h-[100px] relative max-h-[90%] ${innerClass}`"
           @click.stop="null"
         >
           <div
@@ -40,6 +40,7 @@
               </div>
 
               <app-icon
+                v-if="hasCloseIcon"
                 name="close-circle"
                 @click.stop="closeModal(true)"
                 custom-class="h-[24px]"
@@ -73,7 +74,7 @@ import {
   Teleport as teleport_,
   TeleportProps,
   VNodeProps,
-} from 'vue';
+} from "vue";
 
 const Teleport = teleport_ as {
   new (): {
@@ -81,14 +82,14 @@ const Teleport = teleport_ as {
   };
 };
 
-import { AppHeaderText } from '../AppTypography';
-import AppIcon from '../AppIcon';
+import { AppHeaderText } from "../AppTypography";
+import AppIcon from "../AppIcon";
 
 /**
  *  Modal component that displays content in an overlay.
  */
 export default defineComponent({
-  name: 'AppModal',
+  name: "AppModal",
   components: {
     AppHeaderText,
     AppIcon,
@@ -110,7 +111,7 @@ export default defineComponent({
      */
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     /**
      * Function to execute when the modal is closed.
@@ -131,37 +132,42 @@ export default defineComponent({
      */
     customClass: {
       type: String,
-      default: '',
+      default: "",
     },
     contentClass: {
       type: String,
-      default: '',
+      default: "",
     },
     titleClass: {
       type: String,
-      default: '',
+      default: "",
     },
     /**
      * Custom CSS classes to apply to the inner modal container.
      */
     innerClass: {
       type: String,
-      default: '',
+      default: "",
     },
 
     /**  * Custom CSS classes to apply to the bottom section.
      */
     bottomSectionClass: {
       type: String,
-      default: '',
+      default: "",
     },
 
     showHeader: {
       type: Boolean,
       default: true,
     },
+
+    hasCloseIcon: {
+      type: Boolean,
+      default: true,
+    },
   },
-  emits: ['back'],
+  emits: ["back"],
   setup(props, { emit }) {
     const closeModal = (fromButton = false) => {
       if (props.canClose || fromButton) {
@@ -169,7 +175,7 @@ export default defineComponent({
       }
     };
     const goBack = () => {
-      emit('back');
+      emit("back");
     };
 
     const innerHeight = ref(window.innerHeight);
@@ -180,11 +186,11 @@ export default defineComponent({
 
     onMounted(() => {
       updateHeight();
-      window.addEventListener('resize', updateHeight);
+      window.addEventListener("resize", updateHeight);
     });
 
     onUnmounted(() => {
-      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener("resize", updateHeight);
     });
 
     const mobileFullHeight = computed(() => {

@@ -1,75 +1,52 @@
 <template>
-  <div class="px-4 py-4 mb-4 border-[1.5px] rounded-[12px] border-[#E0E2E4] flex flex-col">
-    <div class="flex flex-row items-center pb-3 mb-3 border-b-[1px] border-[#F0F3F6]">
-      <div class="w-[32px] mr-2">
-        <app-icon name="arrow-swap" custom-class="!h-[32px]" />
+  <div
+    :class="`w-full flex flex-col space-y-1 px-4 py-4 !border-[2px] mb-3 border-[#F0F3F6] rounded-[16px] relative ${customClass}`"
+    :style="customStyle"
+  >
+    <div class="w-full flex flex-row items-center">
+      <div class="w-[24px]">
+        <app-image-loader
+          :photo-url="item.user.photo_url"
+          class="h-[24px] w-[24px] !rounded-full !border-[1.5px] !border-[#E0E0E0]"
+        />
       </div>
-
-      <app-normal-text class="!font-[500]" >
-        {{ item.currency.name }}
-      </app-normal-text>
-      <!-- <app-normal-text class="!font-[500]" v-else>
-        {{ item.currency.name }} to USDC
-      </app-normal-text> -->
+      <div class="ml-2 flex flex-row items-center">
+        <app-normal-text class="!font-medium !text-[12px]">
+          {{ item.user.name }}
+        </app-normal-text>
+        <app-icon
+          v-if="item.user.is_verified"
+          name="verified-badge"
+          custom-class="h-[16px] ml-1"
+        />
+      </div>
     </div>
 
-    <div class="flex flex-col pb-3 border-b-[1px] border-[#F0F3F6]">
-      <app-header-text>
-        {{ item.currency.symbol
-        }}{{ Logic.Common.convertToMoney(item.rate_per_usd, true, "") }}
+    <div class="w-full flex flex-row pt-[1px]">
+      <app-header-text class="!text-semibold">
+        {{ item.base_currency }}
+        {{ Logic.Common.convertToMoney(item.rate, true, "", false) }}
+        <span class="!text-xs">per {{ item.target_currency }}</span>
       </app-header-text>
-      <app-normal-text class="!text-gray-500"> For 1 USDC </app-normal-text>
     </div>
 
-    <!-- Limit -->
-    <div :class="`flex flex-col  ${item.trader ? 'py-3 border-b-[1px] border-[#F0F3F6]' : 'pt-3'
-      }`">
-      <div class="flex flex-col pb-3">
-        <app-normal-text class="!text-gray-500 pb-1">
-          Cash Limit
-        </app-normal-text>
-        <app-normal-text class="!text-sm font-[500]">
-          {{ item.currency.symbol
-          }}{{ Logic.Common.convertToMoney(item.limit.min, true, "") }} -
-          {{ item.currency.symbol
-          }}{{ Logic.Common.convertToMoney(item.limit.max, true, "") }}
-        </app-normal-text>
-      </div>
+    <div class="w-full flex flex-row items-center">
+      <app-normal-text class="!text-[#616161]">
+        {{ item.target_currency_symbol
+        }}{{ Logic.Common.convertToMoney(item.min_amount, true, "", false) }}
+        min
+      </app-normal-text>
 
-      <div class="flex flex-col pt-3 !border-t-[1px] border-[#F0F3F6]">
-        <app-normal-text class="!text-gray-500 pb-1">
-          Payout Options
-        </app-normal-text>
-        <app-normal-text class="!text-sm font-[500]">
-          {{ item.payout_options.join(", ") }}
-        </app-normal-text>
-      </div>
-    </div>
+      <span class="!text-[#616161] !text-xs mx-2">
+        <!-- Dot -->
+        &bull;
+      </span>
 
-    <!-- Trader -->
-    <div class="flex flex-col pt-3" v-if="item.trader">
-      <div class="w-full flex flex-row items-center">
-        <div class="w-[43px]">
-          <app-avatar :src="item.trader.photo_url" :name="item.trader.name" :size="40" />
-        </div>
-        <div class="flex flex-col space-y-[1px] pl-1">
-          <app-normal-text class="!font-semibold !line-clamp-1">
-            {{ item.trader.name }}
-          </app-normal-text>
-          <div class="flex flex-row items-center !pt-[2px]">
-            <app-normal-text class="!text-gray-500 !line-clamp-1">
-              {{ item.trader.no_of_trades }} trade{{
-                parseFloat(item.trader.no_of_trades) > 1 ? "s" : ""
-              }}
-            </app-normal-text>
-            <span class="h-[4px] w-[4px] rounded-full !bg-gray-500 mx-2">
-            </span>
-            <app-normal-text class="!text-gray-500 !line-clamp-1">
-              {{ item.trader.success_rate }} success
-            </app-normal-text>
-          </div>
-        </div>
-      </div>
+      <app-normal-text class="!text-[#616161]">
+        {{ item.target_currency_symbol
+        }}{{ Logic.Common.convertToMoney(item.max_amount, true, "", false) }}
+        max
+      </app-normal-text>
     </div>
   </div>
 </template>
@@ -78,27 +55,26 @@ import { Logic } from "../../composable";
 import { defineComponent } from "vue";
 import { AppNormalText, AppHeaderText } from "../AppTypography";
 import AppIcon from "../AppIcon";
-import AppAvatar from "../AppAvatar";
+import AppImageLoader from "../AppImageLoader";
 
 interface Item {
-  currency: {
-    code: string;
-    symbol: string;
+  id: string;
+  user: {
     name: string;
-  };
-  rate_per_usd: number;
-  limit: {
-    min: number;
-    max: number;
-  };
-  payout_options: string[];
-  trader?: {
     photo_url: string;
-    name: string;
-    no_of_trades: string;
-    success_rate: string;
+    is_verified: boolean;
   };
-  ad_type?: string;
+  base_currency: string;
+  base_currency_symbol: string;
+  target_currency: string;
+  target_currency_symbol: string;
+  rate: number;
+  min_amount: number;
+  max_amount: number;
+  supported_payment_methods: {
+    method: string;
+    details: Record<string, any>;
+  }[];
 }
 
 /**
@@ -109,7 +85,7 @@ export default defineComponent({
   components: {
     AppNormalText,
     AppIcon,
-    AppAvatar,
+    AppImageLoader,
     AppHeaderText,
   },
   props: {
@@ -143,11 +119,3 @@ export default defineComponent({
   },
 });
 </script>
-<!-- <style scoped>
-.blend-in {
-  animation: fadein 0.15s;
-  -moz-animation: fadein 0.15s; /* Firefox */
-  -webkit-animation: fadein 0.15s; /* Safari and Chrome */
-  -o-animation: fadein 0.15s; /* Opera */
-}
-</style> -->
